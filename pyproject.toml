@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nyctalus"
+description = "Identify bats from ultrasonic recordings, in your browser."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+# Runtime dependencies are added by the stage that first needs them.
+dependencies = [
+    "numpy>=1.26",
+    "soundfile>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+nyctalus = "nyctalus.cli:main"
+
+[tool.hatch.version]
+path = "src/nyctalus/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nyctalus"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "SIM",      # simplify
+    "RUF",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+# Third-party packages that ship without type information.
+module = ["soundfile"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
