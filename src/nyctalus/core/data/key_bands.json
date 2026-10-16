@@ -1,0 +1,24 @@
+{
+  "sources": [
+    "Barataud, M. (2015). Acoustic Ecology of European Bats. Biotope / MNHN.",
+    "Russ, J. (2012). British Bat Calls: A Guide to Species Identification. Pelagic.",
+    "Skiba, R. (2009). Europäische Fledermäuse. Westarp Wissenschaften."
+  ],
+  "notes": "Search-phase, free-flight values, widened to the union of the sources. Bands are not fitted to any recordings.",
+  "taxa": {
+    "Nyctalus noctula": {"end_khz": [17, 23], "duration_ms": [10, 25], "interval_ms": [180, 450]},
+    "Nyctalus leisleri": {"end_khz": [23, 30], "duration_ms": [6, 16], "interval_ms": [130, 320]},
+    "Eptesicus serotinus": {"end_khz": [23, 29], "duration_ms": [7, 20], "interval_ms": [90, 220]},
+    "Eptesicus nilssonii": {"end_khz": [26, 33], "duration_ms": [7, 16], "interval_ms": [130, 320]},
+    "Vespertilio murinus": {"end_khz": [21, 28], "duration_ms": [9, 22], "interval_ms": [90, 350]},
+    "Pipistrellus pipistrellus": {"end_khz": [42, 51], "duration_ms": [4, 11], "interval_ms": [70, 130]},
+    "Pipistrellus nathusii": {"end_khz": [35, 41], "duration_ms": [5, 13], "interval_ms": [90, 170]},
+    "Pipistrellus kuhlii": {"end_khz": [36, 43], "duration_ms": [5, 13], "interval_ms": [80, 150]},
+    "Pipistrellus pygmaeus": {"end_khz": [51, 62], "duration_ms": [3, 9], "interval_ms": [60, 120]},
+    "Barbastella barbastellus": {"end_khz": [28, 36], "duration_ms": [1.5, 5], "interval_ms": [80, 320]},
+    "Plecotus": {"end_khz": [25, 45], "duration_ms": [1.5, 6], "interval_ms": [100, 400]},
+    "Myotis": {"end_khz": [25, 48], "duration_ms": [2, 7], "interval_ms": [50, 130]},
+    "Rhinolophus hipposideros": {"end_khz": [100, 117], "duration_ms": [15, 70], "interval_ms": [60, 200]},
+    "Rhinolophus ferrumequinum": {"end_khz": [76, 86], "duration_ms": [20, 70], "interval_ms": [60, 200]}
+  }
+}
