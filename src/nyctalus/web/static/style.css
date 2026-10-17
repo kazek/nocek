@@ -257,3 +257,28 @@ details.hour table { margin-top: 8px; }
 table.recordings td:first-child, table.recordings th:first-child { width: 1%; white-space: nowrap; }
 .pager { margin-bottom: 8px; }
 .bats { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; }
+
+/* One recording: the spectrogram with its overlay, and what was heard. */
+.spectrogram { position: relative; height: 340px; margin-bottom: 10px; }
+.spectrogram canvas { position: absolute; top: 0; image-rendering: auto; }
+.spectrogram .overlay { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
+.spectrogram .axis { fill: var(--muted); font-size: 11px; }
+.spectrogram .tickmark { stroke: var(--line); }
+.spectrogram .call { fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-opacity: 0.85; }
+.spectrogram .badge rect { fill: rgb(0 0 0 / 0.75); stroke: #ffffff; stroke-width: 1; }
+.spectrogram .badge text { fill: #ffffff; font-size: 10px; font-weight: 700; }
+.spectrogram .cursor { stroke: #ffffff; stroke-width: 1.5; }
+.spectrogram .selection { fill: rgb(255 255 255 / 0.15); stroke: #ffffff; stroke-width: 1; }
+audio { height: 36px; }
+.spacer { flex: 1; }
+.animals { list-style: none; padding: 0; }
+.animals > li { display: flex; gap: 14px; align-items: flex-start; }
+.animals .number {
+  flex: none; width: 24px; height: 24px; border-radius: 6px;
+  background: var(--text); color: var(--bg);
+  display: grid; place-items: center; font-weight: 700; font-size: 0.85rem;
+}
+.animals .name { font-size: 1.1rem; margin-bottom: 4px; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 8px 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }

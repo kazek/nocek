@@ -37,13 +37,21 @@ def get_spectrogram(
     width: int = 1600,
     min_khz: float = 10.0,
     max_khz: float | None = None,
-    range_db: float = 70.0,
+    range_db: float = 30.0,
+    start_s: float = 0.0,
+    end_s: float | None = None,
 ) -> Response:
-    """Pixels as bytes, one column after another, each from low to high frequency."""
-    if not (1 <= width <= 20_000 and min_khz >= 0 and 10 <= range_db <= 150):
+    """Pixels as bytes, one column after another, each from low to high frequency.
+
+    start_s and end_s draw only that stretch of the recording, at full detail.
+    """
+    valid_range = start_s >= 0 and (end_s is None or end_s > start_s)
+    if not (1 <= width <= 20_000 and min_khz >= 0 and 10 <= range_db <= 150 and valid_range):
         raise ApiError(422, "invalid-spectrogram", "")
     try:
-        picture = media.image(_file(request, recording_id), width, min_khz, max_khz, range_db)
+        picture = media.image(
+            _file(request, recording_id), width, min_khz, max_khz, range_db, start_s, end_s
+        )
     except AudioError as error:
         raise ApiError(422, "unreadable-recording", str(error)) from error
     columns, rows = picture.pixels.shape
@@ -57,6 +65,7 @@ def get_spectrogram(
             "X-Min-Khz": repr(picture.min_khz),
             "X-Khz-Per-Row": repr(picture.khz_per_row),
             "X-Duration-S": repr(picture.duration_s),
+            "X-Start-S": repr(picture.start_s),
             "X-Top-Db": repr(picture.top_db),
             "X-Range-Db": repr(picture.range_db),
         },

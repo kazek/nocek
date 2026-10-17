@@ -154,3 +154,19 @@ def test_a_damaged_recording_is_reported(client: TestClient, library: Library) -
 
         assert response.status_code == 422
         assert response.json()["error"] == "unreadable-recording"
+
+
+def test_the_spectrogram_of_a_stretch(client: TestClient, library: Library) -> None:
+    # A tone in the second half only: the first half drawn alone stays dark.
+    recording = add(library, synth.audio(synth.noise(0.05), synth.tone(40, 0.05)).samples)
+    url = f"/api/recordings/{recording}/spectrogram"
+
+    quiet = client.get(url, params={"start_s": 0, "end_s": 0.04, "width": 50})
+    loud = client.get(url, params={"start_s": 0.06, "end_s": 0.1, "width": 50})
+
+    assert float(quiet.headers["x-start-s"]) == 0
+    assert float(loud.headers["x-start-s"]) == pytest.approx(0.06, abs=1e-4)
+    assert float(loud.headers["x-duration-s"]) == pytest.approx(0.1, abs=1e-3)
+    columns = int(loud.headers["x-columns"])
+    assert columns * float(loud.headers["x-seconds-per-column"]) == pytest.approx(0.04, abs=0.005)
+    assert client.get(url, params={"start_s": 0.05, "end_s": 0.01}).status_code == 422

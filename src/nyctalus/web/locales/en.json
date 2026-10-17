@@ -340,5 +340,63 @@
     "showing": "{first}–{last} of {total}",
     "none": "No recordings match.",
     "open": "Open"
+  },
+  "recording": {
+    "previous": "Previous recording",
+    "next": "Next recording",
+    "site": "Site",
+    "device": "Recorder",
+    "zoom_hint": "Drag across the spectrogram to look closer.",
+    "whole": "Show the whole recording",
+    "slowed": "Played {n} times slower, so the calls fall where you can hear them.",
+    "verdict": "What was heard",
+    "animal": "Animal {n}",
+    "withheld": "Name withheld",
+    "agreement": {
+      "one": "{agreeing} of {named} methods agree",
+      "other": "{agreeing} of {named} methods agree"
+    },
+    "only_network": "Only BatDetect2 gave a name",
+    "details": "Details",
+    "method": {
+      "batdetect2": "BatDetect2",
+      "key": "Field key",
+      "battybirdnet": "BattyBirdNET"
+    },
+    "model_class": "Network class",
+    "calls": "Calls",
+    "best": "Best score",
+    "votes": "Calls voting for this name",
+    "no_opinion": "no opinion",
+    "measured": "Measured by the detector",
+    "pulses": "Pulses",
+    "end_khz": "End frequency",
+    "duration": "Call length",
+    "interval": "Interval between calls",
+    "also_heard": "BattyBirdNET also heard",
+    "not_analysed": "This recording has not been analysed yet.",
+    "no_calls": "No bat calls in this recording.",
+    "not_run": "Not run",
+    "failed": "Failed",
+    "khz": "{n} kHz",
+    "ms": "{n} ms",
+    "skipped": {
+      "disabled": "switched off in the settings",
+      "no-pulses": "the detector found no calls",
+      "no-sources": "BatDetect2 found no animal",
+      "failed-earlier": "an earlier step failed"
+    },
+    "sound": {
+      "audiomoth": "a recorder's own noise",
+      "background": "background noise",
+      "bird": "a bird",
+      "collected": "noise",
+      "electrical": "electrical noise",
+      "insect": "an insect",
+      "mechanical": "a machine",
+      "other": "something else",
+      "pro": "a recorder's own noise",
+      "rain": "rain"
+    }
   }
 }

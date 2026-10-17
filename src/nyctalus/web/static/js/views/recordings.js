@@ -3,7 +3,7 @@
 import { get } from "../api.js";
 import { h, replace } from "../dom.js";
 import { apiQuery, filterBar, readFilters } from "../filters.js";
-import { formatDate, formatNumber, formatTime, t } from "../i18n.js";
+import { formatDateTime, formatNumber, formatTime, t } from "../i18n.js";
 import { taxaLabel } from "../names.js";
 
 const PAGE = 100;
@@ -50,7 +50,8 @@ export function recordingRows(rows, sites, { withDate = true } = {}) {
             h(
               "a",
               { href: `#/recording/${row.id}` },
-              withDate ? `${formatDate(row.night)} ${formatTime(row.recorded_at)}` : formatTime(row.recorded_at),
+              // The recording's own date and time; its night may have begun the evening before.
+              withDate ? formatDateTime(row.recorded_at) : formatTime(row.recorded_at),
             ),
           ),
           sites.length > 1 ? h("td", {}, siteName.get(row.site_id) ?? "—") : null,

@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from nyctalus.core import consensus, opinion, region, taxonomy
+from nyctalus.core import consensus, opinion, pipeline, region, taxonomy
 from nyctalus.recorders import base, checks
 from nyctalus.storage import importer
 from nyctalus.web import i18n, jobs
@@ -27,6 +27,8 @@ SECTIONS: list[tuple[type[StrEnum], str]] = [
     (jobs.Status, "job.status"),
     (jobs.Phase, "job.phase"),
     (region.Status, "status"),
+    (pipeline.Pass, "recording.method"),
+    (pipeline.Skipped, "recording.skipped"),
 ]
 
 
@@ -165,3 +167,10 @@ def _find(data: dict[str, Any], dotted: str) -> Any:
             return None
         data = data[part]
     return data
+
+
+def test_every_sound_battybirdnet_can_report_has_a_text() -> None:
+    from nyctalus.core import battybird
+
+    sounds = {label for head in battybird.heads().values() for label in head.not_a_bat}
+    assert sounds <= ENGLISH["recording"]["sound"].keys()

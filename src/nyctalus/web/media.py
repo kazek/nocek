@@ -51,11 +51,18 @@ class Image:
     seconds_per_column: float
     min_khz: float
     khz_per_row: float
-    duration_s: float
+    duration_s: float  # of the whole recording
+    start_s: float  # where the picture begins in it
     # The loudness shown white, in dB of the recording's own scale, and the
     # range below it that fades to black.
     top_db: float
     range_db: float
+
+
+# Black is the recording's own background noise, a little below its typical
+# level; white is its loudest moments, but never closer than this to black,
+# so a recording of nothing but noise stays dark instead of being stretched.
+NOISE_MARGIN_DB = 3.0
 
 
 def image(
@@ -63,9 +70,18 @@ def image(
     width: int = 1600,
     min_khz: float = 10.0,
     max_khz: float | None = None,
-    range_db: float = 70.0,
+    range_db: float = 30.0,
+    start_s: float = 0.0,
+    end_s: float | None = None,
 ) -> Image:
-    sound = load(path)
+    """The spectrogram of the recording, or of the stretch from start_s to end_s.
+
+    range_db is the least distance from black to white, in dB.
+    """
+    whole = load(path)
+    begin = max(0, round(start_s * whole.sample_rate))
+    stop = len(whole.samples) if end_s is None else round(end_s * whole.sample_rate)
+    sound = Audio(whole.samples[begin:stop], whole.sample_rate)
     params = detection.DEFAULT_PARAMS
     nfft = round(sound.sample_rate * params.window_ms / 1000)
     hop = nfft // 4
@@ -87,14 +103,17 @@ def image(
         power[first:last] = np.maximum.reduceat(block, starts, axis=0)
 
     db = 10 * np.log10(np.maximum(power, 1e-20))
-    top_db = float(np.percentile(db, 99.9)) if db.size else 0.0
-    scaled = np.clip((db - (top_db - range_db)) / range_db, 0, 1) * 255
+    floor_db = float(np.median(db)) - NOISE_MARGIN_DB if db.size else 0.0
+    top_db = max(float(np.percentile(db, 99.9)) if db.size else 0.0, floor_db + range_db)
+    span = top_db - floor_db
+    scaled = np.clip((db - floor_db) / span, 0, 1) * 255
     return Image(
         pixels=scaled.astype(np.uint8),
         seconds_per_column=per_column * hop / sound.sample_rate,
         min_khz=float(freqs[rows[0]]) if len(rows) else min_khz,
         khz_per_row=float(freqs[1] - freqs[0]),
-        duration_s=sound.duration_s,
+        duration_s=whole.duration_s,
+        start_s=begin / whole.sample_rate,
         top_db=top_db,
-        range_db=range_db,
+        range_db=span,
     )
