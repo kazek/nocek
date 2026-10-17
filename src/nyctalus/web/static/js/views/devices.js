@@ -3,6 +3,7 @@
 import { get, put } from "../api.js";
 import { h, replace } from "../dom.js";
 import { formatDateTime, formatNumber, t } from "../i18n.js";
+import { configIssue, recorderMode } from "../names.js";
 import { attempt } from "../notice.js";
 
 export async function devices(view) {
@@ -68,7 +69,7 @@ function configRow(config) {
     h(
       "td",
       {},
-      config.schedules.map((s) => h("div", {}, t("devices_page.mode", s))),
+      config.schedules.map((s) => h("div", {}, t("devices_page.mode", { ...s, mode: recorderMode(s.mode) }))),
     ),
     h("td", { class: "number" }, config.trigger_sensitivity ?? t("devices_page.none")),
     h(
@@ -83,7 +84,7 @@ function configRow(config) {
       "td",
       {},
       config.issues.length
-        ? config.issues.map((i) => h("div", { class: "warn" }, t(`config_issue.${i.issue}`, i.details)))
+        ? config.issues.map((i) => h("div", { class: "warn" }, configIssue(i)))
         : t("devices_page.none"),
     ),
   );

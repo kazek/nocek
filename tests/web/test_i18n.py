@@ -49,7 +49,7 @@ def error_codes() -> set[str]:
 
 def keys(data: dict[str, Any], prefix: str = "") -> Iterator[str]:
     for key, value in data.items():
-        if isinstance(value, dict) and "other" not in value:
+        if isinstance(value, dict) and not i18n.plural(value):
             yield from keys(value, f"{prefix}{key}.")
         else:
             yield prefix + key
@@ -72,11 +72,10 @@ def test_every_taxon_has_an_english_name() -> None:
     assert {t.name for t in taxonomy.genera()} <= ENGLISH["genus"].keys()
 
 
-def test_plural_forms_always_include_other() -> None:
+def test_texts_are_strings_or_plural_forms() -> None:
     for language in i18n.available():
         for value in _values(i18n.raw(language)):
-            if isinstance(value, dict):
-                assert "other" in value
+            assert isinstance(value, str) or i18n.plural(value), value
 
 
 @pytest.mark.parametrize("language", [lang for lang in i18n.available() if lang != "en"])
@@ -89,8 +88,34 @@ def test_translations_use_only_english_keys_and_placeholders(language: str) -> N
         assert _placeholders(other) == _placeholders(english), key
 
 
+# The plural categories each language uses, as Intl.PluralRules names them.
+PLURALS = {"en": {"one", "other"}, "de": {"one", "other"}, "pl": {"one", "few", "many", "other"}}
+
+
+def test_every_shipped_language_has_its_plural_rules() -> None:
+    assert set(i18n.available()) == PLURALS.keys()
+
+
+@pytest.mark.parametrize("language", sorted(PLURALS))
+def test_translations_are_complete(language: str) -> None:
+    translated = i18n.raw(language)
+
+    assert set(keys(translated)) == set(keys(ENGLISH))
+    for value in _values(translated):
+        if i18n.plural(value):
+            assert value.keys() == PLURALS[language], value
+
+
+def test_every_region_has_a_name() -> None:
+    assert {p.id for p in region.profiles()} <= ENGLISH["region_name"].keys()
+
+
 def test_a_missing_translation_falls_back_to_english(monkeypatch: pytest.MonkeyPatch) -> None:
-    partial = {"language": {"name": "Polski"}, "job": {"status": {"done": "Gotowe"}}}
+    partial = {
+        "language": {"name": "Polski"},
+        "job": {"status": {"done": "Gotowe"}},
+        "recording": {"sound": {"other": "coś innego"}},  # a section, though it has an "other"
+    }
     monkeypatch.setattr(i18n, "available", lambda: ("en", "pl"))
     monkeypatch.setattr(i18n, "raw", lambda lang: ENGLISH if lang == "en" else partial)
 
@@ -98,6 +123,8 @@ def test_a_missing_translation_falls_back_to_english(monkeypatch: pytest.MonkeyP
 
     assert polish["job"]["status"]["done"] == "Gotowe"
     assert polish["job"]["status"]["failed"] == "Failed"
+    assert polish["recording"]["sound"]["other"] == "coś innego"
+    assert polish["recording"]["sound"]["rain"] == "rain"
     assert polish["species"]["Nyctalus noctula"] == "Common noctule"
     assert i18n.names() == {"en": "English", "pl": "Polski"}
 
@@ -126,14 +153,17 @@ def test_chooses_a_language(
 def test_the_api_serves_languages(client: TestClient) -> None:
     listing = client.get("/api/locales", headers={"accept-language": "en-GB"}).json()
 
-    assert listing == {"available": {"en": "English"}, "chosen": "en"}
+    assert listing == {
+        "available": {"de": "Deutsch", "en": "English", "pl": "Polski"},
+        "chosen": "en",
+    }
     assert client.get("/api/locales/en").json()["species"]["Nyctalus noctula"] == "Common noctule"
     assert client.get("/api/locales/xx").json()["error"] == "no-such-language"
 
 
 def _values(data: dict[str, Any]) -> Iterator[Any]:
     for value in data.values():
-        if isinstance(value, dict) and "other" not in value:
+        if isinstance(value, dict) and not i18n.plural(value):
             yield from _values(value)
         else:
             yield value

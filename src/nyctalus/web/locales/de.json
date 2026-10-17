@@ -1,0 +1,444 @@
+{
+  "language": {
+    "name": "Deutsch"
+  },
+  "app": {
+    "title": "Nyctalus",
+    "tagline": "Fledermäuse in Ultraschallaufnahmen erkennen"
+  },
+  "count": {
+    "recordings": {
+      "one": "{n} Aufnahme",
+      "other": "{n} Aufnahmen"
+    },
+    "nights": {
+      "one": "{n} Nacht",
+      "other": "{n} Nächte"
+    }
+  },
+  "error": {
+    "failed": "Etwas ist schiefgegangen.",
+    "internal-error": "Ein unerwarteter Fehler ist aufgetreten. Details stehen in der Protokolldatei.",
+    "forbidden-host": "Diese Seite ist nicht Nyctalus.",
+    "forbidden-origin": "Eine andere Website hat versucht, etwas in Nyctalus zu ändern.",
+    "missing-token": "Öffne Nyctalus über die Adresse, die beim Start angezeigt wurde.",
+    "invalid-setting": "Nyctalus akzeptiert diesen Wert für diese Einstellung nicht.",
+    "no-library": "Es ist keine Bibliothek geöffnet.",
+    "library-unavailable": "Dieser Ordner kann nicht als Bibliothek verwendet werden.",
+    "folder-not-writable": "Nyctalus kann in diesen Ordner nicht schreiben.",
+    "folder-not-readable": "Nyctalus kann diesen Ordner nicht lesen.",
+    "not-a-folder": "Das ist kein Ordner.",
+    "not-an-absolute-path": "Wähle einen Ordner mit vollständigem Pfad.",
+    "site-exists": "Es gibt schon einen Standort mit diesem Namen.",
+    "no-such-site": "Diesen Standort gibt es nicht mehr.",
+    "unknown-species": "Diese Art steht nicht im Katalog.",
+    "not-a-species": "Wähle eine Art, keine Gattung.",
+    "no-such-device": "Diesen Rekorder gibt es nicht mehr.",
+    "no-such-recording": "Diese Aufnahme gibt es nicht mehr.",
+    "file-missing": "Die Datei dieser Aufnahme fehlt im Bibliotheksordner.",
+    "unreadable-recording": "Die Datei dieser Aufnahme kann nicht gelesen werden.",
+    "invalid-slowdown": "Die Wiedergabe kann 1- bis 40-mal verlangsamt werden.",
+    "invalid-spectrogram": "Diese Spektrogramm-Einstellungen liegen außerhalb des Bereichs.",
+    "no-such-job": "Diesen Auftrag gibt es nicht mehr.",
+    "job-not-running": "Dieser Auftrag ist schon beendet.",
+    "no-such-language": "Diese Sprache ist nicht verfügbar."
+  },
+  "abstention": {
+    "too-short": "Die Aufnahme ist zu kurz, um sie zu beurteilen.",
+    "too-few-pulses": "Zu wenige Rufe zum Messen.",
+    "mixed-sources": "Mehrere Tiere oder Rauschen sind gleichzeitig zu hören.",
+    "ruled-out": "Alle Kandidaten wurden ausgeschlossen oder kommen hier nicht vor.",
+    "no-match": "Nichts passt gut genug.",
+    "out-of-band": "Die Ruffrequenz widerspricht diesem Namen.",
+    "inconclusive": "Die Rufe stimmen zu gleichen Teilen für verschiedene Namen.",
+    "uncorroborated": "Die Messung hat nicht bestätigt, dass hier eine Fledermaus war.",
+    "contradicted": "Die beiden anderen Verfahren sind sich über eine andere Fledermaus einig."
+  },
+  "note": {
+    "measured-like-common-pipistrelle": "Die gemessene Endfrequenz spricht für die Zwergfledermaus.",
+    "measured-like-nathusius-pipistrelle": "Die gemessene Endfrequenz spricht für die Rauhaut- oder Weißrandfledermaus."
+  },
+  "import": {
+    "skip": {
+      "known": "schon in der Bibliothek",
+      "not-bat-mode": "nicht im Fledermausmodus aufgenommen",
+      "unreadable": "leer oder unlesbar"
+    },
+    "notice": {
+      "no-device": "Einige Aufnahmen konnten keinem Rekorder zugeordnet werden.",
+      "no-site": "Einige Aufnahmen entstanden dort, wo es noch keinen Standort gibt.",
+      "clock-ahead": "Einige Aufnahmen tragen ein Datum in der Zukunft: Die Uhr des Rekorders geht vielleicht vor."
+    },
+    "problem": {
+      "empty-settings": "Eine leere Einstellungsdatei wurde gefunden.",
+      "unreadable-settings": "Eine Einstellungsdatei konnte nicht gelesen werden."
+    },
+    "title": "Aufnahmen importieren",
+    "intro": "Wähle den Ordner mit den Dateien des Rekorders: die Speicherkarte oder eine Kopie davon. Darauf wird nichts verändert.",
+    "choose_folder": "Ordner mit Aufnahmen wählen",
+    "folder": "Ordner",
+    "site": "Standort",
+    "site_auto": "Nach der Position des Rekorders",
+    "start": "Importieren",
+    "other_folder": "Anderen Ordner wählen",
+    "running": "Der Import läuft. Du kannst zu einer anderen Ansicht wechseln, die Leiste oben zeigt den Fortschritt.",
+    "report": "Import abgeschlossen",
+    "copied": {
+      "one": "{n} neue Aufnahme in die Bibliothek kopiert.",
+      "other": "{n} neue Aufnahmen in die Bibliothek kopiert."
+    },
+    "nothing_new": "Nichts Neues: Alle Aufnahmen in diesem Ordner sind schon in der Bibliothek.",
+    "skipped": "Nicht kopiert",
+    "new_configs": {
+      "one": "{n} neue Rekorder-Konfiguration gespeichert.",
+      "other": "{n} neue Rekorder-Konfigurationen gespeichert."
+    },
+    "issues": "Zu den Einstellungen des Rekorders",
+    "found": "Im Ordner gefunden",
+    "analysis_started": "Die Erkennung der neuen Aufnahmen hat schon begonnen.",
+    "see_results": "Sieh nach, wer hier war",
+    "new_site": "Diese Aufnahmen stammen von einem neuen Ort",
+    "new_site_name": "Standort {latitude}, {longitude}",
+    "name": "Name",
+    "latitude": "Breite",
+    "longitude": "Länge",
+    "map": "In OpenStreetMap zeigen",
+    "create_site": "Standort anlegen und die Aufnahmen zuordnen",
+    "or_existing": "Oder ordne sie einem bestehenden Standort zu:",
+    "assign": "Zuordnen",
+    "assigned": {
+      "one": "{n} Aufnahme dem Standort {site} zugeordnet.",
+      "other": "{n} Aufnahmen dem Standort {site} zugeordnet."
+    },
+    "history": "Frühere Importe",
+    "history_empty": "Noch nichts importiert.",
+    "without_site": {
+      "one": "{n} ohne Standort",
+      "other": "{n} ohne Standort"
+    },
+    "imported": {
+      "one": "{n} Aufnahme",
+      "other": "{n} Aufnahmen"
+    },
+    "new_site_count": {
+      "one": "{n} Aufnahme entstand dort, wo es noch keinen Standort gibt.",
+      "other": "{n} Aufnahmen entstanden dort, wo es noch keinen Standort gibt."
+    },
+    "in_folder": {
+      "one": "{n} Aufnahme in diesem Ordner und seinen Unterordnern.",
+      "other": "{n} Aufnahmen in diesem Ordner und seinen Unterordnern."
+    }
+  },
+  "config_issue": {
+    "starts-after-sunset": "Die Aufnahme beginnt um {1}, nach Sonnenuntergang um {0}.",
+    "ends-before-sunrise": "Die Aufnahme endet um {1}, vor Sonnenaufgang um {0}.",
+    "not-bat-mode": "Eingestellter Aufnahmemodus: {0}.",
+    "sensitivity-changed": "Auslöseempfindlichkeit von {0} auf {1} geändert."
+  },
+  "job": {
+    "kind": {
+      "import": "Import",
+      "analyse": "Erkennung",
+      "models": "Modelle herunterladen",
+      "verdicts": "Namen aktualisieren"
+    },
+    "status": {
+      "queued": "Wartet",
+      "running": "Läuft",
+      "done": "Fertig",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    },
+    "phase": {
+      "models": "Modelle werden heruntergeladen",
+      "copying": "Aufnahmen werden kopiert",
+      "analysing": "Aufnahmen werden erkannt",
+      "judging": "Aufnahmen werden neu beurteilt"
+    },
+    "idle": "Gerade läuft nichts.",
+    "cancel": "Abbrechen",
+    "history": "Letzte Aufträge",
+    "progress": "{done} von {total}"
+  },
+  "status": {
+    "occurs": "kommt vor",
+    "rare": "selten",
+    "absent": "kommt nicht vor"
+  },
+  "species": {
+    "Barbastella barbastellus": "Mopsfledermaus",
+    "Eptesicus nilssonii": "Nordfledermaus",
+    "Eptesicus serotinus": "Breitflügelfledermaus",
+    "Hypsugo savii": "Alpenfledermaus",
+    "Myotis alcathoe": "Nymphenfledermaus",
+    "Myotis bechsteinii": "Bechsteinfledermaus",
+    "Myotis brandtii": "Große Bartfledermaus",
+    "Myotis dasycneme": "Teichfledermaus",
+    "Myotis daubentonii": "Wasserfledermaus",
+    "Myotis emarginatus": "Wimperfledermaus",
+    "Myotis myotis": "Großes Mausohr",
+    "Myotis mystacinus": "Kleine Bartfledermaus",
+    "Myotis nattereri": "Fransenfledermaus",
+    "Nyctalus lasiopterus": "Riesenabendsegler",
+    "Nyctalus leisleri": "Kleiner Abendsegler",
+    "Nyctalus noctula": "Großer Abendsegler",
+    "Pipistrellus kuhlii": "Weißrandfledermaus",
+    "Pipistrellus nathusii": "Rauhautfledermaus",
+    "Pipistrellus pipistrellus": "Zwergfledermaus",
+    "Pipistrellus pygmaeus": "Mückenfledermaus",
+    "Plecotus auritus": "Braunes Langohr",
+    "Plecotus austriacus": "Graues Langohr",
+    "Rhinolophus ferrumequinum": "Große Hufeisennase",
+    "Rhinolophus hipposideros": "Kleine Hufeisennase",
+    "Vespertilio murinus": "Zweifarbfledermaus"
+  },
+  "genus": {
+    "Barbastella": "Mopsfledermäuse",
+    "Eptesicus": "Breitflügelfledermäuse",
+    "Hypsugo": "Alpenfledermäuse",
+    "Myotis": "Mausohren",
+    "Nyctalus": "Abendsegler",
+    "Pipistrellus": "Zwergfledermäuse",
+    "Plecotus": "Langohren",
+    "Rhinolophus": "Hufeisennasen",
+    "Vespertilio": "Zweifarbfledermäuse"
+  },
+  "nav": {
+    "species": "Wer war hier",
+    "nights": "Nächte",
+    "import": "Import",
+    "sites": "Standorte",
+    "devices": "Rekorder",
+    "settings": "Einstellungen"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "close": "Schließen",
+    "loading": "Wird geladen…",
+    "saved": "Gespeichert."
+  },
+  "folders": {
+    "title": "Ordner wählen",
+    "places": "Orte",
+    "up": "Übergeordneter Ordner",
+    "recordings": {
+      "one": "{n} Aufnahme",
+      "other": "{n} Aufnahmen"
+    },
+    "choose": "Diesen Ordner wählen",
+    "empty": "Hier gibt es keine Ordner."
+  },
+  "welcome": {
+    "title": "Willkommen bei Nyctalus",
+    "intro": "Nyctalus bewahrt deine Aufnahmen und das, was es darin erkennt, in einer Bibliothek auf: einem einzigen Ordner, den du leicht als Ganzes kopieren oder verschieben kannst.",
+    "library_step": "Bibliothek",
+    "create_here": "Bibliothek in {path} anlegen",
+    "create_elsewhere": "Woanders anlegen",
+    "open_existing": "Bestehende Bibliothek öffnen",
+    "library_ready": "Die Bibliothek liegt in {path}.",
+    "models_step": "Modelle",
+    "models_intro": "Eines der Erkennungsverfahren braucht etwa 52 MB Modelldateien. Sie werden nur einmal heruntergeladen.",
+    "download": "Modelle herunterladen",
+    "models_ready": "Die Modelle sind bereit.",
+    "ready_step": "Fertig",
+    "ready_text": "Lies die Aufnahmen von der Karte deines Rekorders ein.",
+    "start_import": "Aufnahmen importieren"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "follow_browser": "Wie im Browser",
+    "passes": "Erkennungsverfahren",
+    "pass": {
+      "key": "Feldschlüssel, aus Rufmessungen",
+      "batdetect2": "Netzwerk BatDetect2",
+      "battybirdnet": "Netzwerk BattyBirdNET"
+    },
+    "passes_note": "Die Namen kommen von BatDetect2. Die beiden anderen Verfahren können einen Namen nur zurückhalten, wenn beide ihm widersprechen.",
+    "sieve": "Netzwerke bei Aufnahmen überspringen, in denen keine Rufe gemessen wurden",
+    "device": "Berechnen auf",
+    "devices": {
+      "auto": "Automatisch wählen",
+      "cpu": "Prozessor",
+      "mps": "Apple-Grafik (MPS)",
+      "cuda": "NVIDIA-Grafik (CUDA)"
+    },
+    "library": "Bibliothek",
+    "open_other": "Andere Bibliothek öffnen",
+    "create_other": "Neue Bibliothek anlegen"
+  },
+  "species_page": {
+    "title": "Wer war hier",
+    "recordings": "Aufnahmen",
+    "nights": "Nächte",
+    "with_calls": "Mit Rufen",
+    "analysed": "Analysiert",
+    "bat": "Fledermaus",
+    "first_night": "Erste Nacht",
+    "last_night": "Letzte Nacht",
+    "best_score": "Bester Wert",
+    "best_score_help": "Die höchste Sicherheit, die das Netzwerk je für diese Fledermaus hatte. Hat eine häufig genannte Art nie einen hohen Wert, ist es vielleicht etwas anderes, das immer wieder dafür gehalten wird.",
+    "none_named": "In diesen Aufnahmen wurde noch keine Fledermaus benannt.",
+    "empty": "Hier gibt es noch keine Aufnahmen.",
+    "import_first": "Aufnahmen importieren",
+    "chart": "Aufnahmen mit benannter Fledermaus, Nacht für Nacht",
+    "chart_table": "Nächte als Tabelle zeigen",
+    "night": "Nacht",
+    "tooltip": "{named} mit benannter Fledermaus · {with_calls} mit Rufen · {recordings} Aufnahmen",
+    "download": "Als CSV herunterladen",
+    "download_species": "diese Übersicht",
+    "download_recordings": "alle Aufnahmen mit Urteilen",
+    "named": "Mit benannter Fledermaus"
+  },
+  "filters": {
+    "site": "Standort",
+    "all_sites": "Alle Standorte",
+    "device": "Rekorder",
+    "all_devices": "Alle Rekorder",
+    "from": "Ab Nacht",
+    "to": "Bis Nacht",
+    "clear": "Filter zurücksetzen"
+  },
+  "nights_page": {
+    "title": "Nächte",
+    "night": "Nacht",
+    "all_nights": "Alle Nächte",
+    "recordings": "Aufnahmen",
+    "with_calls": "Mit Rufen",
+    "named": "Mit benannter Fledermaus",
+    "timeline": "Aufnahmen im Lauf der Nacht",
+    "sunset": "Sonnenuntergang {time}",
+    "sunrise": "Sonnenaufgang {time}",
+    "no_sun": "Gib die Position des Standorts an, um hier Sonnenuntergang und -aufgang zu sehen.",
+    "withheld": "Rufe, Name zurückgehalten",
+    "no_calls": "Ohne Rufe",
+    "not_analysed": "Noch nicht analysiert",
+    "by_hour": "Stunde für Stunde",
+    "empty": "In dieser Nacht gibt es keine Aufnahmen.",
+    "tooltip": "{time} · {file}",
+    "hour_summary": "{time} · {recordings} · {named}",
+    "named_count": {
+      "one": "{n} mit benannter Fledermaus",
+      "other": "{n} mit benannter Fledermaus"
+    }
+  },
+  "recordings_page": {
+    "title": "Aufnahmen",
+    "time": "Zeit",
+    "site": "Standort",
+    "bats": "Fledermäuse",
+    "withheld": {
+      "one": "Rufe, Name zurückgehalten",
+      "other": "{n} Tiere, Namen zurückgehalten"
+    },
+    "no_calls": "ohne Rufe",
+    "not_analysed": "noch nicht analysiert",
+    "earlier": "Frühere",
+    "later": "Spätere",
+    "showing": "{first}–{last} von {total}",
+    "none": "Keine Aufnahme passt.",
+    "open": "Öffnen"
+  },
+  "recording": {
+    "previous": "Vorherige Aufnahme",
+    "next": "Nächste Aufnahme",
+    "site": "Standort",
+    "device": "Rekorder",
+    "zoom_hint": "Zieh über das Spektrogramm, um genauer hinzusehen.",
+    "whole": "Ganze Aufnahme zeigen",
+    "slowed": "{n}-mal langsamer abgespielt, damit die Rufe hörbar werden.",
+    "verdict": "Was zu hören war",
+    "animal": "Tier {n}",
+    "withheld": "Name zurückgehalten",
+    "agreement": {
+      "one": "{agreeing} von {named} Verfahren stimmt zu",
+      "other": "{agreeing} von {named} Verfahren stimmen zu"
+    },
+    "only_network": "Nur BatDetect2 hat einen Namen genannt",
+    "details": "Details",
+    "method": {
+      "batdetect2": "BatDetect2",
+      "key": "Feldschlüssel",
+      "battybirdnet": "BattyBirdNET"
+    },
+    "model_class": "Klasse im Netzwerk",
+    "calls": "Rufe",
+    "best": "Bester Wert",
+    "votes": "Rufe, die für diesen Namen stimmen",
+    "no_opinion": "keine Meinung",
+    "measured": "Messungen des Detektors",
+    "pulses": "Impulse",
+    "end_khz": "Endfrequenz",
+    "duration": "Ruflänge",
+    "interval": "Rufabstand",
+    "also_heard": "BattyBirdNET hörte auch",
+    "not_analysed": "Diese Aufnahme wurde noch nicht analysiert.",
+    "no_calls": "In dieser Aufnahme gibt es keine Fledermausrufe.",
+    "not_run": "Nicht ausgeführt",
+    "failed": "Fehlgeschlagen",
+    "khz": "{n} kHz",
+    "ms": "{n} ms",
+    "skipped": {
+      "disabled": "in den Einstellungen ausgeschaltet",
+      "no-pulses": "der Detektor fand keine Rufe",
+      "no-sources": "BatDetect2 fand kein Tier",
+      "failed-earlier": "ein früherer Schritt ist fehlgeschlagen"
+    },
+    "sound": {
+      "audiomoth": "Eigenrauschen des Rekorders",
+      "background": "Hintergrundrauschen",
+      "bird": "einen Vogel",
+      "collected": "Rauschen",
+      "electrical": "elektrische Störungen",
+      "insect": "ein Insekt",
+      "mechanical": "eine Maschine",
+      "other": "etwas anderes",
+      "pro": "Eigenrauschen des Rekorders",
+      "rain": "Regen"
+    }
+  },
+  "sites_page": {
+    "title": "Standorte",
+    "intro": "Die Orte, an denen deine Rekorder lauschen. Von der Position eines Standorts hängt ab, welche Fledermäuse dort zu erwarten sind; für jede Art kannst du das ändern.",
+    "empty": "Noch keine Standorte. Nyctalus schlägt einen vor, wenn du Aufnahmen von einem neuen Ort importierst.",
+    "add": "Standort hinzufügen",
+    "name": "Name",
+    "latitude": "Breite",
+    "longitude": "Länge",
+    "save": "Speichern",
+    "map": "In OpenStreetMap zeigen",
+    "region": "Erwartete Fledermäuse: {region}",
+    "no_position": "Ohne Position gilt die europäische Liste.",
+    "species": "Welche Fledermäuse hier vorkommen",
+    "species_help": "Seltene Fledermäuse werden nur bei starken Belegen benannt, fehlende nie. Eine Änderung aktualisiert die Namen in den Aufnahmen dieses Standorts.",
+    "as_region": "Wie in der Region ({status})",
+    "updating": "Gespeichert. Die Namen in den Aufnahmen dieses Standorts werden aktualisiert."
+  },
+  "devices_page": {
+    "title": "Rekorder",
+    "empty": "Noch kein Rekorder. Er erscheint nach dem ersten Import.",
+    "label": "Name",
+    "save": "Speichern",
+    "identifier": "{kind}, Kennung {uid}",
+    "configs": "Einstellungen, die er erhalten hat",
+    "written": "Eingestellt",
+    "number": "Nummer",
+    "firmware": "Firmware",
+    "schedule": "Lauscht",
+    "sensitivity": "Auslöseempfindlichkeit",
+    "position": "Position",
+    "issues": "Zu prüfen",
+    "none": "—",
+    "mode": "{wake}–{sleep}, {mode}"
+  },
+  "region_name": {
+    "central-europe": "Mitteleuropa",
+    "europe": "Europa"
+  },
+  "recorder_mode": {
+    "bat": "Fledermäuse",
+    "bird": "Vögel"
+  }
+}

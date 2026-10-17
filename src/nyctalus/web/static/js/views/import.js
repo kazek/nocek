@@ -5,6 +5,7 @@ import { h, replace } from "../dom.js";
 import { pickFolder } from "../folder-picker.js";
 import { formatDateTime, formatNumber, t } from "../i18n.js";
 import { run } from "../jobs.js";
+import { configIssue } from "../names.js";
 import { attempt } from "../notice.js";
 
 export async function importer(view) {
@@ -86,7 +87,7 @@ async function showReport(body, history, report) {
               "ul",
               {},
               report.issues.map((issue) =>
-                h("li", { class: "warn" }, `${formatDateTime(issue.written_at)}: ${t(`config_issue.${issue.issue}`, issue.details)}`),
+                h("li", { class: "warn" }, `${formatDateTime(issue.written_at)}: ${configIssue(issue)}`),
               ),
             ),
           )

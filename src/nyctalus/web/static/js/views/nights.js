@@ -87,9 +87,13 @@ export async function night(view, date, query) {
     h(
       "p",
       { class: "muted" },
-      `${t("count.recordings", { n: formatNumber(page.total), count: page.total })} · `,
-      sun.sunset ? `${t("nights_page.sunset", { time: formatTime(sun.sunset) })} · ` : "",
-      sun.sunrise ? t("nights_page.sunrise", { time: formatTime(sun.sunrise) }) : "",
+      [
+        t("count.recordings", { n: formatNumber(page.total), count: page.total }),
+        sun.sunset && t("nights_page.sunset", { time: formatTime(sun.sunset) }),
+        sun.sunrise && t("nights_page.sunrise", { time: formatTime(sun.sunrise) }),
+      ]
+        .filter(Boolean)
+        .join(" · "),
     ),
     nightTimeline(page.rows, sun, (id) => go(`/recording/${id}`)),
     h("h2", {}, t("nights_page.by_hour")),

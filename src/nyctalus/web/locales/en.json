@@ -432,5 +432,13 @@
     "issues": "Worth a look",
     "none": "—",
     "mode": "{wake}–{sleep}, {mode}"
+  },
+  "region_name": {
+    "central-europe": "Central Europe",
+    "europe": "Europe"
+  },
+  "recorder_mode": {
+    "bat": "bat",
+    "bird": "bird"
   }
 }

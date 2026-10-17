@@ -1,0 +1,470 @@
+{
+  "language": {
+    "name": "Polski"
+  },
+  "app": {
+    "title": "Nyctalus",
+    "tagline": "Rozpoznawanie nietoperzy z nagrań ultradźwięków"
+  },
+  "count": {
+    "recordings": {
+      "one": "{n} nagranie",
+      "few": "{n} nagrania",
+      "many": "{n} nagrań",
+      "other": "{n} nagrania"
+    },
+    "nights": {
+      "one": "{n} noc",
+      "few": "{n} noce",
+      "many": "{n} nocy",
+      "other": "{n} nocy"
+    }
+  },
+  "error": {
+    "failed": "Coś poszło nie tak.",
+    "internal-error": "Wystąpił nieoczekiwany błąd. Szczegóły są w pliku dziennika.",
+    "forbidden-host": "Ta strona nie jest stroną Nyctalusa.",
+    "forbidden-origin": "Inna strona internetowa próbowała coś zmienić w Nyctalusie.",
+    "missing-token": "Otwórz Nyctalusa pod adresem, który pokazał przy uruchomieniu.",
+    "invalid-setting": "Nyctalus nie przyjmuje takiej wartości tego ustawienia.",
+    "no-library": "Żadna biblioteka nie jest otwarta.",
+    "library-unavailable": "Tego katalogu nie można użyć jako biblioteki.",
+    "folder-not-writable": "Nyctalus nie może zapisywać w tym katalogu.",
+    "folder-not-readable": "Nyctalus nie może odczytać tego katalogu.",
+    "not-a-folder": "To nie jest katalog.",
+    "not-an-absolute-path": "Wybierz katalog z pełną ścieżką.",
+    "site-exists": "Stanowisko o tej nazwie już istnieje.",
+    "no-such-site": "To stanowisko już nie istnieje.",
+    "unknown-species": "Tego gatunku nie ma w katalogu.",
+    "not-a-species": "Wybierz gatunek, a nie rodzaj.",
+    "no-such-device": "Ten rejestrator już nie istnieje.",
+    "no-such-recording": "To nagranie już nie istnieje.",
+    "file-missing": "Brakuje pliku tego nagrania w katalogu biblioteki.",
+    "unreadable-recording": "Nie można odczytać pliku tego nagrania.",
+    "invalid-slowdown": "Odtwarzanie można spowolnić od 1 do 40 razy.",
+    "invalid-spectrogram": "Te ustawienia spektrogramu są poza zakresem.",
+    "no-such-job": "To zadanie już nie istnieje.",
+    "job-not-running": "To zadanie już się zakończyło.",
+    "no-such-language": "Ten język nie jest dostępny."
+  },
+  "abstention": {
+    "too-short": "Nagranie jest za krótkie, żeby je ocenić.",
+    "too-few-pulses": "Za mało wywołań do pomiaru.",
+    "mixed-sources": "Naraz odzywa się kilka zwierząt albo szum.",
+    "ruled-out": "Wszyscy kandydaci zostali wykluczeni albo nie występują tutaj.",
+    "no-match": "Nic nie pasuje wystarczająco dobrze.",
+    "out-of-band": "Częstotliwość wywołań przeczy tej nazwie.",
+    "inconclusive": "Wywołania głosują po równo na różne nazwy.",
+    "uncorroborated": "Pomiar nie potwierdził, że był tu nietoperz.",
+    "contradicted": "Dwie inne metody zgodnie wskazują innego nietoperza."
+  },
+  "note": {
+    "measured-like-common-pipistrelle": "Zmierzona częstotliwość końcowa wskazuje na karlika malutkiego.",
+    "measured-like-nathusius-pipistrelle": "Zmierzona częstotliwość końcowa wskazuje na karlika większego albo średniego."
+  },
+  "import": {
+    "skip": {
+      "known": "już są w bibliotece",
+      "not-bat-mode": "nagrane w trybie innym niż nietoperze",
+      "unreadable": "puste albo nieczytelne"
+    },
+    "notice": {
+      "no-device": "Części nagrań nie udało się przypisać do rejestratora.",
+      "no-site": "Część nagrań powstała tam, gdzie nie ma jeszcze stanowiska.",
+      "clock-ahead": "Część nagrań ma datę z przyszłości: zegar rejestratora może się spieszyć."
+    },
+    "problem": {
+      "empty-settings": "Znaleziono pusty plik ustawień.",
+      "unreadable-settings": "Nie udało się odczytać pliku ustawień."
+    },
+    "title": "Import nagrań",
+    "intro": "Wybierz katalog z plikami z rejestratora: kartę pamięci albo jej kopię. Nic na niej nie zostanie zmienione.",
+    "choose_folder": "Wybierz katalog z nagraniami",
+    "folder": "Katalog",
+    "site": "Stanowisko",
+    "site_auto": "Według położenia rejestratora",
+    "start": "Importuj",
+    "other_folder": "Wybierz inny katalog",
+    "running": "Trwa import. Możesz przejść do innego ekranu, a pasek u góry pokazuje postęp.",
+    "report": "Import zakończony",
+    "copied": {
+      "one": "Skopiowano do biblioteki {n} nowe nagranie.",
+      "few": "Skopiowano do biblioteki {n} nowe nagrania.",
+      "many": "Skopiowano do biblioteki {n} nowych nagrań.",
+      "other": "Skopiowano do biblioteki {n} nowego nagrania."
+    },
+    "nothing_new": "Nic nowego: wszystkie nagrania z tego katalogu są już w bibliotece.",
+    "skipped": "Nie skopiowano",
+    "new_configs": {
+      "one": "Zapisano {n} nową konfigurację rejestratora.",
+      "few": "Zapisano {n} nowe konfiguracje rejestratora.",
+      "many": "Zapisano {n} nowych konfiguracji rejestratora.",
+      "other": "Zapisano {n} nowej konfiguracji rejestratora."
+    },
+    "issues": "O ustawieniach rejestratora",
+    "found": "Znalezione w katalogu",
+    "analysis_started": "Rozpoznawanie nowych nagrań już się rozpoczęło.",
+    "see_results": "Zobacz, kto tu był",
+    "new_site": "Te nagrania powstały w nowym miejscu",
+    "new_site_name": "Stanowisko {latitude}, {longitude}",
+    "name": "Nazwa",
+    "latitude": "Szerokość",
+    "longitude": "Długość",
+    "map": "Pokaż w OpenStreetMap",
+    "create_site": "Utwórz stanowisko i przypisz do niego nagrania",
+    "or_existing": "Albo przypisz je do istniejącego stanowiska:",
+    "assign": "Przypisz",
+    "assigned": {
+      "one": "Przypisano {n} nagranie do stanowiska {site}.",
+      "few": "Przypisano {n} nagrania do stanowiska {site}.",
+      "many": "Przypisano {n} nagrań do stanowiska {site}.",
+      "other": "Przypisano {n} nagrania do stanowiska {site}."
+    },
+    "history": "Wcześniejsze importy",
+    "history_empty": "Jeszcze nic nie zaimportowano.",
+    "without_site": {
+      "one": "{n} bez stanowiska",
+      "few": "{n} bez stanowiska",
+      "many": "{n} bez stanowiska",
+      "other": "{n} bez stanowiska"
+    },
+    "imported": {
+      "one": "{n} nagranie",
+      "few": "{n} nagrania",
+      "many": "{n} nagrań",
+      "other": "{n} nagrania"
+    },
+    "new_site_count": {
+      "one": "{n} nagranie powstało tam, gdzie nie ma jeszcze stanowiska.",
+      "few": "{n} nagrania powstały tam, gdzie nie ma jeszcze stanowiska.",
+      "many": "{n} nagrań powstało tam, gdzie nie ma jeszcze stanowiska.",
+      "other": "{n} nagrania powstało tam, gdzie nie ma jeszcze stanowiska."
+    },
+    "in_folder": {
+      "one": "{n} nagranie w tym katalogu i jego podkatalogach.",
+      "few": "{n} nagrania w tym katalogu i jego podkatalogach.",
+      "many": "{n} nagrań w tym katalogu i jego podkatalogach.",
+      "other": "{n} nagrania w tym katalogu i jego podkatalogach."
+    }
+  },
+  "config_issue": {
+    "starts-after-sunset": "Nagrywanie zaczyna się o {1}, po zachodzie słońca o {0}.",
+    "ends-before-sunrise": "Nagrywanie kończy się o {1}, przed wschodem słońca o {0}.",
+    "not-bat-mode": "Ustawiony tryb nagrywania: {0}.",
+    "sensitivity-changed": "Czułość wyzwalania zmieniona z {0} na {1}."
+  },
+  "job": {
+    "kind": {
+      "import": "Import",
+      "analyse": "Rozpoznawanie",
+      "models": "Pobieranie modeli",
+      "verdicts": "Aktualizacja nazw"
+    },
+    "status": {
+      "queued": "Czeka",
+      "running": "Trwa",
+      "done": "Gotowe",
+      "failed": "Nie powiodło się",
+      "cancelled": "Anulowano"
+    },
+    "phase": {
+      "models": "Pobieranie modeli",
+      "copying": "Kopiowanie nagrań",
+      "analysing": "Rozpoznawanie nagrań",
+      "judging": "Ponowna ocena nagrań"
+    },
+    "idle": "Nic nie jest uruchomione.",
+    "cancel": "Anuluj",
+    "history": "Ostatnie zadania",
+    "progress": "{done} z {total}"
+  },
+  "status": {
+    "occurs": "występuje",
+    "rare": "rzadki",
+    "absent": "nie występuje"
+  },
+  "species": {
+    "Barbastella barbastellus": "Mopek zachodni",
+    "Eptesicus nilssonii": "Mroczek pozłocisty",
+    "Eptesicus serotinus": "Mroczek późny",
+    "Hypsugo savii": "Karlik Saviego",
+    "Myotis alcathoe": "Nocek nimfa",
+    "Myotis bechsteinii": "Nocek Bechsteina",
+    "Myotis brandtii": "Nocek Brandta",
+    "Myotis dasycneme": "Nocek łydkowłosy",
+    "Myotis daubentonii": "Nocek rudy",
+    "Myotis emarginatus": "Nocek orzęsiony",
+    "Myotis myotis": "Nocek duży",
+    "Myotis mystacinus": "Nocek wąsatek",
+    "Myotis nattereri": "Nocek Natterera",
+    "Nyctalus lasiopterus": "Borowiec olbrzymi",
+    "Nyctalus leisleri": "Borowiec Leislera",
+    "Nyctalus noctula": "Borowiec wielki",
+    "Pipistrellus kuhlii": "Karlik średni",
+    "Pipistrellus nathusii": "Karlik większy",
+    "Pipistrellus pipistrellus": "Karlik malutki",
+    "Pipistrellus pygmaeus": "Karlik drobny",
+    "Plecotus auritus": "Gacek brunatny",
+    "Plecotus austriacus": "Gacek szary",
+    "Rhinolophus ferrumequinum": "Podkowiec duży",
+    "Rhinolophus hipposideros": "Podkowiec mały",
+    "Vespertilio murinus": "Mroczek posrebrzany"
+  },
+  "genus": {
+    "Barbastella": "Mopki",
+    "Eptesicus": "Mroczki",
+    "Hypsugo": "Karliki Saviego",
+    "Myotis": "Nocki",
+    "Nyctalus": "Borowce",
+    "Pipistrellus": "Karliki",
+    "Plecotus": "Gacki",
+    "Rhinolophus": "Podkowce",
+    "Vespertilio": "Mroczki posrebrzane"
+  },
+  "nav": {
+    "species": "Kto tu był",
+    "nights": "Noce",
+    "import": "Import",
+    "sites": "Stanowiska",
+    "devices": "Rejestratory",
+    "settings": "Ustawienia"
+  },
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "back": "Wstecz",
+    "close": "Zamknij",
+    "loading": "Wczytywanie…",
+    "saved": "Zapisano."
+  },
+  "folders": {
+    "title": "Wybierz katalog",
+    "places": "Miejsca",
+    "up": "Katalog wyżej",
+    "recordings": {
+      "one": "{n} nagranie",
+      "few": "{n} nagrania",
+      "many": "{n} nagrań",
+      "other": "{n} nagrania"
+    },
+    "choose": "Wybierz ten katalog",
+    "empty": "Tu nie ma katalogów."
+  },
+  "welcome": {
+    "title": "Witaj w Nyctalusie",
+    "intro": "Nyctalus przechowuje Twoje nagrania i to, co w nich rozpozna, w bibliotece: jednym katalogu, który łatwo w całości skopiować albo przenieść.",
+    "library_step": "Biblioteka",
+    "create_here": "Utwórz bibliotekę w {path}",
+    "create_elsewhere": "Utwórz ją gdzie indziej",
+    "open_existing": "Otwórz istniejącą bibliotekę",
+    "library_ready": "Biblioteka jest w {path}.",
+    "models_step": "Modele",
+    "models_intro": "Jedna z metod rozpoznawania potrzebuje około 52 MB plików modelu. Pobiera się je tylko raz.",
+    "download": "Pobierz modele",
+    "models_ready": "Modele są gotowe.",
+    "ready_step": "Gotowe",
+    "ready_text": "Wczytaj nagrania z karty swojego rejestratora.",
+    "start_import": "Importuj nagrania"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "language": "Język",
+    "follow_browser": "Jak w przeglądarce",
+    "passes": "Metody rozpoznawania",
+    "pass": {
+      "key": "Klucz terenowy, z pomiarów wywołań",
+      "batdetect2": "Sieć BatDetect2",
+      "battybirdnet": "Sieć BattyBirdNET"
+    },
+    "passes_note": "Nazwy podaje BatDetect2. Dwie pozostałe metody mogą tylko wstrzymać nazwę, z którą obie się nie zgadzają.",
+    "sieve": "Pomijaj sieci w nagraniach, w których nie zmierzono żadnych wywołań",
+    "device": "Obliczenia na",
+    "devices": {
+      "auto": "Wybierz automatycznie",
+      "cpu": "Procesor",
+      "mps": "Grafika Apple (MPS)",
+      "cuda": "Grafika NVIDIA (CUDA)"
+    },
+    "library": "Biblioteka",
+    "open_other": "Otwórz inną bibliotekę",
+    "create_other": "Utwórz nową bibliotekę"
+  },
+  "species_page": {
+    "title": "Kto tu był",
+    "recordings": "Nagrania",
+    "nights": "Noce",
+    "with_calls": "Z wywołaniami",
+    "analysed": "Przeanalizowane",
+    "bat": "Nietoperz",
+    "first_night": "Pierwsza noc",
+    "last_night": "Ostatnia noc",
+    "best_score": "Najlepszy wynik",
+    "best_score_help": "Największa pewność, jaką sieć kiedykolwiek miała co do tego nietoperza. Jeśli gatunek spotykany często nigdy nie ma wysokiego wyniku, może to być coś innego, wciąż za niego brane.",
+    "none_named": "W tych nagraniach nie nazwano jeszcze żadnego nietoperza.",
+    "empty": "Nie ma tu jeszcze żadnych nagrań.",
+    "import_first": "Importuj nagrania",
+    "chart": "Nagrania z nazwanym nietoperzem, noc po nocy",
+    "chart_table": "Pokaż noce jako tabelę",
+    "night": "Noc",
+    "tooltip": "{named} z nazwanym nietoperzem · {with_calls} z wywołaniami · {recordings} nagrań",
+    "download": "Pobierz jako CSV",
+    "download_species": "to podsumowanie",
+    "download_recordings": "wszystkie nagrania z werdyktami",
+    "named": "Z nazwanym nietoperzem"
+  },
+  "filters": {
+    "site": "Stanowisko",
+    "all_sites": "Wszystkie stanowiska",
+    "device": "Rejestrator",
+    "all_devices": "Wszystkie rejestratory",
+    "from": "Od nocy",
+    "to": "Do nocy",
+    "clear": "Wyczyść filtry"
+  },
+  "nights_page": {
+    "title": "Noce",
+    "night": "Noc",
+    "all_nights": "Wszystkie noce",
+    "recordings": "Nagrania",
+    "with_calls": "Z wywołaniami",
+    "named": "Z nazwanym nietoperzem",
+    "timeline": "Nagrania w ciągu nocy",
+    "sunset": "Zachód {time}",
+    "sunrise": "Wschód {time}",
+    "no_sun": "Podaj położenie stanowiska, żeby zobaczyć tu zachód i wschód słońca.",
+    "withheld": "Wywołania, nazwa wstrzymana",
+    "no_calls": "Bez wywołań",
+    "not_analysed": "Jeszcze nieprzeanalizowane",
+    "by_hour": "Godzina po godzinie",
+    "empty": "Tej nocy nie ma nagrań.",
+    "tooltip": "{time} · {file}",
+    "hour_summary": "{time} · {recordings} · {named}",
+    "named_count": {
+      "one": "{n} z nazwanym nietoperzem",
+      "few": "{n} z nazwanym nietoperzem",
+      "many": "{n} z nazwanym nietoperzem",
+      "other": "{n} z nazwanym nietoperzem"
+    }
+  },
+  "recordings_page": {
+    "title": "Nagrania",
+    "time": "Czas",
+    "site": "Stanowisko",
+    "bats": "Nietoperze",
+    "withheld": {
+      "one": "wywołania, nazwa wstrzymana",
+      "few": "{n} zwierzęta, nazwy wstrzymane",
+      "many": "{n} zwierząt, nazwy wstrzymane",
+      "other": "{n} zwierzęcia, nazwy wstrzymane"
+    },
+    "no_calls": "bez wywołań",
+    "not_analysed": "jeszcze nieprzeanalizowane",
+    "earlier": "Wcześniejsze",
+    "later": "Późniejsze",
+    "showing": "{first}–{last} z {total}",
+    "none": "Żadne nagranie nie pasuje.",
+    "open": "Otwórz"
+  },
+  "recording": {
+    "previous": "Poprzednie nagranie",
+    "next": "Następne nagranie",
+    "site": "Stanowisko",
+    "device": "Rejestrator",
+    "zoom_hint": "Przeciągnij po spektrogramie, żeby przyjrzeć się z bliska.",
+    "whole": "Pokaż całe nagranie",
+    "slowed": "Odtwarzane {n} razy wolniej, żeby wywołania znalazły się w zakresie słyszalnym.",
+    "verdict": "Co było słychać",
+    "animal": "Zwierzę {n}",
+    "withheld": "Nazwa wstrzymana",
+    "agreement": {
+      "one": "{agreeing} z {named} metod się zgadza",
+      "few": "{agreeing} z {named} metod się zgadzają",
+      "many": "{agreeing} z {named} metod się zgadza",
+      "other": "{agreeing} z {named} metod się zgadza"
+    },
+    "only_network": "Nazwę podał tylko BatDetect2",
+    "details": "Szczegóły",
+    "method": {
+      "batdetect2": "BatDetect2",
+      "key": "Klucz terenowy",
+      "battybirdnet": "BattyBirdNET"
+    },
+    "model_class": "Klasa w sieci",
+    "calls": "Wywołania",
+    "best": "Najlepszy wynik",
+    "votes": "Wywołania głosujące na tę nazwę",
+    "no_opinion": "brak zdania",
+    "measured": "Pomiary detektora",
+    "pulses": "Impulsy",
+    "end_khz": "Częstotliwość końcowa",
+    "duration": "Długość wywołania",
+    "interval": "Odstęp między wywołaniami",
+    "also_heard": "BattyBirdNET usłyszał też",
+    "not_analysed": "To nagranie nie zostało jeszcze przeanalizowane.",
+    "no_calls": "W tym nagraniu nie ma wywołań nietoperzy.",
+    "not_run": "Nie uruchomiono",
+    "failed": "Nie powiodło się",
+    "khz": "{n} kHz",
+    "ms": "{n} ms",
+    "skipped": {
+      "disabled": "wyłączone w ustawieniach",
+      "no-pulses": "detektor nie znalazł wywołań",
+      "no-sources": "BatDetect2 nie znalazł żadnego zwierzęcia",
+      "failed-earlier": "wcześniejszy krok się nie powiódł"
+    },
+    "sound": {
+      "audiomoth": "własny szum rejestratora",
+      "background": "szum tła",
+      "bird": "ptaka",
+      "collected": "szum",
+      "electrical": "zakłócenia elektryczne",
+      "insect": "owada",
+      "mechanical": "maszynę",
+      "other": "coś innego",
+      "pro": "własny szum rejestratora",
+      "rain": "deszcz"
+    }
+  },
+  "sites_page": {
+    "title": "Stanowiska",
+    "intro": "Miejsca, w których nasłuchują Twoje rejestratory. Od położenia stanowiska zależy, jakich nietoperzy się tam spodziewamy; dla każdego gatunku możesz to zmienić.",
+    "empty": "Nie ma jeszcze stanowisk. Nyctalus zaproponuje je przy imporcie nagrań z nowego miejsca.",
+    "add": "Dodaj stanowisko",
+    "name": "Nazwa",
+    "latitude": "Szerokość",
+    "longitude": "Długość",
+    "save": "Zapisz",
+    "map": "Pokaż w OpenStreetMap",
+    "region": "Spodziewane nietoperze: {region}",
+    "no_position": "Bez położenia używana jest lista europejska.",
+    "species": "Jakie nietoperze tu występują",
+    "species_help": "Rzadkie nietoperze są nazywane tylko przy mocnych dowodach. Nieobecne nie są nazywane nigdy. Zmiana zaktualizuje nazwy w nagraniach z tego stanowiska.",
+    "as_region": "Jak w regionie ({status})",
+    "updating": "Zapisano. Nazwy w nagraniach z tego stanowiska są aktualizowane."
+  },
+  "devices_page": {
+    "title": "Rejestratory",
+    "empty": "Nie ma jeszcze rejestratora. Pojawi się po pierwszym imporcie.",
+    "label": "Nazwa",
+    "save": "Zapisz",
+    "identifier": "{kind}, identyfikator {uid}",
+    "configs": "Ustawienia, które otrzymał",
+    "written": "Ustawiono",
+    "number": "Numer",
+    "firmware": "Oprogramowanie",
+    "schedule": "Nasłuchuje",
+    "sensitivity": "Czułość wyzwalania",
+    "position": "Położenie",
+    "issues": "Warto sprawdzić",
+    "none": "—",
+    "mode": "{wake}–{sleep}, {mode}"
+  },
+  "region_name": {
+    "central-europe": "Europa Środkowa",
+    "europe": "Europa"
+  },
+  "recorder_mode": {
+    "bat": "nietoperze",
+    "bird": "ptaki"
+  }
+}

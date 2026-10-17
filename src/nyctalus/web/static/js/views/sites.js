@@ -4,7 +4,7 @@ import { get, post, put } from "../api.js";
 import { h, replace } from "../dom.js";
 import { t } from "../i18n.js";
 import { attempt } from "../notice.js";
-import { localName, scientificName } from "../names.js";
+import { localName, regionName, scientificName } from "../names.js";
 
 const STATUSES = ["occurs", "rare", "absent"];
 
@@ -99,7 +99,7 @@ function siteCard(site, profiles, species, redraw) {
           ),
         )
       : h("p", { class: "muted" }, t("sites_page.no_position")),
-    h("p", {}, t("sites_page.region", { region: profile?.name ?? "" })),
+    h("p", {}, t("sites_page.region", { region: regionName(profile) })),
     h(
       "details",
       {},

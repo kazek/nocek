@@ -22,3 +22,18 @@ export function taxaLabel(names) {
     h("i", { class: "scientific" }, names.map(scientificName).join(" / ")),
   );
 }
+
+// A recorder's mode as the recorder wrote it, translated when it is a known one.
+export function recorderMode(mode) {
+  return has(`recorder_mode.${mode}`) ? t(`recorder_mode.${mode}`) : mode;
+}
+
+// An issue with a recorder's settings, in words.
+export function configIssue(issue) {
+  const details = issue.issue === "not-bat-mode" ? issue.details.map(recorderMode) : issue.details;
+  return t(`config_issue.${issue.issue}`, details);
+}
+
+export function regionName(profile) {
+  return profile && has(`region_name.${profile.id}`) ? t(`region_name.${profile.id}`) : (profile?.name ?? "");
+}

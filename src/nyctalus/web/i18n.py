@@ -16,6 +16,8 @@ from typing import Any
 
 FOLDER = Path(__file__).parent / "locales"
 SOURCE = "en"
+# The plural categories Intl.PluralRules can name; an object of these is one text.
+PLURAL_FORMS = frozenset({"zero", "one", "two", "few", "many", "other"})
 
 
 @cache
@@ -72,12 +74,18 @@ def _preferences(header: str) -> list[str]:
 def _merge(base: dict[str, Any], over: dict[str, Any]) -> dict[str, Any]:
     out = dict(base)
     for key, value in over.items():
-        if isinstance(value, dict) and isinstance(base.get(key), dict) and not _plural(value):
+        if isinstance(value, dict) and isinstance(base.get(key), dict) and not plural(base[key]):
             out[key] = _merge(base[key], value)
         else:
             out[key] = value
     return out
 
 
-def _plural(value: dict[str, Any]) -> bool:
-    return "other" in value and all(isinstance(v, str) for v in value.values())
+def plural(value: Any) -> bool:
+    """Whether a value is one text in plural forms rather than a section of texts."""
+    return (
+        isinstance(value, dict)
+        and "other" in value
+        and value.keys() <= PLURAL_FORMS
+        and all(isinstance(v, str) for v in value.values())
+    )
