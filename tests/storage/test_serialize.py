@@ -2,41 +2,17 @@ import json
 from pathlib import Path
 
 import pytest
-import soundfile as sf
 
 from nyctalus.core import battybird
 from nyctalus.core.batdetect import interpret
 from nyctalus.core.pipeline import Analyser, Pass, RecordingResult, Settings
 from nyctalus.core.region import Region
 from nyctalus.storage.serialize import FORMAT, FormatError, result_from_dict, result_to_dict
-from tests import synth
-from tests.core.factories import FakeBatDetect, FakeBattyBird, calls, opinion
+from tests.core.factories import FakeBatDetect, FakeBattyBird
 
 
 def roundtrip(result: RecordingResult) -> RecordingResult:
     return result_from_dict(json.loads(json.dumps(result_to_dict(result))))
-
-
-@pytest.fixture
-def two_bats(tmp_path: Path) -> RecordingResult:
-    """A full result: every pass ran, two sources, BattyBirdNET with windows."""
-    path = tmp_path / "two.wav"
-    sf.write(path, synth.sequence(synth.sweep(60, 46, 0.006), n=10), synth.SAMPLE_RATE)
-    sources = interpret(
-        calls("Pipistrellus pipistrellus", low_khz=45) + calls("Nyctalus noctula", low_khz=20)
-    )
-    second = battybird.Analysis(
-        opinion=opinion("Pipistrellus pipistrellus", score=0.9),
-        not_a_bat=(battybird.Sound("insect", 0.3),),
-        windows=(battybird.Window(0.0, None), battybird.Window(0.42, None)),
-    )
-    analyser = Analyser(
-        Path("unused"),
-        Region("anywhere"),
-        batdetect_model=FakeBatDetect(sources),
-        battybird_model=FakeBattyBird(second),
-    )
-    return analyser.analyse(path)
 
 
 def test_a_full_result_survives_the_round_trip(two_bats: RecordingResult) -> None:

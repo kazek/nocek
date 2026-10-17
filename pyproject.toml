@@ -29,6 +29,8 @@ dependencies = [
     # BattyBirdNET: the maintained TFLite runtime, and the resampler to 256 kHz.
     "ai-edge-litert>=1.2",
     "soxr>=0.5",
+    # Where application data and settings belong on each operating system.
+    "platformdirs>=4",
 ]
 
 [project.optional-dependencies]
