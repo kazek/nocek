@@ -37,3 +37,8 @@ export function configIssue(issue) {
 export function regionName(profile) {
   return profile && has(`region_name.${profile.id}`) ? t(`region_name.${profile.id}`) : (profile?.name ?? "");
 }
+
+// A recorder's number as its files spell it: 0 -> "dev000".
+export function numberName(number) {
+  return `dev${String(number).padStart(3, "0")}`;
+}

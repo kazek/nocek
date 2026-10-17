@@ -146,33 +146,68 @@ def test_a_recording_with_no_device_is_reported(library: Library, tmp_path: Path
     assert next(library.recordings_dir.rglob("*.wav")).parent.parent.name == "pippyg-unknown"
 
 
-def test_a_recording_goes_to_the_site_it_was_made_at(library: Library, card: Path) -> None:
-    near = library.repository.add_site("Balcony", 50.0950, 19.9925)  # about 100 m away
-    library.repository.add_site("Allotment", 50.1100, 20.0300)  # a few km away
+def sites_of_recordings(library: Library) -> set[int | None]:
+    return {r.site_id for r in library.repository.recordings_without_result()}
+
+
+def test_a_number_stands_for_its_site(library: Library, card: Path) -> None:
+    far = library.repository.add_site("Allotment", 50.1100, 20.0300)  # a few km from the card
+    device = library.repository.device("pippyg", UID)
+    library.repository.set_site_number(device.id, 0, far.id)
 
     report = import_folder(library, card, now=NOW)
 
     assert all(n.notice is not Notice.NO_SITE for n in report.notices)
-    assert {r.site_id for r in library.repository.recordings_without_result()} == {near.id}
+    assert sites_of_recordings(library) == {far.id}
+    assert {r.device_number for r in library.repository.recordings_without_result()} == {0}
 
 
-def test_a_new_place_is_reported_with_its_position(library: Library, card: Path) -> None:
-    library.repository.add_site("Allotment", 50.1100, 20.0300)
+def test_a_site_nearby_does_not_take_a_number_without_one(library: Library, card: Path) -> None:
+    library.repository.add_site("Balcony", 50.0950, 19.9925)  # about 100 m away
 
     report = import_folder(library, card, now=NOW)
 
     (notice,) = [n for n in report.notices if n.notice is Notice.NO_SITE]
-    assert notice.count == 2
+    assert (notice.count, notice.device_number) == (2, 0)
     assert notice.location is not None
     assert notice.location.latitude == pytest.approx(50.0944, abs=1e-3)
+    assert sites_of_recordings(library) == {None}
 
 
-def test_a_chosen_site_wins(library: Library, card: Path) -> None:
+def test_a_chosen_site_wins_and_keeps_the_number(library: Library, card: Path) -> None:
     chosen = library.repository.add_site("Garden")
 
     import_folder(library, card, site=chosen, now=NOW)
 
-    assert {r.site_id for r in library.repository.recordings_without_result()} == {chosen.id}
+    assert sites_of_recordings(library) == {chosen.id}
+    device = library.repository.device("pippyg", UID)
+    assert library.repository.site_for_number(device.id, 0) == chosen.id
+
+
+def test_a_site_given_after_the_import_keeps_the_number(library: Library, card: Path) -> None:
+    report = import_folder(library, card, now=NOW)
+    garden = library.repository.add_site("Garden")
+
+    moved = library.repository.assign_site(report.import_id, garden.id, device_number=0)
+
+    assert moved == 2
+    assert sites_of_recordings(library) == {garden.id}
+    device = library.repository.device("pippyg", UID)
+    assert library.repository.site_for_number(device.id, 0) == garden.id
+
+
+def test_a_number_moves_with_all_its_recordings(library: Library, card: Path) -> None:
+    import_folder(library, card, now=NOW)
+    garden, balcony = library.repository.add_site("Garden"), library.repository.add_site("Balcony")
+    device = library.repository.device("pippyg", UID)
+    repo = library.repository
+
+    assert repo.set_site_number(device.id, 0, garden.id) == 2
+    assert repo.set_site_number(device.id, 0, balcony.id) == 2
+    assert sites_of_recordings(library) == {balcony.id}
+    assert repo.set_site_number(device.id, 0, None) == 2
+    assert sites_of_recordings(library) == {None}
+    assert [(n.device_number, n.site_id) for n in repo.site_numbers()] == [(0, None)]
 
 
 def test_a_clock_running_fast_is_reported(library: Library, card: Path) -> None:

@@ -10,7 +10,7 @@ from nocek.core.region import Region
 from nocek.core.taxonomy import Taxon
 from nocek.storage import database
 from nocek.storage.repository import Repository
-from nocek.storage.summaries import Filter, totals
+from nocek.storage.summaries import Filter, device_use, totals
 from tests.core.factories import calls, measured
 
 NOCTULE = frozenset({Taxon("Nyctalus noctula")})
@@ -100,3 +100,22 @@ def test_an_empty_library(tmp_path: Path) -> None:
     t = totals(database.connect(tmp_path / "db.sqlite"))
 
     assert (t.species, t.recordings, t.analysed, t.with_calls, t.nights) == ((), 0, 0, 0, 0)
+
+
+def test_how_much_each_recorder_was_used(tmp_path: Path) -> None:
+    repo = Repository(database.connect(tmp_path / "db.sqlite"))
+    garden, balcony = repo.add_site("Garden").id, repo.add_site("Balcony").id
+    used, idle = repo.device("pippyg", "a").id, repo.device("pippyg", "b").id
+    for i, (at, site) in enumerate(
+        [(datetime(2026, 9, 1, 21), garden), (datetime(2026, 9, 5, 2), balcony)]
+    ):
+        repo.add_recording(
+            f"{i:064d}", PurePosixPath(f"{i}.wav"), 1, recorded_at=at, site_id=site, device_id=used
+        )
+
+    use = device_use(repo.conn)
+
+    assert idle not in use
+    assert use[used].recordings == 2
+    assert (use[used].first_night, use[used].last_night) == (date(2026, 9, 1), date(2026, 9, 4))
+    assert use[used].last_site_id == balcony

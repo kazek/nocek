@@ -10,6 +10,11 @@ anything is read, so importing the same card again costs a directory listing.
 Recordings made in a non-bat mode are not imported. The configurations on
 the card are kept as the recorder wrote them, and used, together with those
 from earlier imports, to tell which device and mode each recording comes from.
+
+The site comes from the number the recorder was set to: each number stands for
+the site the user gave it. A number without one is reported, with where the
+recorder was, so a site can be made for it; only a recording without a number
+is placed by its position.
 """
 
 from __future__ import annotations
@@ -28,9 +33,9 @@ from nocek.recorders.base import Config, Finding, Location, Recorder, RecordingF
 from nocek.recorders.checks import ConfigIssue, check
 from nocek.recorders.pippyg import Pippyg
 from nocek.storage.library import Library
-from nocek.storage.repository import Device, Site
+from nocek.storage.repository import Device, Repository, Site
 
-# A recording within this distance of a site's position belongs to it.
+# A recording without a number, within this distance of a site's position, belongs to it.
 SITE_RADIUS_M = 200.0
 # A recording dated this far beyond the moment of import was made by a clock
 # running fast.
@@ -49,7 +54,7 @@ class Skip(StrEnum):
 
 class Notice(StrEnum):
     NO_DEVICE = "no-device"  # recordings that could not be tied to a recorder
-    NO_SITE = "no-site"  # recordings whose position matches no site
+    NO_SITE = "no-site"  # recordings whose number, or position, stands for no site
     CLOCK_AHEAD = "clock-ahead"  # recordings dated in the future
 
 
@@ -59,6 +64,7 @@ class ImportNotice:
     count: int
     example: Path
     location: Location | None = None  # for NO_SITE: where a new site could go
+    device_number: int | None = None  # for NO_SITE: the number without a site
 
 
 @dataclass(frozen=True)
@@ -100,8 +106,10 @@ def import_folder(
     sites = repo.sites()
 
     skipped = dict.fromkeys(Skip, 0)
-    notices: dict[Notice, list[RecordingFile]] = {n: [] for n in Notice}
-    homeless: list[Location] = []
+    notices: dict[Notice, list[RecordingFile]] = {n: [] for n in Notice if n is not Notice.NO_SITE}
+    # Recordings without a site, by number, with where the recorder was.
+    homeless: dict[int | None, tuple[list[RecordingFile], list[Location]]] = {}
+    chosen: set[tuple[int, int]] = set()  # numbers the import's given site now stands for
     copied = 0
     total = len(scan.recordings)
     for done, file in enumerate(scan.recordings, 1):
@@ -116,14 +124,21 @@ def import_folder(
             if not device_known:
                 notices[Notice.NO_DEVICE].append(file)
             if not site_known:
-                notices[Notice.NO_SITE].append(file)
+                files, places = homeless.setdefault(file.device_number, ([], []))
+                files.append(file)
                 if config and config.location:
-                    homeless.append(config.location)
+                    places.append(config.location)
+            elif site and device and file.device_number is not None:
+                chosen.add((device.id, file.device_number))
             if file.recorded_at > now + CLOCK_TOLERANCE:
                 notices[Notice.CLOCK_AHEAD].append(file)
         if progress:
             progress(done, total, file.path.name)
 
+    # A site chosen for the import becomes the site of its numbers that had none.
+    for device_id, number in chosen:
+        if site is not None and repo.site_for_number(device_id, number) is None:
+            repo.set_site_number(device_id, number, site.id)
     repo.finish_import(import_id, copied=copied, skipped=sum(skipped.values()))
     fresh = {id(c) for c in new}
     return ImportReport(
@@ -133,17 +148,27 @@ def import_folder(
         new_configs=len(new),
         findings=scan.findings,
         issues=tuple(i for i in check(scan.configs) if id(i.config) in fresh),
-        notices=tuple(
-            ImportNotice(
-                n,
-                len(files),
-                files[0].path,
-                homeless[0] if n is Notice.NO_SITE and homeless else None,
-            )
-            for n, files in notices.items()
-            if files
+        notices=(
+            *(ImportNotice(n, len(files), files[0].path) for n, files in notices.items() if files),
+            *(
+                ImportNotice(Notice.NO_SITE, len(files), files[0].path, _middle(places), number)
+                for number, (files, places) in sorted(
+                    homeless.items(), key=lambda item: (item[0] is None, item[0] or 0)
+                )
+            ),
         ),
     )
+
+
+def _middle(places: list[Location]) -> Location | None:
+    """Where the recorder stood: the middle of its positions, each coordinate apart,
+    so one stray reading from a GPS still finding itself does not move it.
+    """
+    if not places:
+        return None
+    lat = sorted(p.latitude for p in places)[len(places) // 2]
+    lon = sorted(p.longitude for p in places)[len(places) // 2]
+    return Location(lat, lon)
 
 
 def _import_one(
@@ -186,7 +211,9 @@ def _import_one(
     finally:
         partial.unlink(missing_ok=True)
 
-    at = _site_for(site, sites, config.location if config else None)
+    at = _site_for(
+        repo, site, sites, device, file.device_number, config.location if config else None
+    )
     repo.add_recording(
         sha256,
         library.relative(target),
@@ -197,13 +224,27 @@ def _import_one(
         device_id=device.id if device else None,
         site_id=at.id if at else None,
         import_id=import_id,
+        device_number=file.device_number,
     )
     return device is not None, at is not None
 
 
-def _site_for(given: Site | None, sites: list[Site], location: Location | None) -> Site | None:
+def _site_for(
+    repo: Repository,
+    given: Site | None,
+    sites: list[Site],
+    device: Device | None,
+    number: int | None,
+    location: Location | None,
+) -> Site | None:
+    """The site chosen for the import; else the one the number stands for; else, for a
+    recording without a number, the nearest site within SITE_RADIUS_M.
+    """
     if given is not None:
         return given
+    if device is not None and number is not None:
+        site_id = repo.site_for_number(device.id, number)
+        return next((s for s in sites if s.id == site_id), None)
     if location is None:
         return None
     near = [

@@ -420,6 +420,7 @@ def report_to_dict(r: ImportReport) -> dict[str, Any]:
                 "location": {"latitude": n.location.latitude, "longitude": n.location.longitude}
                 if n.location
                 else None,
+                "device_number": n.device_number,
             }
             for n in r.notices
         ],

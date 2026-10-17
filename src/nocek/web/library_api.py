@@ -59,6 +59,14 @@ class StatusBody(BaseModel):
 
 class AssignBody(BaseModel):
     site_id: int
+    # Only the recordings with this number; None: all the import's without a site.
+    device_number: int | None = None
+
+
+class NumberBody(BaseModel):
+    device_id: int
+    device_number: int
+    site_id: int | None  # None: the number stands for no site
 
 
 class LabelBody(BaseModel):
@@ -97,6 +105,42 @@ def get_profiles() -> list[dict[str, Any]]:
 def get_sites(request: Request) -> list[dict[str, Any]]:
     with opened(request) as library:
         return [_site(library, s) for s in library.repository.sites()]
+
+
+@router.get("/numbers")
+def get_numbers(request: Request) -> dict[str, Any]:
+    """Every number a recorder was set to, the site it stands for, and how many
+    recordings it brought; and how many recordings have no site at all.
+    """
+    with opened(request) as library:
+        counts = summaries.number_use(library.conn)
+        numbers = library.repository.site_numbers()
+        without = summaries.site_use(library.conn).get(None)
+    return {
+        "numbers": [
+            {
+                "device_id": n.device_id,
+                "device_number": n.device_number,
+                "site_id": n.site_id,
+                "recordings": counts.get((n.device_id, n.device_number), 0),
+            }
+            for n in numbers
+        ],
+        "without_site": without.recordings if without else 0,
+    }
+
+
+@router.put("/numbers")
+def set_number(request: Request, body: NumberBody) -> dict[str, int]:
+    """Let a recorder's number stand for a site, or for none; its recordings move along."""
+    with opened(request) as library:
+        if body.site_id is not None and library.repository.site(body.site_id) is None:
+            raise ApiError(404, "no-such-site", str(body.site_id))
+        moved = library.repository.set_site_number(body.device_id, body.device_number, body.site_id)
+    # The site picks the region, and so what may be named in what moved.
+    if moved:
+        rejudge(request, None)
+    return {"moved": moved}
 
 
 @router.post("/sites")
@@ -147,11 +191,20 @@ def set_status(request: Request, site_id: int, body: StatusBody) -> dict[str, An
 
 def _site(library: Library, site: Site) -> dict[str, Any]:
     profile = regions.profile_for(site.latitude, site.longitude)
+    use = summaries.site_use(library.conn).get(site.id)
     return {
         "id": site.id,
         "name": site.name,
         "latitude": site.latitude,
         "longitude": site.longitude,
+        "recordings": use.recordings if use else 0,
+        "first_night": _iso(use.first_night) if use else None,
+        "last_night": _iso(use.last_night) if use else None,
+        "numbers": [
+            {"device_id": n.device_id, "device_number": n.device_number}
+            for n in library.repository.site_numbers()
+            if n.site_id == site.id
+        ],
         "profile": profile.id,
         "statuses": {
             t.name: str(s) for t, s in library.repository.species_statuses(site.id).items()
@@ -173,7 +226,7 @@ def assign_site(request: Request, import_id: int, body: AssignBody) -> dict[str,
     with opened(request) as library:
         if library.repository.site(body.site_id) is None:
             raise ApiError(404, "no-such-site", str(body.site_id))
-        assigned = library.repository.assign_site(import_id, body.site_id)
+        assigned = library.repository.assign_site(import_id, body.site_id, body.device_number)
     if assigned:
         rejudge(request, body.site_id)
     return {"assigned": assigned}
@@ -183,6 +236,7 @@ def assign_site(request: Request, import_id: int, body: AssignBody) -> dict[str,
 def get_devices(request: Request) -> list[dict[str, Any]]:
     with opened(request) as library:
         repo = library.repository
+        use = summaries.device_use(library.conn)
         out = []
         for d in repo.all_devices():
             recorder = RECORDERS.get(d.kind)
@@ -202,6 +256,10 @@ def get_devices(request: Request) -> list[dict[str, Any]]:
                     "kind": d.kind,
                     "uid": d.uid,
                     "label": d.label,
+                    "recordings": use[d.id].recordings if d.id in use else 0,
+                    "first_night": _iso(use[d.id].first_night) if d.id in use else None,
+                    "last_night": _iso(use[d.id].last_night) if d.id in use else None,
+                    "last_site_id": use[d.id].last_site_id if d.id in use else None,
                     "configs": [_config(c, issues.get(id(c), [])) for c in configs],
                 }
             )
@@ -238,10 +296,18 @@ def _config(c: Config, issues: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _filter(
-    site_id: int | None, device_id: int | None, first_night: date | None, last_night: date | None
+    site_id: int | None,
+    device_id: int | None,
+    first_night: date | None,
+    last_night: date | None,
+    without_site: bool = False,
 ) -> Filter:
     return Filter(
-        site_id=site_id, device_id=device_id, first_night=first_night, last_night=last_night
+        site_id=site_id,
+        device_id=device_id,
+        first_night=first_night,
+        last_night=last_night,
+        without_site=without_site,
     )
 
 
@@ -252,6 +318,7 @@ def get_recordings(
     device_id: int | None = None,
     first_night: date | None = None,
     last_night: date | None = None,
+    without_site: bool = False,
     taxa: str | None = None,
     with_calls: bool = False,
     offset: int = 0,
@@ -262,7 +329,7 @@ def get_recordings(
     with opened(request) as library:
         page = summaries.recordings(
             library.conn,
-            _filter(site_id, device_id, first_night, last_night),
+            _filter(site_id, device_id, first_night, last_night, without_site),
             taxa=wanted,
             with_calls=with_calls,
             offset=max(0, offset),
@@ -325,9 +392,12 @@ def get_totals(
     device_id: int | None = None,
     first_night: date | None = None,
     last_night: date | None = None,
+    without_site: bool = False,
 ) -> dict[str, Any]:
     with opened(request) as library:
-        t = summaries.totals(library.conn, _filter(site_id, device_id, first_night, last_night))
+        t = summaries.totals(
+            library.conn, _filter(site_id, device_id, first_night, last_night, without_site)
+        )
     return {
         "recordings": t.recordings,
         "analysed": t.analysed,
@@ -354,9 +424,12 @@ def get_nights(
     device_id: int | None = None,
     first_night: date | None = None,
     last_night: date | None = None,
+    without_site: bool = False,
 ) -> list[dict[str, Any]]:
     with opened(request) as library:
-        found = summaries.nights(library.conn, _filter(site_id, device_id, first_night, last_night))
+        found = summaries.nights(
+            library.conn, _filter(site_id, device_id, first_night, last_night, without_site)
+        )
     return [
         {
             "night": n.night.isoformat(),
@@ -366,6 +439,10 @@ def get_nights(
         }
         for n in found
     ]
+
+
+def _iso(day: date | None) -> str | None:
+    return day.isoformat() if day else None
 
 
 def _names(taxa: frozenset[Taxon]) -> list[str]:

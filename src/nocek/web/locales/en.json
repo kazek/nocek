@@ -71,15 +71,13 @@
       "clock-ahead": "Some recordings are dated in the future: the recorder's clock may be fast."
     },
     "problem": {
-      "empty-settings": "An empty settings file was found.",
-      "unreadable-settings": "A settings file could not be read."
+      "empty-settings": "Empty settings files",
+      "unreadable-settings": "Unreadable settings files"
     },
-    "title": "Import recordings",
-    "intro": "Choose the folder with your recorder's files: the memory card, or a copy of it. Nothing on it is changed.",
     "choose_folder": "Choose the folder with the recordings",
     "folder": "Folder",
     "site": "Site",
-    "site_auto": "Decide from the recorder's position",
+    "site_auto": "By the recorder's number",
     "start": "Import",
     "other_folder": "Choose another folder",
     "running": "Importing. You can leave this screen; the strip at the top shows how far it got.",
@@ -128,7 +126,9 @@
     "in_folder": {
       "one": "{n} recording in this folder and the folders inside it.",
       "other": "{n} recordings in this folder and the folders inside it."
-    }
+    },
+    "last": "Last import: {when}, {recordings}",
+    "new_number": "{number} has no site yet"
   },
   "config_issue": {
     "starts-after-sunset": "Starts recording at {1}, after sunset at {0}.",
@@ -204,15 +204,6 @@
     "Rhinolophus": "Horseshoe bats",
     "Vespertilio": "Parti-coloured bats"
   },
-  "nav": {
-    "species": "Who was here",
-    "nights": "Nights",
-    "import": "Import",
-    "sites": "Sites",
-    "devices": "Recorders",
-    "settings": "Settings",
-    "quit": "Quit"
-  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -250,7 +241,6 @@
   },
   "settings": {
     "title": "Settings",
-    "language": "Language",
     "follow_browser": "As in the browser",
     "passes": "Identification methods",
     "pass": {
@@ -281,78 +271,6 @@
       "log": "Log file, for reporting a problem:",
       "models_folder": "Downloaded models:"
     }
-  },
-  "species_page": {
-    "title": "Who was here",
-    "recordings": "Recordings",
-    "nights": "Nights",
-    "with_calls": "With bat calls",
-    "analysed": "Analysed",
-    "bat": "Bat",
-    "first_night": "First night",
-    "last_night": "Last night",
-    "best_score": "Best score",
-    "best_score_help": "The most confident the network ever was about this bat. A bat met often whose best stays low may be something else mistaken for it.",
-    "none_named": "No bat has been named in these recordings yet.",
-    "empty": "There are no recordings here yet.",
-    "import_first": "Import recordings",
-    "chart": "Recordings with a named bat, night by night",
-    "chart_table": "Show the nights as a table",
-    "night": "Night",
-    "tooltip": "{named} with a named bat · {with_calls} with calls · {recordings} recordings",
-    "download": "Download as CSV",
-    "download_species": "these totals",
-    "download_recordings": "every recording with its verdict",
-    "named": "With a named bat"
-  },
-  "filters": {
-    "site": "Site",
-    "all_sites": "All sites",
-    "device": "Recorder",
-    "all_devices": "All recorders",
-    "from": "From the night of",
-    "to": "To the night of",
-    "clear": "Clear filters"
-  },
-  "nights_page": {
-    "title": "Nights",
-    "night": "Night",
-    "all_nights": "All nights",
-    "recordings": "Recordings",
-    "with_calls": "With bat calls",
-    "named": "With a named bat",
-    "timeline": "Recordings through the night",
-    "sunset": "Sunset {time}",
-    "sunrise": "Sunrise {time}",
-    "no_sun": "Give the site a position to see sunset and sunrise here.",
-    "withheld": "Calls, name withheld",
-    "no_calls": "No bat calls",
-    "not_analysed": "Not analysed yet",
-    "by_hour": "Hour by hour",
-    "empty": "No recordings on this night.",
-    "tooltip": "{time} · {file}",
-    "hour_summary": "{time} · {recordings} · {named}",
-    "named_count": {
-      "one": "{n} with a named bat",
-      "other": "{n} with a named bat"
-    }
-  },
-  "recordings_page": {
-    "title": "Recordings",
-    "time": "Time",
-    "site": "Site",
-    "bats": "Bats",
-    "withheld": {
-      "one": "calls, name withheld",
-      "other": "{n} animals, names withheld"
-    },
-    "no_calls": "no bat calls",
-    "not_analysed": "not analysed yet",
-    "earlier": "Earlier",
-    "later": "Later",
-    "showing": "{first}–{last} of {total}",
-    "none": "No recordings match.",
-    "open": "Open"
   },
   "recording": {
     "previous": "Previous recording",
@@ -413,7 +331,6 @@
     }
   },
   "sites_page": {
-    "title": "Sites",
     "intro": "Where your recorders listen. A site's position decides which bats are expected there; you can change that for any species.",
     "empty": "No sites yet. One is suggested when you import recordings made somewhere new.",
     "add": "Add a site",
@@ -427,10 +344,13 @@
     "species": "Which bats occur here",
     "species_help": "Rare bats are named only on strong evidence. Absent bats are never named. Changing this updates the names of this site's recordings.",
     "as_region": "As expected ({status})",
-    "updating": "Saved. The names of this site's recordings are being updated."
+    "updating": "Saved. The names of this site's recordings are being updated.",
+    "numbers": "Recorder numbers:",
+    "no_numbers": "none yet",
+    "add_number": "Give this site a number…",
+    "no_site": "no site"
   },
   "devices_page": {
-    "title": "Recorders",
     "empty": "No recorder yet. One appears with its first import.",
     "label": "Name",
     "save": "Save",
@@ -464,11 +384,47 @@
   },
   "header": {
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "quit": "Quit"
   },
   "theme": {
     "system": "As the system",
     "light": "Light",
     "dark": "Dark"
+  },
+  "calendar": {
+    "earlier": "Earlier months",
+    "later": "Later months",
+    "night": "{recordings}, {named} with a named bat"
+  },
+  "home": {
+    "no_recordings": "No recordings yet. Add some from your recorder's card above.",
+    "nights": "Nights",
+    "season": "This site so far: {recordings} · {nights} · {bats}",
+    "named_bats": {
+      "one": "{n} bat named",
+      "other": "{n} bats named"
+    },
+    "night_of": "The night of {date}",
+    "night_bar": "The night's recordings, from sunset to sunrise",
+    "legend": {
+      "other": "Other bats",
+      "withheld": "Calls, name withheld",
+      "quiet": "No calls",
+      "unanalysed": "Not analysed yet"
+    },
+    "more": "More",
+    "menu": {
+      "sites": "Sites and their bats…",
+      "devices": "Recorders and their settings…",
+      "species_csv": "Download this recorder's totals (CSV)",
+      "recordings_csv": "Download every recording with its verdict (CSV)"
+    },
+    "sunset": "Sunset {time}",
+    "sunrise": "Sunrise {time}",
+    "no_sun": "Give the site a position to see sunset and sunrise here.",
+    "site": "Site",
+    "site_hint": "Each site has nights of its own; pick which to look at.",
+    "without_site": "No site yet"
   }
 }

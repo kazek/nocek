@@ -71,15 +71,13 @@
       "clock-ahead": "Einige Aufnahmen tragen ein Datum in der Zukunft: Die Uhr des Rekorders geht vielleicht vor."
     },
     "problem": {
-      "empty-settings": "Eine leere Einstellungsdatei wurde gefunden.",
-      "unreadable-settings": "Eine Einstellungsdatei konnte nicht gelesen werden."
+      "empty-settings": "Leere Einstellungsdateien",
+      "unreadable-settings": "Unlesbare Einstellungsdateien"
     },
-    "title": "Aufnahmen importieren",
-    "intro": "Wähle den Ordner mit den Dateien des Rekorders: die Speicherkarte oder eine Kopie davon. Darauf wird nichts verändert.",
     "choose_folder": "Ordner mit Aufnahmen wählen",
     "folder": "Ordner",
     "site": "Standort",
-    "site_auto": "Nach der Position des Rekorders",
+    "site_auto": "Nach der Nummer des Rekorders",
     "start": "Importieren",
     "other_folder": "Anderen Ordner wählen",
     "running": "Der Import läuft. Du kannst zu einer anderen Ansicht wechseln, die Leiste oben zeigt den Fortschritt.",
@@ -128,7 +126,9 @@
     "in_folder": {
       "one": "{n} Aufnahme in diesem Ordner und seinen Unterordnern.",
       "other": "{n} Aufnahmen in diesem Ordner und seinen Unterordnern."
-    }
+    },
+    "last": "Letzter Import: {when}, {recordings}",
+    "new_number": "{number} hat noch keinen Standort"
   },
   "config_issue": {
     "starts-after-sunset": "Die Aufnahme beginnt um {1}, nach Sonnenuntergang um {0}.",
@@ -204,15 +204,6 @@
     "Rhinolophus": "Hufeisennasen",
     "Vespertilio": "Zweifarbfledermäuse"
   },
-  "nav": {
-    "species": "Wer war hier",
-    "nights": "Nächte",
-    "import": "Import",
-    "sites": "Standorte",
-    "devices": "Rekorder",
-    "settings": "Einstellungen",
-    "quit": "Beenden"
-  },
   "common": {
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -250,7 +241,6 @@
   },
   "settings": {
     "title": "Einstellungen",
-    "language": "Sprache",
     "follow_browser": "Wie im Browser",
     "passes": "Erkennungsverfahren",
     "pass": {
@@ -281,78 +271,6 @@
       "log": "Protokolldatei, um ein Problem zu melden:",
       "models_folder": "Heruntergeladene Modelle:"
     }
-  },
-  "species_page": {
-    "title": "Wer war hier",
-    "recordings": "Aufnahmen",
-    "nights": "Nächte",
-    "with_calls": "Mit Rufen",
-    "analysed": "Analysiert",
-    "bat": "Fledermaus",
-    "first_night": "Erste Nacht",
-    "last_night": "Letzte Nacht",
-    "best_score": "Bester Wert",
-    "best_score_help": "Die höchste Sicherheit, die das Netzwerk je für diese Fledermaus hatte. Hat eine häufig genannte Art nie einen hohen Wert, ist es vielleicht etwas anderes, das immer wieder dafür gehalten wird.",
-    "none_named": "In diesen Aufnahmen wurde noch keine Fledermaus benannt.",
-    "empty": "Hier gibt es noch keine Aufnahmen.",
-    "import_first": "Aufnahmen importieren",
-    "chart": "Aufnahmen mit benannter Fledermaus, Nacht für Nacht",
-    "chart_table": "Nächte als Tabelle zeigen",
-    "night": "Nacht",
-    "tooltip": "{named} mit benannter Fledermaus · {with_calls} mit Rufen · {recordings} Aufnahmen",
-    "download": "Als CSV herunterladen",
-    "download_species": "diese Übersicht",
-    "download_recordings": "alle Aufnahmen mit Urteilen",
-    "named": "Mit benannter Fledermaus"
-  },
-  "filters": {
-    "site": "Standort",
-    "all_sites": "Alle Standorte",
-    "device": "Rekorder",
-    "all_devices": "Alle Rekorder",
-    "from": "Ab Nacht",
-    "to": "Bis Nacht",
-    "clear": "Filter zurücksetzen"
-  },
-  "nights_page": {
-    "title": "Nächte",
-    "night": "Nacht",
-    "all_nights": "Alle Nächte",
-    "recordings": "Aufnahmen",
-    "with_calls": "Mit Rufen",
-    "named": "Mit benannter Fledermaus",
-    "timeline": "Aufnahmen im Lauf der Nacht",
-    "sunset": "Sonnenuntergang {time}",
-    "sunrise": "Sonnenaufgang {time}",
-    "no_sun": "Gib die Position des Standorts an, um hier Sonnenuntergang und -aufgang zu sehen.",
-    "withheld": "Rufe, Name zurückgehalten",
-    "no_calls": "Ohne Rufe",
-    "not_analysed": "Noch nicht analysiert",
-    "by_hour": "Stunde für Stunde",
-    "empty": "In dieser Nacht gibt es keine Aufnahmen.",
-    "tooltip": "{time} · {file}",
-    "hour_summary": "{time} · {recordings} · {named}",
-    "named_count": {
-      "one": "{n} mit benannter Fledermaus",
-      "other": "{n} mit benannter Fledermaus"
-    }
-  },
-  "recordings_page": {
-    "title": "Aufnahmen",
-    "time": "Zeit",
-    "site": "Standort",
-    "bats": "Fledermäuse",
-    "withheld": {
-      "one": "Rufe, Name zurückgehalten",
-      "other": "{n} Tiere, Namen zurückgehalten"
-    },
-    "no_calls": "ohne Rufe",
-    "not_analysed": "noch nicht analysiert",
-    "earlier": "Frühere",
-    "later": "Spätere",
-    "showing": "{first}–{last} von {total}",
-    "none": "Keine Aufnahme passt.",
-    "open": "Öffnen"
   },
   "recording": {
     "previous": "Vorherige Aufnahme",
@@ -413,7 +331,6 @@
     }
   },
   "sites_page": {
-    "title": "Standorte",
     "intro": "Die Orte, an denen deine Rekorder lauschen. Von der Position eines Standorts hängt ab, welche Fledermäuse dort zu erwarten sind; für jede Art kannst du das ändern.",
     "empty": "Noch keine Standorte. Nocek schlägt einen vor, wenn du Aufnahmen von einem neuen Ort importierst.",
     "add": "Standort hinzufügen",
@@ -427,10 +344,13 @@
     "species": "Welche Fledermäuse hier vorkommen",
     "species_help": "Seltene Fledermäuse werden nur bei starken Belegen benannt, fehlende nie. Eine Änderung aktualisiert die Namen in den Aufnahmen dieses Standorts.",
     "as_region": "Wie in der Region ({status})",
-    "updating": "Gespeichert. Die Namen in den Aufnahmen dieses Standorts werden aktualisiert."
+    "updating": "Gespeichert. Die Namen in den Aufnahmen dieses Standorts werden aktualisiert.",
+    "numbers": "Rekordernummern:",
+    "no_numbers": "noch keine",
+    "add_number": "Diesem Standort eine Nummer geben…",
+    "no_site": "ohne Standort"
   },
   "devices_page": {
-    "title": "Rekorder",
     "empty": "Noch kein Rekorder. Er erscheint nach dem ersten Import.",
     "label": "Name",
     "save": "Speichern",
@@ -464,11 +384,47 @@
   },
   "header": {
     "language": "Sprache",
-    "theme": "Farbschema"
+    "theme": "Farbschema",
+    "quit": "Beenden"
   },
   "theme": {
     "system": "Wie im System",
     "light": "Hell",
     "dark": "Dunkel"
+  },
+  "calendar": {
+    "earlier": "Frühere Monate",
+    "later": "Spätere Monate",
+    "night": "{recordings}, davon mit benannter Fledermaus: {named}"
+  },
+  "home": {
+    "no_recordings": "Noch keine Aufnahmen. Füge oben welche von der Karte deines Rekorders hinzu.",
+    "nights": "Nächte",
+    "season": "Dieser Standort bisher: {recordings} · {nights} · {bats}",
+    "named_bats": {
+      "one": "{n} Fledermaus benannt",
+      "other": "{n} Fledermäuse benannt"
+    },
+    "night_of": "Die Nacht vom {date}",
+    "night_bar": "Die Aufnahmen der Nacht, von Sonnenuntergang bis Sonnenaufgang",
+    "legend": {
+      "other": "Andere Fledermäuse",
+      "withheld": "Rufe, Name zurückgehalten",
+      "quiet": "Ohne Rufe",
+      "unanalysed": "Noch nicht analysiert"
+    },
+    "more": "Mehr",
+    "menu": {
+      "sites": "Standorte und ihre Fledermäuse…",
+      "devices": "Rekorder und ihre Einstellungen…",
+      "species_csv": "Übersicht dieses Rekorders herunterladen (CSV)",
+      "recordings_csv": "Alle Aufnahmen mit Urteilen herunterladen (CSV)"
+    },
+    "sunset": "Sonnenuntergang {time}",
+    "sunrise": "Sonnenaufgang {time}",
+    "no_sun": "Gib die Position des Standorts an, um hier Sonnenuntergang und -aufgang zu sehen.",
+    "site": "Standort",
+    "site_hint": "Jeder Standort hat seine eigenen Nächte; wähle, welchen du ansiehst.",
+    "without_site": "Noch ohne Standort"
   }
 }

@@ -1,4 +1,5 @@
-// The page: texts first, then the header, then whichever screen the address names.
+// The page: texts first, then the header, then the main page, or the welcome until
+// there is a library.
 
 import { registerIconLibrary } from "../vendor/webawesome/webawesome.js";
 import { get } from "./api.js";
@@ -7,33 +8,18 @@ import * as i18n from "./i18n.js";
 import { watch } from "./jobs.js";
 import { showError } from "./notice.js";
 import { route, start } from "./router.js";
-import { devices } from "./views/devices.js";
-import { importer } from "./views/import.js";
-import { night, nights } from "./views/nights.js";
-import { recording } from "./views/recording.js";
-import { recordings } from "./views/recordings.js";
-import { settings } from "./views/settings.js";
-import { sites } from "./views/sites.js";
-import { species } from "./views/species.js";
+import { home } from "./views/home.js";
 import { welcome } from "./views/welcome.js";
 
 route(/^\/welcome$/, welcome);
-route(/^\/settings$/, settings);
-route(/^\/import$/, importer);
-route(/^\/nights$/, nights);
-route(/^\/nights\/(\d{4}-\d{2}-\d{2})$/, night);
-route(/^\/recordings$/, recordings);
-route(/^\/recording\/(\d+)$/, recording);
-route(/^\/sites$/, sites);
-route(/^\/devices$/, devices);
-route(/^\/$/, species);
+route(/^\/$/, home);
 
 // Icons come from the copy of Lucide that ships with Nocek, never from the network.
 registerIconLibrary("default", { resolver: (name) => `/static/vendor/lucide/${name}.svg` });
 
 // Without a library there is nothing to show but the way to make one.
 async function needsLibrary(path) {
-  if (path === "/welcome" || path === "/settings") return null;
+  if (path === "/welcome") return null;
   const library = await get("/library");
   return library.open ? null : "/welcome";
 }

@@ -71,7 +71,7 @@ export async function welcome(view) {
         { class: `card ${ready ? "" : "waiting"}` },
         h("h2", {}, t("welcome.ready_step")),
         h("p", {}, t("welcome.ready_text")),
-        h("button", { class: "primary", disabled: !ready, onclick: () => go("/import") }, t("welcome.start_import")),
+        h("button", { class: "primary", disabled: !ready, onclick: () => go("/") }, t("welcome.start_import")),
       ),
     ),
   );

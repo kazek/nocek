@@ -65,6 +65,16 @@ class Recording:
     device_id: int | None
     site_id: int | None
     import_id: int | None
+    device_number: int | None = None  # the number the recorder was set to
+
+
+@dataclass(frozen=True)
+class SiteNumber:
+    """One of a recorder's numbers, and the site it stands for."""
+
+    device_id: int
+    device_number: int
+    site_id: int | None  # None: recordings with this number, but no site for it yet
 
 
 class Repository:
@@ -127,13 +137,72 @@ class Repository:
         )
         return {Taxon(r["species"]): Status(r["status"]) for r in rows}
 
-    def assign_site(self, import_id: int, site_id: int) -> int:
-        """Give an import's recordings that have no site this one. Returns how many."""
+    def assign_site(self, import_id: int, site_id: int, device_number: int | None = None) -> int:
+        """Give an import's recordings that have no site this one: all of them, or those
+        with one number. Their numbers then stand for the site, so every recording with
+        them moves too. Returns how many recordings moved.
+        """
         with self.transaction():
-            cur = self.conn.execute(
-                "UPDATE recording SET site_id = ? WHERE import_id = ? AND site_id IS NULL",
-                (site_id, import_id),
+            numbers = self.conn.execute(
+                "SELECT DISTINCT device_id, device_number FROM recording"
+                " WHERE import_id = ? AND site_id IS NULL AND device_id IS NOT NULL"
+                " AND device_number IS NOT NULL AND (? IS NULL OR device_number = ?)",
+                (import_id, device_number, device_number),
+            ).fetchall()
+            moved = sum(
+                self._set_site_number(n["device_id"], n["device_number"], site_id) for n in numbers
             )
+            if device_number is None:  # and those that came without a number
+                moved += self.conn.execute(
+                    "UPDATE recording SET site_id = ? WHERE import_id = ? AND site_id IS NULL",
+                    (site_id, import_id),
+                ).rowcount
+        return moved
+
+    # --- Numbers -----------------------------------------------------------
+
+    def site_numbers(self) -> list[SiteNumber]:
+        """Every number recordings came with, and the site each stands for, if any."""
+        rows = self.conn.execute(
+            "SELECT DISTINCT r.device_id, r.device_number, n.site_id FROM recording r"
+            " LEFT JOIN site_number n"
+            "  ON n.device_id = r.device_id AND n.device_number = r.device_number"
+            " WHERE r.device_id IS NOT NULL AND r.device_number IS NOT NULL"
+            " UNION"
+            " SELECT device_id, device_number, site_id FROM site_number"
+            " ORDER BY 1, 2"
+        )
+        return [SiteNumber(r[0], r[1], r[2]) for r in rows]
+
+    def site_for_number(self, device_id: int, device_number: int) -> int | None:
+        row = self.conn.execute(
+            "SELECT site_id FROM site_number WHERE device_id = ? AND device_number = ?",
+            (device_id, device_number),
+        ).fetchone()
+        return row["site_id"] if row else None
+
+    def set_site_number(self, device_id: int, device_number: int, site_id: int | None) -> int:
+        """Let a number stand for a site, or for none, moving its recordings along.
+        Returns how many recordings moved.
+        """
+        with self.transaction():
+            return self._set_site_number(device_id, device_number, site_id)
+
+    def _set_site_number(self, device_id: int, device_number: int, site_id: int | None) -> int:
+        self.conn.execute(
+            "DELETE FROM site_number WHERE device_id = ? AND device_number = ?",
+            (device_id, device_number),
+        )
+        if site_id is not None:
+            self.conn.execute(
+                "INSERT INTO site_number (device_id, device_number, site_id) VALUES (?, ?, ?)",
+                (device_id, device_number, site_id),
+            )
+        cur = self.conn.execute(
+            "UPDATE recording SET site_id = ? WHERE device_id = ? AND device_number = ?"
+            " AND site_id IS NOT ?",
+            (site_id, device_id, device_number, site_id),
+        )
         return cur.rowcount
 
     def set_species_status(self, site_id: int, species: Taxon, status: Status | None) -> None:
@@ -260,13 +329,14 @@ class Repository:
         device_id: int | None = None,
         site_id: int | None = None,
         import_id: int | None = None,
+        device_number: int | None = None,
     ) -> Recording:
         night = night_of(recorded_at) if recorded_at else None
         with self.transaction():
             cur = self.conn.execute(
                 "INSERT INTO recording (sha256, path, file_name, size_bytes, recorded_at, night,"
-                " duration_s, sample_rate, device_id, site_id, import_id, added_at)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                " duration_s, sample_rate, device_id, site_id, import_id, added_at, device_number)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     sha256,
                     str(path),
@@ -280,6 +350,7 @@ class Repository:
                     site_id,
                     import_id,
                     _now(),
+                    device_number,
                 ),
             )
         return Recording(
@@ -295,6 +366,7 @@ class Repository:
             device_id,
             site_id,
             import_id,
+            device_number,
         )
 
     def recording(self, recording_id: int) -> Recording | None:
@@ -408,6 +480,7 @@ def _recording(r: sqlite3.Row) -> Recording:
         device_id=r["device_id"],
         site_id=r["site_id"],
         import_id=r["import_id"],
+        device_number=r["device_number"],
     )
 
 

@@ -12,6 +12,15 @@ export function h(tag, attributes = {}, ...children) {
   return element;
 }
 
+const SVG = "http://www.w3.org/2000/svg";
+
+// The same for SVG, whose elements need their namespace.
+export function svg(tag, attributes = {}) {
+  const element = document.createElementNS(SVG, tag);
+  for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
+  return element;
+}
+
 export function append(element, children) {
   for (const child of children.flat()) {
     if (child === null || child === undefined || child === false) continue;

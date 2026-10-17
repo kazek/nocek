@@ -140,6 +140,7 @@ def test_lists_devices_with_their_configurations_and_issues(
     (config,) = device["configs"]
     assert config["schedules"] == [{"wake": "19:30", "sleep": "07:30", "mode": "bat"}]
     assert [i["issue"] for i in config["issues"]] == ["starts-after-sunset"]
+    assert {"recordings", "first_night", "last_night", "last_site_id"} <= device.keys()
 
 
 def test_names_a_device(client: TestClient, library: Library) -> None:
@@ -292,3 +293,32 @@ def test_a_new_name_alone_judges_nothing_again(client: TestClient, library: Libr
     )
 
     assert jobs_of(client) == []
+
+
+def test_a_number_is_given_a_site(client: TestClient, library: Library) -> None:
+    repo = library.repository
+    device = repo.device("pippyg", "e6659854e7389631")
+    repo.add_recording(
+        "f" * 64,
+        PurePosixPath("pippyg/DEV_001_20260909_210000.wav"),
+        1000,
+        recorded_at=datetime(2026, 9, 9, 21, 0),
+        device_id=device.id,
+        device_number=1,
+    )
+    numbers = client.get("/api/numbers").json()
+    assert numbers["numbers"] == [
+        {"device_id": device.id, "device_number": 1, "site_id": None, "recordings": 1}
+    ]
+    assert numbers["without_site"] == 2
+    balcony = client.get("/api/sites").json()[0]
+
+    body = {"device_id": device.id, "device_number": 1, "site_id": balcony["id"]}
+    assert client.put("/api/numbers", json=body).json() == {"moved": 1}
+
+    (site,) = client.get("/api/sites").json()
+    assert site["numbers"] == [{"device_id": device.id, "device_number": 1}]
+    assert site["recordings"] == 3
+    assert client.get("/api/recordings", params={"without_site": True}).json()["total"] == 1
+    gone = {"device_id": device.id, "device_number": 1, "site_id": 999}
+    assert client.put("/api/numbers", json=gone).json()["error"] == "no-such-site"

@@ -69,17 +69,22 @@ function draw(strip, jobs) {
   }
   const label = running.phase ? t(`job.phase.${running.phase}`) : t(`job.kind.${running.kind}`);
   const known = running.total > 0;
+  // Everything keeps its size from one report to the next, so the header does not move.
   replace(
     strip,
     h("strong", {}, label),
     h("progress", known ? { max: running.total, value: running.done } : {}),
-    known
-      ? t("job.progress", { done: formatNumber(running.done), total: formatNumber(running.total) })
-      : t(`job.status.${running.status}`),
-    running.item ? h("span", { class: "path" }, running.item) : null,
     h(
-      "button",
-      { onclick: () => attempt(() => post(`/jobs/${running.id}/cancel`)) },
+      "span",
+      { class: "count" },
+      known
+        ? t("job.progress", { done: formatNumber(running.done), total: formatNumber(running.total) })
+        : t(`job.status.${running.status}`),
+    ),
+    h("span", { class: "path" }, running.item ?? ""),
+    h(
+      "wa-button",
+      { size: "small", appearance: "plain", onclick: () => attempt(() => post(`/jobs/${running.id}/cancel`)) },
       t("job.cancel"),
     ),
   );

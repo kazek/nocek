@@ -3,8 +3,7 @@
 // look closer. Animals are told apart by number, not colour, so any number of
 // them reads the same for everyone.
 
-import { svg } from "./chart.js";
-import { h } from "./dom.js";
+import { h, svg } from "./dom.js";
 import { formatNumber } from "./i18n.js";
 import { MAGMA } from "./magma.js";
 

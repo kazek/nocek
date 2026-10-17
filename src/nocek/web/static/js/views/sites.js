@@ -1,24 +1,70 @@
-// Sites: where they are, and which bats are expected at each.
+// Sites: where they are, which of the recorders' numbers stand for each, and which
+// bats are expected there.
 
 import { get, post, put } from "../api.js";
 import { h, replace } from "../dom.js";
-import { t } from "../i18n.js";
+import { formatNumber, t } from "../i18n.js";
 import { attempt } from "../notice.js";
-import { localName, regionName, scientificName } from "../names.js";
+import { localName, numberName, regionName, scientificName } from "../names.js";
 
 const STATUSES = ["occurs", "rare", "absent"];
 
 export async function sites(view) {
-  const [list, profiles, taxa] = await Promise.all([get("/sites"), get("/profiles"), get("/taxa")]);
+  const [list, profiles, taxa, numbers, devices] = await Promise.all([
+    get("/sites"),
+    get("/profiles"),
+    get("/taxa"),
+    get("/numbers"),
+    get("/devices"),
+  ]);
   const redraw = () => sites(view);
+  // "dev000", with the recorder's name in front when there is more than one.
+  const label = (n) => {
+    const device = devices.find((d) => d.id === n.device_id);
+    return (devices.length > 1 && device ? `${device.label ?? device.uid} ` : "") + numberName(n.device_number);
+  };
+  const context = { numbers: numbers.numbers, list, label, redraw };
 
   replace(
     view,
-    h("h1", {}, t("sites_page.title")),
     h("p", { class: "muted" }, t("sites_page.intro")),
     list.length === 0 ? h("p", {}, t("sites_page.empty")) : null,
-    list.map((site) => siteCard(site, profiles, taxa.species, redraw)),
+    list.map((site) => siteCard(site, profiles, taxa.species, context)),
     addForm(redraw),
+  );
+}
+
+// The numbers that stand for a site, each to be let go, and any other to be given it.
+function siteNumbers(site, { numbers, list, label, redraw }) {
+  const move = async (n, siteId) => {
+    const body = { device_id: n.device_id, device_number: n.device_number, site_id: siteId };
+    if (await attempt(() => put("/numbers", body))) redraw();
+  };
+  const own = numbers.filter((n) => n.site_id === site.id);
+  const others = numbers.filter((n) => n.site_id !== site.id);
+  const elsewhere = (n) => list.find((s) => s.id === n.site_id)?.name ?? t("sites_page.no_site");
+  const choice = h(
+    "select",
+    {},
+    h("option", { value: "" }, t("sites_page.add_number")),
+    others.map((n, i) =>
+      h("option", { value: String(i) }, `${label(n)} (${elsewhere(n)}, ${t("count.recordings", { n: formatNumber(n.recordings), count: n.recordings })})`),
+    ),
+  );
+  choice.onchange = () => choice.value && move(others[Number(choice.value)], site.id);
+  return h(
+    "div",
+    { class: "numbers" },
+    h("span", {}, t("sites_page.numbers")),
+    own.length === 0 ? h("span", { class: "muted" }, t("sites_page.no_numbers")) : null,
+    own.map((n) =>
+      h(
+        "wa-tag",
+        { size: "small", "with-remove": true, "onwa-remove": () => move(n, null) },
+        label(n),
+      ),
+    ),
+    others.length ? choice : null,
   );
 }
 
@@ -37,7 +83,8 @@ function read(form) {
   return { name: value("name"), latitude: number("latitude"), longitude: number("longitude") };
 }
 
-function siteCard(site, profiles, species, redraw) {
+function siteCard(site, profiles, species, context) {
+  const { redraw } = context;
   const profile = profiles.find((p) => p.id === site.profile);
   const status = h("p", { class: "muted", "aria-live": "polite" });
   const form = h(
@@ -83,6 +130,7 @@ function siteCard(site, profiles, species, redraw) {
     "section",
     { class: "card" },
     h("h2", {}, site.name),
+    siteNumbers(site, context),
     form,
     site.latitude !== null && site.longitude !== null
       ? h(

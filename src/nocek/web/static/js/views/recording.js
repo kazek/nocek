@@ -1,19 +1,21 @@
 // One recording: see it, hear it, and what each method made of it.
 
 import { get } from "../api.js";
+import { openDialog } from "../dialog.js";
 import { h, replace } from "../dom.js";
-import { formatDate, formatDateTime, formatNumber, lang, t } from "../i18n.js";
+import { formatDateTime, formatNumber, lang, t } from "../i18n.js";
 import { taxaLabel } from "../names.js";
-import { go } from "../router.js";
 import { spectrogram } from "../spectrogram.js";
 
 const SLOWDOWN = 10;
 
-export async function recording(view, id) {
-  const [rec, sites, devices] = await Promise.all([get(`/recordings/${id}`), get("/sites"), get("/devices")]);
+// One recording, ready to be placed anywhere: the spectrogram, the player and the
+// verdict. previous and next are the neighbouring recordings' ids, onStep(id) moves.
+export async function recordingPanel(rec, { previous = null, next = null, onStep = () => {} } = {}) {
+  const [sites, devices] = await Promise.all([get("/sites"), get("/devices")]);
+  const id = rec.id;
   const result = rec.result;
   const sources = result?.batdetect ?? [];
-  const neighbours = await nearby(rec);
   const site = sites.find((s) => s.id === rec.site_id);
   const device = devices.find((d) => d.id === rec.device_id);
 
@@ -46,94 +48,121 @@ export async function recording(view, id) {
   });
   audio.addEventListener("pause", () => picture.cursor(audio.currentTime / SLOWDOWN));
 
-  replace(
-    view,
+  const step = (direction, other) =>
+    h(
+      "wa-button",
+      { size: "small", appearance: "outlined", disabled: !other, onclick: () => other && onStep(other) },
+      h("wa-icon", { slot: direction === "previous" ? "start" : "end", name: `chevron-${direction === "previous" ? "left" : "right"}` }),
+      t(`recording.${direction}`),
+    );
+
+  const element = h(
+    "section",
+    { class: "recording" },
     h(
       "div",
-      { class: "row" },
-      h("a", { href: `#/nights/${rec.night}` }, `← ${formatDate(rec.night)}`),
-      h("span", { class: "spacer" }),
-      h("button", { disabled: !neighbours.previous, onclick: () => go(`/recording/${neighbours.previous}`) }, `← ${t("recording.previous")}`),
-      h("button", { disabled: !neighbours.next, onclick: () => go(`/recording/${neighbours.next}`) }, `${t("recording.next")} →`),
+      { class: "row recording-head" },
+      step("previous", previous),
+      h("strong", {}, rec.recorded_at ? formatDateTime(rec.recorded_at) : rec.file_name),
+      step("next", next),
+      h(
+        "span",
+        { class: "muted" },
+        h("span", { class: "path" }, rec.file_name),
+        site ? ` · ${t("recording.site")}: ${site.name}` : "",
+        device ? ` · ${t("recording.device")}: ${device.label ?? device.uid}` : "",
+      ),
     ),
-    h("h1", {}, rec.recorded_at ? formatDateTime(rec.recorded_at) : rec.file_name),
     h(
-      "p",
-      { class: "muted" },
-      h("span", { class: "path" }, rec.file_name),
-      site ? ` · ${t("recording.site")}: ${site.name}` : "",
-      device ? ` · ${t("recording.device")}: ${device.label ?? device.uid}` : "",
+      "div",
+      { class: "card" },
+      picture.element,
+      h(
+        "div",
+        { class: "row" },
+        audio,
+        whole,
+        h("span", { class: "muted" }, t("recording.slowed", { n: SLOWDOWN }), " ", t("recording.zoom_hint")),
+      ),
+      verdict(result),
     ),
-    h("div", { class: "card" }, picture.element, h("div", { class: "row" }, audio, whole, h("span", { class: "muted" }, t("recording.zoom_hint")))),
-    h("p", { class: "muted" }, t("recording.slowed", { n: SLOWDOWN })),
-    verdict(result),
   );
 
-  // Space plays and pauses; the arrows step through the night.
-  const keys = (event) => {
-    if (!document.body.contains(view.firstChild) || event.target.closest("input, select, textarea, button, audio")) return;
+  // Space plays and pauses; the arrows step to the neighbouring recordings.
+  const onKey = (event) => {
+    if (event.target.closest("input, select, textarea, button, audio, wa-button, wa-dropdown")) return;
     if (event.key === " ") {
       event.preventDefault();
       if (audio.paused) audio.play();
       else audio.pause();
-    } else if (event.key === "ArrowLeft" && neighbours.previous) go(`/recording/${neighbours.previous}`);
-    else if (event.key === "ArrowRight" && neighbours.next) go(`/recording/${neighbours.next}`);
+    } else if (event.key === "ArrowLeft" && previous) onStep(previous);
+    else if (event.key === "ArrowRight" && next) onStep(next);
   };
-  document.addEventListener("keydown", keys);
-  addEventListener("hashchange", () => document.removeEventListener("keydown", keys), { once: true });
+  return { element, onKey };
 }
 
-async function nearby(rec) {
-  if (!rec.night) return {};
-  const page = await get(`/recordings?first_night=${rec.night}&last_night=${rec.night}&limit=1000`);
-  const at = page.rows.findIndex((r) => r.id === rec.id);
-  return { previous: page.rows[at - 1]?.id, next: page.rows[at + 1]?.id };
-}
-
+// What was heard, one line per animal; how each method saw it, in a dialog.
 function verdict(result) {
-  if (!result) return h("p", {}, t("recording.not_analysed"));
+  if (!result) return h("p", { class: "muted" }, t("recording.not_analysed"));
   const percent = new Intl.NumberFormat(lang(), { style: "percent" });
   const sources = result.verdict ?? [];
-
-  const animals =
+  const more = h(
+    "wa-button",
+    {
+      size: "small",
+      appearance: "plain",
+      onclick: () => openDialog(t("recording.details"), (body) => replace(body, explanation(result, percent)), { wide: true }),
+    },
+    h("wa-icon", { slot: "start", name: "info" }),
+    t("recording.details"),
+  );
+  return h(
+    "div",
+    { class: "verdict" },
+    h("span", { class: "label" }, t("recording.verdict")),
     sources.length === 0
-      ? h("p", {}, t("recording.no_calls"))
+      ? h("span", { class: "muted" }, t("recording.no_calls"))
       : h(
           "ol",
           { class: "animals" },
           sources.map((v, i) =>
             h(
               "li",
-              { class: "card" },
+              {},
               h("span", { class: "number" }, String(i + 1)),
-              h(
-                "div",
-                {},
-                v.taxa ? h("div", { class: "name" }, taxaLabel(v.taxa)) : h("div", { class: "name muted" }, t("recording.withheld")),
-                v.reasons.map((r) => h("div", { class: "warn" }, t(`abstention.${r}`))),
-                v.notes.map((n) => h("div", { class: "muted" }, t(`note.${n}`))),
-                v.taxa
-                  ? h(
-                      "div",
-                      { class: "muted" },
-                      v.agreement.named > 1
-                        ? t("recording.agreement", { agreeing: v.agreement.agreeing, named: v.agreement.named, count: v.agreement.named })
-                        : t("recording.only_network"),
-                    )
-                  : null,
-                details(v, result.batdetect[v.source], percent),
-              ),
+              v.taxa ? taxaLabel(v.taxa) : h("span", { class: "muted" }, t("recording.withheld")),
+              v.taxa
+                ? h(
+                    "span",
+                    { class: "muted" },
+                    v.agreement.named > 1
+                      ? t("recording.agreement", { agreeing: v.agreement.agreeing, named: v.agreement.named, count: v.agreement.named })
+                      : t("recording.only_network"),
+                  )
+                : null,
+              v.reasons.map((r) => h("span", { class: "warn" }, t(`abstention.${r}`))),
+              v.notes.map((n) => h("span", { class: "muted" }, t(`note.${n}`))),
             ),
           ),
-        );
-
-  return h(
-    "section",
-    {},
-    h("h2", {}, t("recording.verdict")),
-    animals,
-    recordingDetails(result, percent),
+        ),
+    more,
   );
+}
+
+// Everything behind the verdict: each animal as each method saw it, then what the
+// detector measured, what else was heard, and what made the result.
+function explanation(result, percent) {
+  return [
+    ...(result.verdict ?? []).map((v, i) =>
+      h(
+        "section",
+        {},
+        h("h3", {}, t("recording.animal", { n: i + 1 }), " · ", v.taxa ? taxaLabel(v.taxa) : t("recording.withheld")),
+        facts(v, result.batdetect[v.source], percent),
+      ),
+    ),
+    measurements(result, percent),
+  ];
 }
 
 function opinionText(opinion, percent) {
@@ -143,31 +172,26 @@ function opinionText(opinion, percent) {
   return [taxaLabel(leader.taxa), ` ${percent.format(leader.score)}`];
 }
 
-function details(v, source, percent) {
+function facts(v, source, percent) {
   return h(
-    "details",
-    {},
-    h("summary", {}, t("recording.details")),
-    h(
-      "dl",
-      { class: "facts" },
-      h("dt", {}, t("recording.method.batdetect2")),
-      h("dd", {}, opinionText(source.opinion, percent)),
-      h("dt", {}, t("recording.model_class")),
-      h("dd", { class: "scientific" }, source.model_class),
-      h("dt", {}, t("recording.calls")),
-      h("dd", {}, formatNumber(source.calls.length)),
-      h("dt", {}, t("recording.votes")),
-      h("dd", {}, percent.format(source.agreement)),
-      h("dt", {}, t("recording.method.key")),
-      h("dd", {}, opinionText(v.key, percent)),
-      h("dt", {}, t("recording.method.battybirdnet")),
-      h("dd", {}, opinionText(v.battybird, percent)),
-    ),
+    "dl",
+    { class: "facts" },
+    h("dt", {}, t("recording.method.batdetect2")),
+    h("dd", {}, opinionText(source.opinion, percent)),
+    h("dt", {}, t("recording.model_class")),
+    h("dd", { class: "scientific" }, source.model_class),
+    h("dt", {}, t("recording.calls")),
+    h("dd", {}, formatNumber(source.calls.length)),
+    h("dt", {}, t("recording.votes")),
+    h("dd", {}, percent.format(source.agreement)),
+    h("dt", {}, t("recording.method.key")),
+    h("dd", {}, opinionText(v.key, percent)),
+    h("dt", {}, t("recording.method.battybirdnet")),
+    h("dd", {}, opinionText(v.battybird, percent)),
   );
 }
 
-function recordingDetails(result, percent) {
+function measurements(result, percent) {
   const group = result.detection?.dominant;
   const rows = [];
   if (result.detection) rows.push([t("recording.pulses"), formatNumber(result.detection.pulses.length)]);
@@ -181,9 +205,9 @@ function recordingDetails(result, percent) {
   const sounds = result.battybird?.not_a_bat ?? [];
   const skipped = Object.entries(result.skipped);
   return h(
-    "details",
-    { class: "card" },
-    h("summary", {}, t("recording.measured")),
+    "section",
+    {},
+    h("h3", {}, t("recording.measured")),
     h("dl", { class: "facts" }, rows.flatMap(([label, value]) => [h("dt", {}, label), h("dd", {}, value)])),
     sounds.length
       ? h(

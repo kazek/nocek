@@ -1,4 +1,5 @@
-// Language, identification methods, compute device, which library is open, and about Nocek.
+// The settings dialog: identification methods, compute device, which library is open,
+// and about Nocek. The language and the theme are in the header.
 
 import { get, post, put } from "../api.js";
 import { h, replace } from "../dom.js";
@@ -29,29 +30,12 @@ const MODELS = [
 ];
 
 export async function settings(view) {
-  const [current, locales, info] = await Promise.all([get("/settings"), get("/locales"), get("/about")]);
+  const [current, info] = await Promise.all([get("/settings"), get("/about")]);
   const status = h("p", { class: "muted", "aria-live": "polite" });
-  const redraw = () => settings(view);
 
-  const save = async (change, reload = false) => {
-    if (await attempt(() => put("/settings", change))) {
-      if (reload) location.reload();
-      status.textContent = t("common.saved");
-    }
+  const save = async (change) => {
+    if (await attempt(() => put("/settings", change))) status.textContent = t("common.saved");
   };
-
-  const language = h(
-    "select",
-    {
-      id: "language",
-      onchange: (e) =>
-        save(e.target.value ? { language: e.target.value } : { follow_browser_language: true }, true),
-    },
-    h("option", { value: "", selected: current.language === null }, t("settings.follow_browser")),
-    Object.entries(locales.available).map(([code, name]) =>
-      h("option", { value: code, selected: current.language === code }, name),
-    ),
-  );
 
   const passes = PASSES.map((pass) =>
     h(
@@ -68,25 +52,21 @@ export async function settings(view) {
     ),
   );
 
+  // Another library is another set of recordings: start the page afresh on it.
   const library = async (endpoint, title) => {
     const path = await chooseFolder(view, { title, start: current.library });
-    if (path) await attempt(() => post(endpoint, { path }));
-    redraw();
+    if (path && (await attempt(() => post(endpoint, { path })))) {
+      location.hash = "#/";
+      location.reload();
+    }
   };
 
   replace(
     view,
-    h("h1", {}, t("settings.title")),
     h(
       "section",
-      { class: "card" },
-      h("h2", {}, h("label", { for: "language" }, t("settings.language"))),
-      language,
-    ),
-    h(
-      "section",
-      { class: "card" },
-      h("h2", {}, t("settings.passes")),
+      {},
+      h("h3", {}, t("settings.passes")),
       passes,
       h("p", { class: "muted" }, t("settings.passes_note")),
       h(
@@ -98,8 +78,8 @@ export async function settings(view) {
     ),
     h(
       "section",
-      { class: "card" },
-      h("h2", {}, h("label", { for: "device" }, t("settings.device"))),
+      {},
+      h("h3", {}, h("label", { for: "device" }, t("settings.device"))),
       h(
         "select",
         { id: "device", onchange: (e) => save({ device: e.target.value }) },
@@ -108,8 +88,8 @@ export async function settings(view) {
     ),
     h(
       "section",
-      { class: "card" },
-      h("h2", {}, t("settings.library")),
+      {},
+      h("h3", {}, t("settings.library")),
       h("p", { class: "path" }, current.library ?? "—"),
       h(
         "div",
@@ -130,12 +110,12 @@ function link(href, text) {
 function about(info) {
   return h(
     "section",
-    { class: "card" },
-    h("h2", {}, t("settings.about.title")),
+    {},
+    h("h3", {}, t("settings.about.title")),
     h("p", {}, t("settings.about.version", { version: info.versions.nocek })),
     h("p", {}, t("settings.about.licence")),
     h("p", {}, t("settings.about.private")),
-    h("h3", {}, t("settings.about.models")),
+    h("h4", {}, t("settings.about.models")),
     h(
       "ul",
       {},
@@ -150,7 +130,7 @@ function about(info) {
         ),
       ),
     ),
-    h("h3", {}, t("settings.about.files")),
+    h("h4", {}, t("settings.about.files")),
     h("p", {}, t("settings.about.log"), h("br"), h("span", { class: "path" }, info.log)),
     h("p", {}, t("settings.about.models_folder"), h("br"), h("span", { class: "path" }, info.models)),
   );

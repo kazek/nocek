@@ -25,6 +25,7 @@ class Filter:
     device_id: int | None = None
     first_night: date | None = None
     last_night: date | None = None
+    without_site: bool = False  # only recordings no site was found for
 
 
 @dataclass(frozen=True)
@@ -157,12 +158,76 @@ def totals(conn: sqlite3.Connection, where: Filter | None = None) -> Totals:
     )
 
 
+@dataclass(frozen=True)
+class DeviceUse:
+    """How much a recorder has been used, and where it was last."""
+
+    recordings: int
+    first_night: date | None
+    last_night: date | None
+    last_site_id: int | None  # the site of its latest recording
+
+
+def device_use(conn: sqlite3.Connection) -> dict[int, DeviceUse]:
+    rows = conn.execute(
+        "SELECT r.device_id, COUNT(*) AS recordings, MIN(r.night) AS first_night,"
+        " MAX(r.night) AS last_night,"
+        " (SELECT l.site_id FROM recording l WHERE l.device_id = r.device_id"
+        "  ORDER BY l.recorded_at DESC, l.id DESC LIMIT 1) AS last_site_id"
+        " FROM recording r WHERE r.device_id IS NOT NULL GROUP BY r.device_id"
+    ).fetchall()
+    return {
+        r["device_id"]: DeviceUse(
+            recordings=r["recordings"],
+            first_night=date.fromisoformat(r["first_night"]) if r["first_night"] else None,
+            last_night=date.fromisoformat(r["last_night"]) if r["last_night"] else None,
+            last_site_id=r["last_site_id"],
+        )
+        for r in rows
+    }
+
+
+@dataclass(frozen=True)
+class SiteUse:
+    recordings: int
+    first_night: date | None
+    last_night: date | None
+
+
+def site_use(conn: sqlite3.Connection) -> dict[int | None, SiteUse]:
+    """Recordings per site; under None, those without one."""
+    rows = conn.execute(
+        "SELECT site_id, COUNT(*) AS recordings, MIN(night) AS first_night,"
+        " MAX(night) AS last_night FROM recording GROUP BY site_id"
+    ).fetchall()
+    return {
+        r["site_id"]: SiteUse(
+            r["recordings"],
+            date.fromisoformat(r["first_night"]) if r["first_night"] else None,
+            date.fromisoformat(r["last_night"]) if r["last_night"] else None,
+        )
+        for r in rows
+    }
+
+
+def number_use(conn: sqlite3.Connection) -> dict[tuple[int, int], int]:
+    """Recordings per recorder and number."""
+    rows = conn.execute(
+        "SELECT device_id, device_number, COUNT(*) FROM recording"
+        " WHERE device_id IS NOT NULL AND device_number IS NOT NULL"
+        " GROUP BY device_id, device_number"
+    )
+    return {(r[0], r[1]): r[2] for r in rows}
+
+
 def _condition(f: Filter) -> tuple[str, list[Any]]:
     clauses: list[str] = ["1 = 1"]
     params: list[Any] = []
     if f.site_id is not None:
         clauses.append("r.site_id = ?")
         params.append(f.site_id)
+    if f.without_site:
+        clauses.append("r.site_id IS NULL")
     if f.device_id is not None:
         clauses.append("r.device_id = ?")
         params.append(f.device_id)

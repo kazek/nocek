@@ -26,10 +26,13 @@ def species_csv(
     device_id: int | None = None,
     first_night: date | None = None,
     last_night: date | None = None,
+    without_site: bool = False,
 ) -> Response:
     names = _names(request)
     with opened(request) as library:
-        totals = summaries.totals(library.conn, Filter(site_id, device_id, first_night, last_night))
+        totals = summaries.totals(
+            library.conn, Filter(site_id, device_id, first_night, last_night, without_site)
+        )
     return _csv(
         "nocek-species.csv",
         [
@@ -63,11 +66,12 @@ def recordings_csv(
     device_id: int | None = None,
     first_night: date | None = None,
     last_night: date | None = None,
+    without_site: bool = False,
 ) -> Response:
     names = _names(request)
     with opened(request) as library:
         rows = summaries.verdict_rows(
-            library.conn, Filter(site_id, device_id, first_night, last_night)
+            library.conn, Filter(site_id, device_id, first_night, last_night, without_site)
         )
     return _csv(
         "nocek-recordings.csv",

@@ -1,11 +1,13 @@
-// The header's tools: the language, the theme, and quitting.
+// The header's tools: the language, the theme, the settings, and quitting.
 
 import { get, put } from "./api.js";
+import { openDialog } from "./dialog.js";
 import { h, replace } from "./dom.js";
 import { t } from "./i18n.js";
 import { attempt } from "./notice.js";
 import { quitButton } from "./quit.js";
 import { THEMES, applyTheme, currentTheme } from "./theme.js";
+import { settings as settingsPanel } from "./views/settings.js";
 
 const THEME_ICONS = { system: "sun-moon", light: "sun", dark: "moon" };
 
@@ -16,10 +18,15 @@ export async function tools(container, view) {
     "wa-button",
     { appearance: "plain", size: "small" },
     h("wa-icon", { slot: "start", name: "power" }),
-    t("nav.quit"),
+    t("header.quit"),
   );
   quitButton(quit, view);
-  replace(container, languageMenu(settings, locales), themeMenu(), quit);
+  const gear = h(
+    "wa-button",
+    { appearance: "plain", size: "small", onclick: () => openDialog(t("settings.title"), settingsPanel, { wide: true }) },
+    h("wa-icon", { name: "settings", label: t("settings.title") }),
+  );
+  replace(container, languageMenu(settings, locales), themeMenu(), gear, quit);
 }
 
 function languageMenu(settings, locales) {

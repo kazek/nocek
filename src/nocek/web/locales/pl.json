@@ -75,15 +75,13 @@
       "clock-ahead": "Część nagrań ma datę z przyszłości: zegar rejestratora może się spieszyć."
     },
     "problem": {
-      "empty-settings": "Znaleziono pusty plik ustawień.",
-      "unreadable-settings": "Nie udało się odczytać pliku ustawień."
+      "empty-settings": "Puste pliki ustawień",
+      "unreadable-settings": "Nieczytelne pliki ustawień"
     },
-    "title": "Import nagrań",
-    "intro": "Wybierz katalog z plikami z rejestratora: kartę pamięci albo jej kopię. Nic na niej nie zostanie zmienione.",
     "choose_folder": "Wybierz katalog z nagraniami",
     "folder": "Katalog",
     "site": "Stanowisko",
-    "site_auto": "Według położenia rejestratora",
+    "site_auto": "Według numeru rejestratora",
     "start": "Importuj",
     "other_folder": "Wybierz inny katalog",
     "running": "Trwa import. Możesz przejść do innego ekranu, a pasek u góry pokazuje postęp.",
@@ -146,7 +144,9 @@
       "few": "{n} nagrania w tym katalogu i jego podkatalogach.",
       "many": "{n} nagrań w tym katalogu i jego podkatalogach.",
       "other": "{n} nagrania w tym katalogu i jego podkatalogach."
-    }
+    },
+    "last": "Ostatni import: {when}, {recordings}",
+    "new_number": "{number} nie ma jeszcze stanowiska"
   },
   "config_issue": {
     "starts-after-sunset": "Nagrywanie zaczyna się o {1}, po zachodzie słońca o {0}.",
@@ -222,15 +222,6 @@
     "Rhinolophus": "Podkowce",
     "Vespertilio": "Mroczki posrebrzane"
   },
-  "nav": {
-    "species": "Kto tu był",
-    "nights": "Noce",
-    "import": "Import",
-    "sites": "Stanowiska",
-    "devices": "Rejestratory",
-    "settings": "Ustawienia",
-    "quit": "Zakończ"
-  },
   "common": {
     "save": "Zapisz",
     "cancel": "Anuluj",
@@ -270,7 +261,6 @@
   },
   "settings": {
     "title": "Ustawienia",
-    "language": "Język",
     "follow_browser": "Jak w przeglądarce",
     "passes": "Metody rozpoznawania",
     "pass": {
@@ -301,82 +291,6 @@
       "log": "Plik dziennika, do zgłaszania problemów:",
       "models_folder": "Pobrane modele:"
     }
-  },
-  "species_page": {
-    "title": "Kto tu był",
-    "recordings": "Nagrania",
-    "nights": "Noce",
-    "with_calls": "Z wywołaniami",
-    "analysed": "Przeanalizowane",
-    "bat": "Nietoperz",
-    "first_night": "Pierwsza noc",
-    "last_night": "Ostatnia noc",
-    "best_score": "Najlepszy wynik",
-    "best_score_help": "Największa pewność, jaką sieć kiedykolwiek miała co do tego nietoperza. Jeśli gatunek spotykany często nigdy nie ma wysokiego wyniku, może to być coś innego, wciąż za niego brane.",
-    "none_named": "W tych nagraniach nie nazwano jeszcze żadnego nietoperza.",
-    "empty": "Nie ma tu jeszcze żadnych nagrań.",
-    "import_first": "Importuj nagrania",
-    "chart": "Nagrania z nazwanym nietoperzem, noc po nocy",
-    "chart_table": "Pokaż noce jako tabelę",
-    "night": "Noc",
-    "tooltip": "{named} z nazwanym nietoperzem · {with_calls} z wywołaniami · {recordings} nagrań",
-    "download": "Pobierz jako CSV",
-    "download_species": "to podsumowanie",
-    "download_recordings": "wszystkie nagrania z werdyktami",
-    "named": "Z nazwanym nietoperzem"
-  },
-  "filters": {
-    "site": "Stanowisko",
-    "all_sites": "Wszystkie stanowiska",
-    "device": "Rejestrator",
-    "all_devices": "Wszystkie rejestratory",
-    "from": "Od nocy",
-    "to": "Do nocy",
-    "clear": "Wyczyść filtry"
-  },
-  "nights_page": {
-    "title": "Noce",
-    "night": "Noc",
-    "all_nights": "Wszystkie noce",
-    "recordings": "Nagrania",
-    "with_calls": "Z wywołaniami",
-    "named": "Z nazwanym nietoperzem",
-    "timeline": "Nagrania w ciągu nocy",
-    "sunset": "Zachód {time}",
-    "sunrise": "Wschód {time}",
-    "no_sun": "Podaj położenie stanowiska, żeby zobaczyć tu zachód i wschód słońca.",
-    "withheld": "Wywołania, nazwa wstrzymana",
-    "no_calls": "Bez wywołań",
-    "not_analysed": "Jeszcze nieprzeanalizowane",
-    "by_hour": "Godzina po godzinie",
-    "empty": "Tej nocy nie ma nagrań.",
-    "tooltip": "{time} · {file}",
-    "hour_summary": "{time} · {recordings} · {named}",
-    "named_count": {
-      "one": "{n} z nazwanym nietoperzem",
-      "few": "{n} z nazwanym nietoperzem",
-      "many": "{n} z nazwanym nietoperzem",
-      "other": "{n} z nazwanym nietoperzem"
-    }
-  },
-  "recordings_page": {
-    "title": "Nagrania",
-    "time": "Czas",
-    "site": "Stanowisko",
-    "bats": "Nietoperze",
-    "withheld": {
-      "one": "wywołania, nazwa wstrzymana",
-      "few": "{n} zwierzęta, nazwy wstrzymane",
-      "many": "{n} zwierząt, nazwy wstrzymane",
-      "other": "{n} zwierzęcia, nazwy wstrzymane"
-    },
-    "no_calls": "bez wywołań",
-    "not_analysed": "jeszcze nieprzeanalizowane",
-    "earlier": "Wcześniejsze",
-    "later": "Późniejsze",
-    "showing": "{first}–{last} z {total}",
-    "none": "Żadne nagranie nie pasuje.",
-    "open": "Otwórz"
   },
   "recording": {
     "previous": "Poprzednie nagranie",
@@ -439,7 +353,6 @@
     }
   },
   "sites_page": {
-    "title": "Stanowiska",
     "intro": "Miejsca, w których nasłuchują Twoje rejestratory. Od położenia stanowiska zależy, jakich nietoperzy się tam spodziewamy; dla każdego gatunku możesz to zmienić.",
     "empty": "Nie ma jeszcze stanowisk. Nocek zaproponuje je przy imporcie nagrań z nowego miejsca.",
     "add": "Dodaj stanowisko",
@@ -453,10 +366,13 @@
     "species": "Jakie nietoperze tu występują",
     "species_help": "Rzadkie nietoperze są nazywane tylko przy mocnych dowodach. Nieobecne nie są nazywane nigdy. Zmiana zaktualizuje nazwy w nagraniach z tego stanowiska.",
     "as_region": "Jak w regionie ({status})",
-    "updating": "Zapisano. Nazwy w nagraniach z tego stanowiska są aktualizowane."
+    "updating": "Zapisano. Nazwy w nagraniach z tego stanowiska są aktualizowane.",
+    "numbers": "Numery rejestratora:",
+    "no_numbers": "jeszcze żadnego",
+    "add_number": "Przypisz temu stanowisku numer…",
+    "no_site": "bez stanowiska"
   },
   "devices_page": {
-    "title": "Rejestratory",
     "empty": "Nie ma jeszcze rejestratora. Pojawi się po pierwszym imporcie.",
     "label": "Nazwa",
     "save": "Zapisz",
@@ -490,11 +406,49 @@
   },
   "header": {
     "language": "Język",
-    "theme": "Motyw"
+    "theme": "Motyw",
+    "quit": "Zakończ"
   },
   "theme": {
     "system": "Jak w systemie",
     "light": "Jasny",
     "dark": "Ciemny"
+  },
+  "calendar": {
+    "earlier": "Wcześniejsze miesiące",
+    "later": "Późniejsze miesiące",
+    "night": "{recordings}, z nazwanym nietoperzem: {named}"
+  },
+  "home": {
+    "no_recordings": "Nie ma jeszcze nagrań. Dodaj je z karty rejestratora powyżej.",
+    "nights": "Noce",
+    "season": "To stanowisko do tej pory: {recordings} · {nights} · {bats}",
+    "named_bats": {
+      "one": "{n} nazwany nietoperz",
+      "few": "{n} nazwane nietoperze",
+      "many": "{n} nazwanych nietoperzy",
+      "other": "{n} nazwanego nietoperza"
+    },
+    "night_of": "Noc {date}",
+    "night_bar": "Nagrania tej nocy, od zachodu do wschodu słońca",
+    "legend": {
+      "other": "Inne nietoperze",
+      "withheld": "Wywołania, nazwa wstrzymana",
+      "quiet": "Bez wywołań",
+      "unanalysed": "Jeszcze nieprzeanalizowane"
+    },
+    "more": "Więcej",
+    "menu": {
+      "sites": "Stanowiska i ich nietoperze…",
+      "devices": "Rejestratory i ich ustawienia…",
+      "species_csv": "Pobierz podsumowanie tego rejestratora (CSV)",
+      "recordings_csv": "Pobierz wszystkie nagrania z werdyktami (CSV)"
+    },
+    "sunset": "Zachód {time}",
+    "sunrise": "Wschód {time}",
+    "no_sun": "Podaj położenie stanowiska, żeby zobaczyć tu zachód i wschód słońca.",
+    "site": "Stanowisko",
+    "site_hint": "Każde stanowisko ma swoje noce; wybierz, które oglądasz.",
+    "without_site": "Bez stanowiska"
   }
 }

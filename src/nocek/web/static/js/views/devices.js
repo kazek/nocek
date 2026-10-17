@@ -10,7 +10,6 @@ export async function devices(view) {
   const list = await get("/devices");
   replace(
     view,
-    h("h1", {}, t("devices_page.title")),
     list.length === 0 ? h("p", {}, t("devices_page.empty")) : list.map((device) => card(device, () => devices(view))),
   );
 }
