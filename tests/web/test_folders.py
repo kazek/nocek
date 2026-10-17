@@ -46,3 +46,17 @@ def test_refuses_a_relative_path(client: TestClient) -> None:
 
 def test_a_missing_folder(client: TestClient, tmp_path: Path) -> None:
     assert client.get("/api/folders", params={"path": str(tmp_path / "gone")}).status_code == 404
+
+
+def test_counts_recordings_below_a_folder_when_asked(client: TestClient, tmp_path: Path) -> None:
+    for hour in ("2026_03_sep_21", "2026_03_sep_22"):
+        (tmp_path / hour).mkdir()
+        (tmp_path / hour / f"DEV_000_{hour}.wav").write_bytes(b"x")
+    (tmp_path / ".Trashes").mkdir()
+    (tmp_path / ".Trashes" / "deleted.wav").write_bytes(b"x")
+
+    shallow = client.get("/api/folders", params={"path": str(tmp_path)}).json()
+    deep = client.get("/api/folders", params={"path": str(tmp_path), "deep": True}).json()
+
+    assert shallow["recordings"] == 0
+    assert deep["recordings"] == 2

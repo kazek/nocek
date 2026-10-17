@@ -55,3 +55,11 @@ export function formatTime(isoDateTime) {
     new Date(isoDateTime),
   );
 }
+
+export function formatDateTime(iso) {
+  return new Intl.DateTimeFormat(language, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    hourCycle: "h23",
+  }).format(new Date(iso));
+}

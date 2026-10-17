@@ -47,8 +47,12 @@ def roots() -> list[Folder]:
     return [Folder(p.name or str(p), p, _count(p)) for p in dict.fromkeys(places)]
 
 
-def listing(path: Path) -> Listing:
-    """The folders inside one folder. Raises NotADirectoryError or PermissionError."""
+def listing(path: Path, deep: bool = False) -> Listing:
+    """The folders inside one folder. Raises NotADirectoryError or PermissionError.
+
+    deep counts the recordings in every folder below this one too, as a
+    recorder's card keeps them in a folder per hour.
+    """
     if not path.is_absolute():
         raise NotADirectoryError(f"{path} is not an absolute path")
     if not path.is_dir():
@@ -58,7 +62,7 @@ def listing(path: Path) -> Listing:
         path=path,
         parent=path.parent if path.parent != path else None,
         folders=folders,
-        recordings=_count(path),
+        recordings=_count_deep(path) if deep else _count(path),
     )
 
 
@@ -82,3 +86,11 @@ def _count(path: Path) -> int:
         )
     except (PermissionError, FileNotFoundError, NotADirectoryError):
         return 0
+
+
+def _count_deep(path: Path) -> int:
+    total = 0
+    for _, folders, files in os.walk(path, onerror=lambda _: None):
+        folders[:] = [f for f in folders if not f.startswith(".")]  # never into hidden ones
+        total += sum(1 for f in files if f.lower().endswith(".wav"))
+    return total

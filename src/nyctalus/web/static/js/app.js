@@ -5,13 +5,14 @@ import * as i18n from "./i18n.js";
 import { watch } from "./jobs.js";
 import { showError } from "./notice.js";
 import { route, start } from "./router.js";
+import { importer } from "./views/import.js";
 import { later } from "./views/later.js";
 import { settings } from "./views/settings.js";
 import { welcome } from "./views/welcome.js";
 
 route(/^\/welcome$/, welcome);
 route(/^\/settings$/, settings);
-route(/^\/import$/, later("nav.import"));
+route(/^\/import$/, importer);
 route(/^\/nights/, later("nav.nights"));
 route(/^\/sites$/, later("nav.sites"));
 route(/^\/devices$/, later("nav.devices"));

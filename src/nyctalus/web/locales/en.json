@@ -72,6 +72,61 @@
     "problem": {
       "empty-settings": "An empty settings file was found.",
       "unreadable-settings": "A settings file could not be read."
+    },
+    "title": "Import recordings",
+    "intro": "Choose the folder with your recorder's files: the memory card, or a copy of it. Nothing on it is changed.",
+    "choose_folder": "Choose the folder with the recordings",
+    "folder": "Folder",
+    "site": "Site",
+    "site_auto": "Decide from the recorder's position",
+    "start": "Import",
+    "other_folder": "Choose another folder",
+    "running": "Importing. You can leave this screen; the strip at the top shows how far it got.",
+    "report": "Import finished",
+    "copied": {
+      "one": "{n} new recording copied into the library.",
+      "other": "{n} new recordings copied into the library."
+    },
+    "nothing_new": "Nothing new: every recording in this folder is already in the library.",
+    "skipped": "Not copied",
+    "new_configs": {
+      "one": "{n} new recorder configuration kept.",
+      "other": "{n} new recorder configurations kept."
+    },
+    "issues": "About the recorder's settings",
+    "found": "Found in the folder",
+    "analysis_started": "Identification has started on the new recordings.",
+    "see_results": "See who was here",
+    "new_site": "These recordings were made at a new place",
+    "new_site_name": "Site at {latitude}, {longitude}",
+    "name": "Name",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "map": "Show on OpenStreetMap",
+    "create_site": "Create the site and put the recordings there",
+    "or_existing": "Or put them at an existing site:",
+    "assign": "Put them there",
+    "assigned": {
+      "one": "{n} recording placed at {site}.",
+      "other": "{n} recordings placed at {site}."
+    },
+    "history": "Earlier imports",
+    "history_empty": "Nothing imported yet.",
+    "without_site": {
+      "one": "{n} without a site",
+      "other": "{n} without a site"
+    },
+    "imported": {
+      "one": "{n} recording",
+      "other": "{n} recordings"
+    },
+    "new_site_count": {
+      "one": "{n} recording was made where no site is set up yet.",
+      "other": "{n} recordings were made where no site is set up yet."
+    },
+    "in_folder": {
+      "one": "{n} recording in this folder and the folders inside it.",
+      "other": "{n} recordings in this folder and the folders inside it."
     }
   },
   "config_issue": {

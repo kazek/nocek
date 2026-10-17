@@ -98,6 +98,19 @@ h2 { font-size: 1.1rem; margin: 24px 0 8px; }
 .card > h2:first-child { margin-top: 0; }
 
 .muted { color: var(--muted); }
+.warn { color: var(--warn); }
+
+h3 { font-size: 1rem; margin: 16px 0 4px; }
+
+.history { list-style: none; padding: 0; }
+.history li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
 .ok { color: var(--ok); }
 
 button {

@@ -89,11 +89,11 @@ def open_library(request: Request, body: PathBody) -> dict[str, Any]:
 
 
 @router.get("/folders")
-def get_folders(path: str | None = None) -> dict[str, Any]:
+def get_folders(path: str | None = None, deep: bool = False) -> dict[str, Any]:
     if path is None:
         return {"path": None, "parent": None, "recordings": 0, "folders": _folders(folders.roots())}
     try:
-        found = folders.listing(Path(path))
+        found = folders.listing(Path(path), deep=deep)
     except NotADirectoryError as error:
         raise ApiError(404, "not-a-folder", str(error)) from error
     except PermissionError as error:
