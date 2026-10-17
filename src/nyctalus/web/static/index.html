@@ -3,12 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>Nyctalus</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="module" src="/static/js/app.js"></script>
 </head>
 <body>
-  <main>
-    <h1>Nyctalus</h1>
-    <p>The server is running. The interface arrives in a later stage.</p>
-  </main>
+  <header class="top">
+    <a class="brand" href="#/" data-text="app.title">Nyctalus</a>
+    <nav aria-label="Main">
+      <a href="#/" data-text="nav.species"></a>
+      <a href="#/nights" data-text="nav.nights"></a>
+      <a href="#/import" data-text="nav.import"></a>
+      <a href="#/sites" data-text="nav.sites"></a>
+      <a href="#/devices" data-text="nav.devices"></a>
+      <a href="#/settings" data-text="nav.settings"></a>
+    </nav>
+  </header>
+  <section id="jobs" class="jobs" aria-live="polite"></section>
+  <div id="notice" class="notice" role="alert" hidden></div>
+  <main id="view" tabindex="-1"></main>
 </body>
 </html>

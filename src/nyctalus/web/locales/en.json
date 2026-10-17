@@ -7,8 +7,14 @@
     "tagline": "Identify bats from ultrasonic recordings"
   },
   "count": {
-    "recordings": {"one": "{n} recording", "other": "{n} recordings"},
-    "nights": {"one": "{n} night", "other": "{n} nights"}
+    "recordings": {
+      "one": "{n} recording",
+      "other": "{n} recordings"
+    },
+    "nights": {
+      "one": "{n} night",
+      "other": "{n} nights"
+    }
   },
   "error": {
     "failed": "Something went wrong.",
@@ -91,7 +97,11 @@
       "models": "Downloading models",
       "copying": "Copying recordings",
       "analysing": "Analysing recordings"
-    }
+    },
+    "idle": "Nothing is running.",
+    "cancel": "Cancel",
+    "history": "Recent tasks",
+    "progress": "{done} of {total}"
   },
   "status": {
     "occurs": "occurs",
@@ -135,5 +145,72 @@
     "Plecotus": "long-eared bats",
     "Rhinolophus": "horseshoe bats",
     "Vespertilio": "parti-coloured bats"
+  },
+  "nav": {
+    "species": "Who was here",
+    "nights": "Nights",
+    "import": "Import",
+    "sites": "Sites",
+    "devices": "Recorders",
+    "settings": "Settings"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "close": "Close",
+    "loading": "Loading…",
+    "later": "This part arrives in a later version.",
+    "saved": "Saved."
+  },
+  "folders": {
+    "title": "Choose a folder",
+    "places": "Places",
+    "up": "Up one folder",
+    "recordings": {
+      "one": "{n} recording",
+      "other": "{n} recordings"
+    },
+    "choose": "Choose this folder",
+    "empty": "No folders here."
+  },
+  "welcome": {
+    "title": "Welcome to Nyctalus",
+    "intro": "Nyctalus keeps your recordings, and what it finds in them, in a library: one folder you can back up or move as a whole.",
+    "library_step": "Library",
+    "create_here": "Create the library in {path}",
+    "create_elsewhere": "Create it somewhere else",
+    "open_existing": "Open an existing library",
+    "library_ready": "The library is in {path}.",
+    "models_step": "Models",
+    "models_intro": "One of the identification methods needs about 52 MB of model files. They are downloaded once.",
+    "download": "Download the models",
+    "models_ready": "The models are ready.",
+    "ready_step": "Ready",
+    "ready_text": "Bring in the recordings from your recorder's card.",
+    "start_import": "Import recordings"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "follow_browser": "As in the browser",
+    "passes": "Identification methods",
+    "pass": {
+      "key": "Field key, from the measured calls",
+      "batdetect2": "BatDetect2 network",
+      "battybirdnet": "BattyBirdNET network"
+    },
+    "passes_note": "BatDetect2 gives the names. The other two methods can only withhold a name they both disagree with.",
+    "sieve": "Skip the networks for recordings in which no calls were measured",
+    "device": "Compute on",
+    "devices": {
+      "auto": "Choose automatically",
+      "cpu": "Processor",
+      "mps": "Apple graphics (MPS)",
+      "cuda": "NVIDIA graphics (CUDA)"
+    },
+    "library": "Library",
+    "open_other": "Open another library",
+    "create_other": "Create a new library"
   }
 }

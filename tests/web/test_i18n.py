@@ -146,3 +146,22 @@ def _at(data: dict[str, Any], dotted: str) -> Any:
 def _placeholders(value: Any) -> set[str]:
     texts = value.values() if isinstance(value, dict) else [value]
     return {p for t in texts for p in re.findall(r"\{(\w+)\}", t)}
+
+
+def test_every_text_the_page_asks_for_exists() -> None:
+    static = SOURCE / "web" / "static"
+    pattern = re.compile(r"""\bt\(\s*["']([\w.-]+)["']""")
+    wanted = {key for js in static.rglob("*.js") for key in pattern.findall(js.read_text("utf-8"))}
+    wanted |= set(re.findall(r'data-text="([\w.-]+)"', (static / "index.html").read_text("utf-8")))
+
+    assert len(wanted) > 20  # the search itself works
+    missing = {key for key in wanted if _find(ENGLISH, key) is None}
+    assert missing == set()
+
+
+def _find(data: dict[str, Any], dotted: str) -> Any:
+    for part in dotted.split("."):
+        if not isinstance(data, dict) or part not in data:
+            return None
+        data = data[part]
+    return data
