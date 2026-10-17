@@ -4,11 +4,31 @@ from fastapi.testclient import TestClient
 
 from nyctalus import __version__
 from nyctalus.storage.library import Library
+from nyctalus.web.app import create_app
+from nyctalus.web.security import COOKIE
 from nyctalus.web.state import AppState
+from tests.web.conftest import BASE, TOKEN
 
 
 def test_health(client: TestClient) -> None:
     assert client.get("/api/health").json() == {"version": __version__}
+
+
+def test_about_names_the_versions(client: TestClient) -> None:
+    about = client.get("/api/about").json()
+
+    assert about["versions"]["nyctalus"] == __version__
+    assert set(about["versions"]) == {"nyctalus", "batdetect2", "battybirdnet"}
+    assert about["log"].endswith("nyctalus.log")
+
+
+def test_quit_stops_the_server(app_state: AppState) -> None:
+    stopped: list[bool] = []
+    client = TestClient(create_app(app_state, on_quit=lambda: stopped.append(True)), base_url=BASE)
+    client.cookies.set(COOKIE, TOKEN)
+
+    assert client.post("/api/quit").status_code == 202
+    assert stopped == [True]
 
 
 def test_settings_start_from_the_defaults(client: TestClient) -> None:

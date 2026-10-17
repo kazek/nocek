@@ -72,6 +72,8 @@ a { color: var(--accent); }
   color: var(--muted);
 }
 
+.top .quit { margin-left: auto; }
+
 .top nav a[aria-current="page"] {
   color: var(--text);
   background: var(--bg);

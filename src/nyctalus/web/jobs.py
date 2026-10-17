@@ -148,13 +148,35 @@ class JobRunner:
         self._thread.start()
 
     def stop(self) -> None:
-        """Cancel what is running, drop what is queued, and wait for the worker."""
+        """Cancel what is running, drop what is queued, and wait for the worker.
+
+        Judging verdicts again is let finish: it takes seconds, and a site
+        left half-judged would keep names its statuses no longer allow. An
+        analysis stopped part way is taken up again by resume().
+        """
         with self._lock:
             for job in self._jobs.values():
-                job.cancel.set()
+                if job.kind is not Kind.VERDICTS:
+                    job.cancel.set()
         self._queue.put(None)
         if self._thread is not None:
             self._thread.join(timeout=30)
+
+    def resume(self) -> dict[str, Any] | None:
+        """Analyse the open library's recordings that have no result yet, if any."""
+        root = self.env.library_root()
+        if root is None:
+            return None
+        with self._lock:
+            if any(j.kind is Kind.ANALYSE and j.finished_at is None for j in self._jobs.values()):
+                return None
+        try:
+            with Library.open(root) as library:
+                if not library.repository.recordings_without_result():
+                    return None
+        except LibraryError:
+            return None
+        return self.submit(Kind.ANALYSE, scope="new")
 
     def submit(self, kind: Kind, **params: Any) -> dict[str, Any]:
         with self._lock:

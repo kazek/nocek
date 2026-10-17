@@ -209,7 +209,8 @@
     "import": "Import",
     "sites": "Sites",
     "devices": "Recorders",
-    "settings": "Settings"
+    "settings": "Settings",
+    "quit": "Quit"
   },
   "common": {
     "save": "Save",
@@ -267,7 +268,18 @@
     },
     "library": "Library",
     "open_other": "Open another library",
-    "create_other": "Create a new library"
+    "create_other": "Create a new library",
+    "about": {
+      "title": "About Nyctalus",
+      "version": "Version {version}",
+      "licence": "Nyctalus is free software under the MIT licence. The models it uses may be used for non-commercial purposes only.",
+      "private": "Your recordings stay on this computer. Nyctalus goes online only to download the BattyBirdNET model files.",
+      "models": "Models",
+      "based_on": "Built on {model}: {authors}",
+      "files": "Files",
+      "log": "Log file, for reporting a problem:",
+      "models_folder": "Downloaded models:"
+    }
   },
   "species_page": {
     "title": "Who was here",
@@ -440,5 +452,13 @@
   "recorder_mode": {
     "bat": "bat",
     "bird": "bird"
+  },
+  "quit": {
+    "title": "Quit Nyctalus?",
+    "busy": "Still working: {job}.",
+    "resume": "Recordings not yet identified will be identified the next time Nyctalus starts.",
+    "anyway": "Quit anyway",
+    "stopped": "Nyctalus has stopped",
+    "close_tab": "You can close this tab. Start Nyctalus again with the nyctalus command or its shortcut."
   }
 }

@@ -8,6 +8,7 @@ import { attempt } from "./notice.js";
 const listeners = new Set();
 let timer = null;
 let poll = async () => {};
+let stopped = false;
 
 // Be told about every job that finishes, e.g. to refresh what is on screen.
 export function onFinished(listener) {
@@ -28,6 +29,7 @@ export function watch() {
     } catch {
       // The server may be restarting; try again shortly.
     }
+    if (stopped) return;
     for (const job of jobs) {
       if (job.finished_at && !finished.has(job.id)) {
         finished.add(job.id);
@@ -40,6 +42,12 @@ export function watch() {
     timer = setTimeout(poll, busy ? 1000 : 5000);
   };
   return poll;
+}
+
+// Stop asking: the server is going away.
+export function unwatch() {
+  stopped = true;
+  clearTimeout(timer);
 }
 
 function draw(strip, jobs) {

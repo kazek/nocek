@@ -106,7 +106,7 @@ class Analyser:
         self.settings = settings
         self._batdetect = batdetect_model or batdetect.Model(settings.batdetect, settings.device)
         self._battybird = battybird_model or battybird.Model(models_dir, settings.battybird)
-        self.versions = MappingProxyType(_versions(settings))
+        self.versions = MappingProxyType(versions(settings))
 
     def analyse(self, path: Path, region: Region | None = None) -> RecordingResult:
         """One recording's result, judged in its site's region (by default the analyser's)."""
@@ -183,11 +183,12 @@ class Analyser:
         )
 
 
-def _versions(settings: Settings) -> dict[str, str]:
-    versions = {"nyctalus": __version__}
+def versions(settings: Settings = DEFAULT_SETTINGS) -> dict[str, str]:
+    """What a result depends on: Nyctalus and each model the settings use."""
+    found = {"nyctalus": __version__}
     if Pass.BATDETECT2 in settings.passes:
-        versions[Pass.BATDETECT2] = metadata.version("batdetect2")
+        found[Pass.BATDETECT2] = metadata.version("batdetect2")
     if Pass.BATTYBIRDNET in settings.passes:
         commit = battybird.REPOSITORY.rsplit("/", 1)[-1][:12]
-        versions[Pass.BATTYBIRDNET] = f"{commit}/{settings.battybird.head}"
-    return versions
+        found[Pass.BATTYBIRDNET] = f"{commit}/{settings.battybird.head}"
+    return found

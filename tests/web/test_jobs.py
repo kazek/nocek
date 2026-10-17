@@ -262,3 +262,33 @@ def test_verdicts_are_judged_again_without_the_models(setup: Setup, tmp_path: Pa
         assert result.verdict is not None
         assert result.verdict.named == ()
         assert result.verdict.sources[0].reasons == (Abstention.RULED_OUT,)
+
+
+def test_what_a_previous_run_left_unanalysed_is_taken_up(setup: Setup) -> None:
+    imported = setup.run(Kind.IMPORT, folder=str(setup.card))
+    setup.runner.wait(imported["result"]["analysis_job"])
+    assert setup.runner.resume() is None  # nothing left to do
+    with Library.open(setup.library_root) as library:
+        library.repository.conn.execute("DELETE FROM result WHERE recording_id = 2")
+
+    job = setup.runner.resume()
+
+    assert job is not None
+    assert setup.runner.wait(job["id"])["result"]["analysed"] == 1  # type: ignore[index]
+
+
+def test_nothing_is_taken_up_without_a_library(setup: Setup) -> None:
+    setup.runner.env = replace(setup.runner.env, library_root=lambda: None)
+
+    assert setup.runner.resume() is None
+
+
+def test_stopping_lets_verdicts_finish(tmp_path: Path) -> None:
+    s = Setup(tmp_path)
+    verdicts = s.runner.submit(Kind.VERDICTS, site_id=None)
+    imported = s.runner.submit(Kind.IMPORT, folder=str(s.card))
+    s.runner.stop()  # before the worker has taken either
+    s.runner.start()
+
+    assert s.runner.wait(verdicts["id"])["status"] == "done"  # type: ignore[index]
+    assert s.runner.wait(imported["id"])["status"] == "cancelled"  # type: ignore[index]

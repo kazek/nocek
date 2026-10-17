@@ -10,6 +10,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from nyctalus import __version__
+from nyctalus.core import pipeline
 from nyctalus.storage import settings as app_settings
 from nyctalus.storage.library import Library, LibraryError
 from nyctalus.storage.settings import SettingsError
@@ -40,6 +41,24 @@ class PathBody(BaseModel):
 @router.get("/health")
 def health() -> dict[str, str]:
     return {"version": __version__}
+
+
+@router.get("/about")
+def about(request: Request) -> dict[str, Any]:
+    """Versions and where things are kept, for the About section."""
+    return {
+        "versions": pipeline.versions(),
+        "log": str(app_settings.log_dir() / "nyctalus.log"),
+        "settings": str(state(request).settings_path),
+        "models": str(app_settings.models_dir()),
+    }
+
+
+@router.post("/quit", status_code=202)
+def quit_server(request: Request) -> dict[str, bool]:
+    """Stop the server once this answer is sent; running jobs are cancelled."""
+    request.app.state.quit()
+    return {"quitting": True}
 
 
 @router.get("/settings")
@@ -117,6 +136,7 @@ def _switch(request: Request, path: str, how: Any) -> dict[str, Any]:
     except OSError as error:
         raise ApiError(409, "folder-not-writable", str(error)) from error
     state(request).switch_library(library)
+    request.app.state.jobs.resume()
     return get_library(request)
 
 

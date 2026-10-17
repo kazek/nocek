@@ -4,6 +4,7 @@ import { get } from "./api.js";
 import * as i18n from "./i18n.js";
 import { watch } from "./jobs.js";
 import { showError } from "./notice.js";
+import { quitButton } from "./quit.js";
 import { route, start } from "./router.js";
 import { devices } from "./views/devices.js";
 import { importer } from "./views/import.js";
@@ -36,6 +37,7 @@ async function needsLibrary(path) {
 try {
   await i18n.load();
   watch()();
+  quitButton(document.getElementById("quit"), document.getElementById("view"));
   await start(document.getElementById("view"), needsLibrary);
 } catch (error) {
   showError(error);

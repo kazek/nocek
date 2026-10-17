@@ -63,9 +63,14 @@ def serve(port: int, open_browser: bool) -> None:
             if open_browser:
                 webbrowser.open(address)
 
+    def stop_server() -> None:
+        log.info("Quit from the interface")
+        server.should_exit = True
+
     try:
-        config = uvicorn.Config(create_app(state), host=HOST, port=port, log_config=None)
-        Server(config).run()
+        app = create_app(state, on_quit=stop_server)
+        server = Server(uvicorn.Config(app, host=HOST, port=port, log_config=None))
+        server.run()
     finally:
         state.close()
 

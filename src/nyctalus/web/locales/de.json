@@ -209,7 +209,8 @@
     "import": "Import",
     "sites": "Standorte",
     "devices": "Rekorder",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "quit": "Beenden"
   },
   "common": {
     "save": "Speichern",
@@ -267,7 +268,18 @@
     },
     "library": "Bibliothek",
     "open_other": "Andere Bibliothek öffnen",
-    "create_other": "Neue Bibliothek anlegen"
+    "create_other": "Neue Bibliothek anlegen",
+    "about": {
+      "title": "Über Nyctalus",
+      "version": "Version {version}",
+      "licence": "Nyctalus ist freie Software unter der MIT-Lizenz. Die verwendeten Modelle dürfen nur für nicht kommerzielle Zwecke genutzt werden.",
+      "private": "Deine Aufnahmen bleiben auf diesem Computer. Nyctalus geht nur online, um die Modelldateien von BattyBirdNET herunterzuladen.",
+      "models": "Modelle",
+      "based_on": "Basiert auf {model}: {authors}",
+      "files": "Dateien",
+      "log": "Protokolldatei, um ein Problem zu melden:",
+      "models_folder": "Heruntergeladene Modelle:"
+    }
   },
   "species_page": {
     "title": "Wer war hier",
@@ -440,5 +452,13 @@
   "recorder_mode": {
     "bat": "Fledermäuse",
     "bird": "Vögel"
+  },
+  "quit": {
+    "title": "Nyctalus beenden?",
+    "busy": "Läuft noch: {job}.",
+    "resume": "Aufnahmen, die noch nicht erkannt wurden, werden beim nächsten Start erkannt.",
+    "anyway": "Trotzdem beenden",
+    "stopped": "Nyctalus wurde beendet",
+    "close_tab": "Du kannst diesen Tab schließen. Starte Nyctalus wieder mit dem Befehl nyctalus oder über die Verknüpfung."
   }
 }

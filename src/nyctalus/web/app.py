@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -21,7 +21,12 @@ from nyctalus.web.state import AppState
 STATIC = Path(__file__).parent / "static"
 
 
-def create_app(state: AppState, runner: JobRunner | None = None) -> FastAPI:
+def create_app(
+    state: AppState,
+    runner: JobRunner | None = None,
+    on_quit: Callable[[], None] = lambda: None,
+) -> FastAPI:
+    """The application; on_quit is how the interface's Quit stops the server."""
     runner = runner or JobRunner(
         Environment(
             library_root=lambda: state.library.root if state.library else None,
@@ -33,6 +38,7 @@ def create_app(state: AppState, runner: JobRunner | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         runner.start()
+        runner.resume()  # what the last run left unanalysed
         try:
             yield
         finally:
@@ -43,6 +49,7 @@ def create_app(state: AppState, runner: JobRunner | None = None) -> FastAPI:
     )
     app.state.nyctalus = state
     app.state.jobs = runner
+    app.state.quit = on_quit
     app.add_middleware(Guard, token=state.token, port=state.port)
     app.add_exception_handler(ApiError, handle_api_error)
     app.include_router(api.router)

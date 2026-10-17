@@ -1,4 +1,4 @@
-// Language, identification methods, compute device, and which library is open.
+// Language, identification methods, compute device, which library is open, and about Nyctalus.
 
 import { get, post, put } from "../api.js";
 import { h, replace } from "../dom.js";
@@ -9,8 +9,27 @@ import { attempt } from "../notice.js";
 const PASSES = ["key", "batdetect2", "battybirdnet"];
 const DEVICES = ["auto", "cpu", "mps", "cuda"];
 
+// The models Nyctalus runs: who made them, and on which terms they may be used.
+const MODELS = [
+  {
+    pass: "batdetect2",
+    name: "BatDetect2",
+    authors: "Mac Aodha, O. et al. (2022)",
+    url: "https://github.com/macaodha/batdetect2",
+    licence: ["CC BY-NC 4.0", "https://creativecommons.org/licenses/by-nc/4.0/"],
+  },
+  {
+    pass: "battybirdnet",
+    name: "BattyBirdNET",
+    authors: "Zinck, R.D. (2023)",
+    url: "https://github.com/rdz-oss/BattyBirdNET-Analyzer",
+    licence: ["CC BY-NC-SA 4.0", "https://creativecommons.org/licenses/by-nc-sa/4.0/"],
+    basedOn: { model: "BirdNET", authors: "Kahl, S. et al., Cornell Lab of Ornithology" },
+  },
+];
+
 export async function settings(view) {
-  const [current, locales] = await Promise.all([get("/settings"), get("/locales")]);
+  const [current, locales, info] = await Promise.all([get("/settings"), get("/locales"), get("/about")]);
   const status = h("p", { class: "muted", "aria-live": "polite" });
   const redraw = () => settings(view);
 
@@ -99,6 +118,40 @@ export async function settings(view) {
         h("button", { onclick: () => library("/library/create", t("settings.create_other")) }, t("settings.create_other")),
       ),
     ),
+    about(info),
     status,
+  );
+}
+
+function link(href, text) {
+  return h("a", { href, target: "_blank", rel: "noopener noreferrer" }, text);
+}
+
+function about(info) {
+  return h(
+    "section",
+    { class: "card" },
+    h("h2", {}, t("settings.about.title")),
+    h("p", {}, t("settings.about.version", { version: info.versions.nyctalus })),
+    h("p", {}, t("settings.about.licence")),
+    h("p", {}, t("settings.about.private")),
+    h("h3", {}, t("settings.about.models")),
+    h(
+      "ul",
+      {},
+      MODELS.map((m) =>
+        h(
+          "li",
+          {},
+          link(m.url, m.name),
+          ` ${info.versions[m.pass]} · ${m.authors} · `,
+          link(m.licence[1], m.licence[0]),
+          m.basedOn ? h("div", { class: "muted" }, t("settings.about.based_on", m.basedOn)) : null,
+        ),
+      ),
+    ),
+    h("h3", {}, t("settings.about.files")),
+    h("p", {}, t("settings.about.log"), h("br"), h("span", { class: "path" }, info.log)),
+    h("p", {}, t("settings.about.models_folder"), h("br"), h("span", { class: "path" }, info.models)),
   );
 }

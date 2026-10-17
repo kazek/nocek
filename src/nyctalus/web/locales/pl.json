@@ -227,7 +227,8 @@
     "import": "Import",
     "sites": "Stanowiska",
     "devices": "Rejestratory",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "quit": "Zakończ"
   },
   "common": {
     "save": "Zapisz",
@@ -287,7 +288,18 @@
     },
     "library": "Biblioteka",
     "open_other": "Otwórz inną bibliotekę",
-    "create_other": "Utwórz nową bibliotekę"
+    "create_other": "Utwórz nową bibliotekę",
+    "about": {
+      "title": "O programie",
+      "version": "Wersja {version}",
+      "licence": "Nyctalus to wolne oprogramowanie na licencji MIT. Modele, z których korzysta, wolno używać tylko do celów niekomercyjnych.",
+      "private": "Twoje nagrania zostają na tym komputerze. Nyctalus łączy się z internetem tylko po to, żeby pobrać pliki modelu BattyBirdNET.",
+      "models": "Modele",
+      "based_on": "Oparty na {model}: {authors}",
+      "files": "Pliki",
+      "log": "Plik dziennika, do zgłaszania problemów:",
+      "models_folder": "Pobrane modele:"
+    }
   },
   "species_page": {
     "title": "Kto tu był",
@@ -466,5 +478,13 @@
   "recorder_mode": {
     "bat": "nietoperze",
     "bird": "ptaki"
+  },
+  "quit": {
+    "title": "Zakończyć Nyctalusa?",
+    "busy": "Wciąż trwa: {job}.",
+    "resume": "Nagrania, których nie zdążono rozpoznać, zostaną rozpoznane przy następnym uruchomieniu.",
+    "anyway": "Zakończ mimo to",
+    "stopped": "Nyctalus został zamknięty",
+    "close_tab": "Możesz zamknąć tę kartę. Uruchomisz go ponownie poleceniem nyctalus albo skrótem."
   }
 }
