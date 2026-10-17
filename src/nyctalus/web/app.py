@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from nyctalus import __version__
 from nyctalus.storage import settings as app_settings
-from nyctalus.web import api, jobs_api, library_api
+from nyctalus.web import api, jobs_api, library_api, media_api
 from nyctalus.web.errors import ApiError, handle_api_error
 from nyctalus.web.jobs import Environment, JobRunner
 from nyctalus.web.security import COOKIE, Guard
@@ -48,6 +48,7 @@ def create_app(state: AppState, runner: JobRunner | None = None) -> FastAPI:
     app.include_router(api.router)
     app.include_router(jobs_api.router)
     app.include_router(library_api.router)
+    app.include_router(media_api.router)
 
     @app.get("/", include_in_schema=False)
     def index(request: Request, token: str | None = None) -> Response:
