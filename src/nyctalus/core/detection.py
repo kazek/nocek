@@ -8,7 +8,7 @@ used to check what a model says.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 
 import numpy as np
@@ -138,6 +138,8 @@ def shape_of(sweep_khz: float, width_khz: float, duration_ms: float) -> Shape:
 
 
 def _pulses(audio: Audio, params: Params) -> list[Pulse]:
+    if audio.sample_rate / 2000.0 <= params.floor_khz:
+        return []  # nothing above the analysis floor can have been recorded
     if audio.duration_s <= params.long_file_s:
         return _find(audio.samples, audio.sample_rate, 0.0, params)
 
@@ -292,7 +294,7 @@ def _measure(
 def _shifted(pulse: Pulse, offset_s: float) -> Pulse:
     if not offset_s:
         return pulse
-    return Pulse(**{**pulse.__dict__, "start_s": pulse.start_s + offset_s})
+    return replace(pulse, start_s=pulse.start_s + offset_s)
 
 
 def _dominant_group(pulses: tuple[Pulse, ...], params: Params) -> DominantGroup:

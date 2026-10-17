@@ -13,14 +13,13 @@ P. nathusii often together.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import cache
-from importlib import resources
 from types import MappingProxyType
 
 from nyctalus.core import taxonomy
+from nyctalus.core._data import load_json
 from nyctalus.core.detection import Detection, DominantGroup
 from nyctalus.core.opinion import Abstention, Candidate, Opinion
 from nyctalus.core.taxonomy import Taxon
@@ -45,11 +44,9 @@ class Params:
     tolerance: float = 0.25
     # Published keys lead on frequency and treat the interval as supporting
     # evidence.
-    weights: Mapping[str, float] = field(
-        default_factory=lambda: MappingProxyType(
-            {"end_khz": 3.0, "duration_ms": 1.5, "interval_ms": 1.0}
-        )
-    )
+    end_weight: float = 3.0
+    duration_weight: float = 1.5
+    interval_weight: float = 1.0
     # Below this no published range comes close: usually a feeding buzz, a
     # social call, or not a bat at all.
     min_score: float = 0.55
@@ -89,15 +86,14 @@ def identify(detection: Detection, params: Params = DEFAULT_PARAMS) -> Opinion:
 @cache
 def bands() -> Mapping[Taxon, Bands]:
     """Published ranges per taxon."""
-    text = resources.files("nyctalus.core").joinpath("data/key_bands.json").read_text("utf-8")
     return MappingProxyType(
         {
             taxonomy.get(name): Bands(
-                end_khz=_band(b["end_khz"]),
-                duration_ms=_band(b["duration_ms"]),
-                interval_ms=_band(b["interval_ms"]),
+                end_khz=_band(name, b["end_khz"]),
+                duration_ms=_band(name, b["duration_ms"]),
+                interval_ms=_band(name, b["interval_ms"]),
             )
-            for name, b in json.loads(text)["taxa"].items()
+            for name, b in load_json("key_bands.json")["taxa"].items()
         }
     )
 
@@ -128,16 +124,21 @@ def _score(taxon: Taxon, b: Bands, group: DominantGroup, params: Params) -> Cand
             else fit(interval, b.interval_ms, params.tolerance)
         ),
     }
-    measured = {name: value for name, value in evidence.items() if value is not None}
+    weighted = [
+        (params.end_weight, evidence["end_khz"]),
+        (params.duration_weight, evidence["duration_ms"]),
+        (params.interval_weight, evidence["interval_ms"]),
+    ]
+    measured = [(weight, value) for weight, value in weighted if value is not None]
     # One measurement far outside its band rules a species out however well
     # the rest fits: a 3 ms pulse is not a horseshoe bat, at any frequency.
-    if any(value == 0.0 for value in measured.values()):
+    if any(value == 0.0 for _, value in measured):
         return None
-    total = sum(params.weights[name] for name in measured)
-    score = sum(params.weights[name] * value for name, value in measured.items()) / total
+    score = sum(w * v for w, v in measured) / sum(w for w, _ in measured)
     return Candidate(taxa=frozenset({taxon}), score=score, evidence=evidence)
 
 
-def _band(values: list[float]) -> Band:
-    low, high = values
-    return float(low), float(high)
+def _band(name: str, values: list[float]) -> Band:
+    if len(values) != 2 or not values[0] <= values[1]:
+        raise ValueError(f"{name}: a band is [low, high], got {values}")
+    return float(values[0]), float(values[1])

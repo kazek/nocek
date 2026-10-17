@@ -43,3 +43,9 @@ def test_above_keeps_only_higher_bins() -> None:
 
     assert spec.freqs_khz[0] >= 12
     assert spec.power.shape[1] == len(spec.freqs_khz)
+
+
+@pytest.mark.parametrize(("nfft", "hop"), [(0, 1), (4, 0)])
+def test_rejects_an_empty_window_or_hop(nfft: int, hop: int) -> None:
+    with pytest.raises(ValueError):
+        spectrogram.compute(synth.audio(synth.silence(0.01)), nfft=nfft, hop=hop)

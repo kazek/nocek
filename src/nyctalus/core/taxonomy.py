@@ -8,12 +8,12 @@ Names in other languages belong to the interface, not to this module.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import StrEnum
 from functools import cache
-from importlib import resources
+
+from nyctalus.core._data import load_json
 
 
 class Rank(StrEnum):
@@ -44,8 +44,7 @@ class UnknownTaxonError(LookupError):
 @cache
 def species() -> tuple[Taxon, ...]:
     """Every species in the catalogue, alphabetically."""
-    text = resources.files("nyctalus.core").joinpath("data/taxa.json").read_text("utf-8")
-    return tuple(sorted(Taxon(name) for name in json.loads(text)["species"]))
+    return tuple(sorted(Taxon(name) for name in load_json("taxa.json")["species"]))
 
 
 @cache

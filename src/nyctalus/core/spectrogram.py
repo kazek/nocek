@@ -20,7 +20,8 @@ DEFAULT_NFFT = 512
 DEFAULT_HOP = 128
 
 
-@dataclass(frozen=True)
+# eq=False: comparing arrays field by field has no single truth value.
+@dataclass(frozen=True, eq=False)
 class Spectrogram:
     """Power per frame (rows) and frequency bin (columns)."""
 
@@ -57,6 +58,8 @@ def compute(audio: Audio, nfft: int = DEFAULT_NFFT, hop: int = DEFAULT_HOP) -> S
 
     A recording shorter than one window yields a spectrogram with no frames.
     """
+    if nfft < 1 or hop < 1:
+        raise ValueError(f"window ({nfft}) and hop ({hop}) must be at least one sample")
     freqs_khz = np.fft.rfftfreq(nfft, 1.0 / audio.sample_rate) / 1000.0
     if len(audio.samples) < nfft:
         power = np.zeros((0, nfft // 2 + 1), dtype=np.float32)

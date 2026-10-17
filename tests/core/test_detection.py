@@ -99,3 +99,10 @@ def test_shape_cut_offs(
     sweep_khz: float, width_khz: float, duration_ms: float, shape: Shape
 ) -> None:
     assert shape_of(sweep_khz, width_khz, duration_ms) is shape
+
+
+def test_a_rate_too_low_for_bats_has_no_calls() -> None:
+    rate = 2_000
+    detection = detect(synth.audio(synth.noise(1, sample_rate=rate), sample_rate=rate))
+
+    assert not detection.has_calls

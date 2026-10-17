@@ -16,7 +16,8 @@ class AudioError(Exception):
     """A file that cannot be read as audio."""
 
 
-@dataclass(frozen=True)
+# eq=False: comparing arrays field by field has no single truth value.
+@dataclass(frozen=True, eq=False)
 class Audio:
     """Mono samples in the range [-1, 1] and the rate they were recorded at."""
 

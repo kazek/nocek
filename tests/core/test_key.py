@@ -117,3 +117,27 @@ def test_a_missing_interval_is_judged_on_the_rest() -> None:
 )
 def test_fit(value: float, expected: float) -> None:
     assert key.fit(value, (20.0, 30.0), tolerance=0.25) == pytest.approx(expected)
+
+
+def test_params_are_hashable() -> None:
+    assert hash(key.Params()) == hash(key.Params())
+
+
+@pytest.mark.parametrize("band", [[23, 17], [17], [17, 20, 23]])
+def test_rejects_a_malformed_band(monkeypatch: pytest.MonkeyPatch, band: list[float]) -> None:
+    bad = {
+        "taxa": {
+            "Nyctalus noctula": {
+                "end_khz": band,
+                "duration_ms": [10, 25],
+                "interval_ms": [180, 450],
+            }
+        }
+    }
+    monkeypatch.setattr(key, "load_json", lambda name: bad)
+    key.bands.cache_clear()
+    try:
+        with pytest.raises(ValueError, match="Nyctalus noctula"):
+            key.bands()
+    finally:
+        key.bands.cache_clear()

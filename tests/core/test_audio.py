@@ -50,3 +50,10 @@ def test_rejects_a_file_that_is_not_audio(tmp_path: Path) -> None:
 def test_rejects_a_missing_file(tmp_path: Path) -> None:
     with pytest.raises(AudioError):
         load(tmp_path / "missing.wav")
+
+
+def test_compares_by_identity() -> None:
+    audio = synth.audio(synth.tone(40, 0.01))
+
+    assert audio == audio
+    assert audio != synth.audio(synth.tone(40, 0.01))
