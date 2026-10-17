@@ -62,6 +62,9 @@ DEFAULT_SETTINGS = Settings()
 
 
 class BatDetectModel(Protocol):
+    @property
+    def device(self) -> str: ...
+
     def analyse(self, path: Path) -> batdetect.Analysis: ...
 
 
@@ -147,8 +150,13 @@ class Analyser:
                 except battybird.ModelError as error:
                     failures.append(Failure(Pass.BATTYBIRDNET, str(error)))
 
+        versions = self.versions
         verdict = None
         if sources is not None:
+            # Results can differ slightly between devices on near-tied calls.
+            versions = MappingProxyType(
+                {**self.versions, f"{Pass.BATDETECT2}-device": self._batdetect.device}
+            )
             verdict = consensus.combine(
                 self.region,
                 sources,
@@ -159,7 +167,7 @@ class Analyser:
             )
         return RecordingResult(
             path=path,
-            versions=self.versions,
+            versions=versions,
             sample_rate=sound.sample_rate,
             duration_s=sound.duration_s,
             detection=found,

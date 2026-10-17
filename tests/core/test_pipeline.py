@@ -5,40 +5,16 @@ import pytest
 import soundfile as sf
 
 from nyctalus.core import batdetect, battybird
-from nyctalus.core.audio import Audio, Samples
+from nyctalus.core.audio import Samples
 from nyctalus.core.batdetect import interpret
 from nyctalus.core.pipeline import DEFAULT_SETTINGS, Analyser, Pass, Settings, Skipped
 from nyctalus.core.region import Region
 from nyctalus.core.taxonomy import Taxon
 from tests import synth
-from tests.core.factories import calls, opinion
+from tests.core.factories import FakeBatDetect, FakeBattyBird, calls, opinion
 
 ANYWHERE = Region("anywhere")
 NOCTULE = frozenset({Taxon("Nyctalus noctula")})
-
-
-class FakeBatDetect:
-    def __init__(self, result: batdetect.Analysis | Exception) -> None:
-        self.result = result
-        self.seen: list[Path] = []
-
-    def analyse(self, path: Path) -> batdetect.Analysis:
-        self.seen.append(path)
-        if isinstance(self.result, Exception):
-            raise self.result
-        return self.result
-
-
-class FakeBattyBird:
-    def __init__(self, result: battybird.Analysis | Exception) -> None:
-        self.result = result
-        self.seen = 0
-
-    def analyse(self, audio: Audio) -> battybird.Analysis:
-        self.seen += 1
-        if isinstance(self.result, Exception):
-            raise self.result
-        return self.result
 
 
 NOCTULE_SOURCES = interpret(calls("Nyctalus noctula", low_khz=20))
@@ -174,8 +150,14 @@ def test_an_unreadable_file(tmp_path: Path) -> None:
 def test_records_what_produced_the_result(noctule_file: Path) -> None:
     versions = analyser().analyse(noctule_file).versions
 
-    assert set(versions) == {"nyctalus", Pass.BATDETECT2, Pass.BATTYBIRDNET}
+    assert set(versions) == {
+        "nyctalus",
+        Pass.BATDETECT2,
+        f"{Pass.BATDETECT2}-device",
+        Pass.BATTYBIRDNET,
+    }
     assert versions[Pass.BATDETECT2] == "1.3.1"
+    assert versions[f"{Pass.BATDETECT2}-device"] == "fake"
     assert versions[Pass.BATTYBIRDNET].endswith("/Bavaria")
 
 

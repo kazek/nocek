@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+from nyctalus.core import batdetect, battybird
+from nyctalus.core.audio import Audio
 from nyctalus.core.batdetect import Call
 from nyctalus.core.detection import Detection, DominantGroup, Pulse, Shape
 from nyctalus.core.opinion import Candidate, Opinion
@@ -68,3 +72,33 @@ def opinion(*names: str, score: float = 1.0, source: str = "test") -> Opinion:
         min_score=0.5,
         shortlist_ratio=1.0,
     )
+
+
+class FakeBatDetect:
+    """Stands in for BatDetect2: returns a fixed analysis, or raises."""
+
+    device = "fake"
+
+    def __init__(self, result: batdetect.Analysis | Exception) -> None:
+        self.result = result
+        self.seen: list[Path] = []
+
+    def analyse(self, path: Path) -> batdetect.Analysis:
+        self.seen.append(path)
+        if isinstance(self.result, Exception):
+            raise self.result
+        return self.result
+
+
+class FakeBattyBird:
+    """Stands in for BattyBirdNET: returns a fixed analysis, or raises."""
+
+    def __init__(self, result: battybird.Analysis | Exception) -> None:
+        self.result = result
+        self.seen = 0
+
+    def analyse(self, audio: Audio) -> battybird.Analysis:
+        self.seen += 1
+        if isinstance(self.result, Exception):
+            raise self.result
+        return self.result
