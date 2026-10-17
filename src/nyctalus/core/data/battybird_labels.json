@@ -1,0 +1,34 @@
+{
+  "notes": "What each BattyBirdNET output stands for, per classifier head. The model's own labels say where it cannot separate species ('Daubentons or Whiskered', 'Kuhls or Nathusius', 'Brown or Grey long eared'); those become a genus or a pair. Outputs that are not bats are kept apart: they never name a species but tell what else the model heard.",
+  "heads": {
+    "Bavaria": {
+      "bats": {
+        "Barbastella barbastellus": ["Barbastella barbastellus"],
+        "Eptesicus nilssonii": ["Eptesicus nilssonii"],
+        "Eptesicus serotinus": ["Eptesicus serotinus"],
+        "Hypsugo savii": ["Hypsugo savii"],
+        "Myotis bechsteinii": ["Myotis"],
+        "Myotis dasycneme": ["Myotis"],
+        "Myotis daubentonii": ["Myotis"],
+        "Myotis emarginatus": ["Myotis"],
+        "Myotis myotis": ["Myotis"],
+        "Myotis mystacinus": ["Myotis"],
+        "Myotis nattereri": ["Myotis"],
+        "Nyctalus leisleri": ["Nyctalus leisleri"],
+        "Nyctalus noctula": ["Nyctalus noctula"],
+        "Pipistrellus kuhlii": ["Pipistrellus kuhlii", "Pipistrellus nathusii"],
+        "Pipistrellus nathusii": ["Pipistrellus nathusii", "Pipistrellus kuhlii"],
+        "Pipistrellus pipistrellus": ["Pipistrellus pipistrellus"],
+        "Pipistrellus pygmaeus": ["Pipistrellus pygmaeus"],
+        "Plecotus auritus": ["Plecotus"],
+        "Rhinolophus ferrumequinum": ["Rhinolophus ferrumequinum"],
+        "Rhinolophus hipposideros": ["Rhinolophus hipposideros"],
+        "Vespertilio murinus": ["Vespertilio murinus"]
+      },
+      "not_a_bat": [
+        "audiomoth", "background", "bird", "collected", "electrical",
+        "insect", "mechanical", "other", "pro", "rain"
+      ]
+    }
+  }
+}

@@ -19,6 +19,7 @@ from nyctalus.core.taxonomy import Taxon
 class Abstention(StrEnum):
     """Why a pass gives no answer."""
 
+    TOO_SHORT = "too-short"  # the recording is shorter than the model can read
     TOO_FEW_PULSES = "too-few-pulses"  # not enough calls to measure
     MIXED_SOURCES = "mixed-sources"  # several animals or noise calling at once
     RULED_OUT = "ruled-out"  # every candidate was excluded
