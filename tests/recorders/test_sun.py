@@ -2,7 +2,7 @@ from datetime import UTC, date, datetime, timedelta
 
 import pytest
 
-from nyctalus.recorders import sun
+from nocek.recorders import sun
 
 LONDON = (51.5074, -0.1278)
 

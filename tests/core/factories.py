@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nyctalus.core import batdetect, battybird
-from nyctalus.core.audio import Audio
-from nyctalus.core.batdetect import Call
-from nyctalus.core.detection import Detection, DominantGroup, Pulse, Shape
-from nyctalus.core.opinion import Candidate, Opinion
-from nyctalus.core.taxonomy import Taxon
+from nocek.core import batdetect, battybird
+from nocek.core.audio import Audio
+from nocek.core.batdetect import Call
+from nocek.core.detection import Detection, DominantGroup, Pulse, Shape
+from nocek.core.opinion import Candidate, Opinion
+from nocek.core.taxonomy import Taxon
 
 
 def calls(model_class: str, low_khz: float, n: int = 10, prob: float = 0.8) -> list[Call]:

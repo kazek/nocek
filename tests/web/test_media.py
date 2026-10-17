@@ -6,10 +6,10 @@ import pytest
 import soundfile as sf
 from fastapi.testclient import TestClient
 
-from nyctalus.core.audio import Samples
-from nyctalus.storage.library import Library
-from nyctalus.web import media
-from nyctalus.web.state import AppState
+from nocek.core.audio import Samples
+from nocek.storage.library import Library
+from nocek.web import media
+from nocek.web.state import AppState
 from tests import synth
 
 

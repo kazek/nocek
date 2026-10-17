@@ -1,5 +1,5 @@
-from nyctalus.core.opinion import Abstention, Candidate, Opinion
-from nyctalus.core.taxonomy import Taxon
+from nocek.core.opinion import Abstention, Candidate, Opinion
+from nocek.core.taxonomy import Taxon
 
 NOCTULE = Taxon("Nyctalus noctula")
 LEISLER = Taxon("Nyctalus leisleri")

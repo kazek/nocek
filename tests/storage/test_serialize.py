@@ -3,11 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from nyctalus.core import battybird
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.pipeline import Analyser, Pass, RecordingResult, Settings
-from nyctalus.core.region import Region
-from nyctalus.storage.serialize import FORMAT, FormatError, result_from_dict, result_to_dict
+from nocek.core import battybird
+from nocek.core.batdetect import interpret
+from nocek.core.pipeline import Analyser, Pass, RecordingResult, Settings
+from nocek.core.region import Region
+from nocek.storage.serialize import FORMAT, FormatError, result_from_dict, result_to_dict
 from tests.core.factories import FakeBatDetect, FakeBattyBird
 
 

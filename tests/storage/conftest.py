@@ -3,10 +3,10 @@ from pathlib import Path
 import pytest
 import soundfile as sf
 
-from nyctalus.core import battybird
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.pipeline import Analyser, RecordingResult
-from nyctalus.core.region import Region
+from nocek.core import battybird
+from nocek.core.batdetect import interpret
+from nocek.core.pipeline import Analyser, RecordingResult
+from nocek.core.region import Region
 from tests import synth
 from tests.core.factories import FakeBatDetect, FakeBattyBird, calls, opinion
 

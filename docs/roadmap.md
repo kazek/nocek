@@ -1,6 +1,6 @@
 # Roadmap
 
-Nyctalus is a rewrite of a single-station research setup as an application
+Nocek is a rewrite of a single-station research setup as an application
 anyone with a recorder can install and use. Work proceeds in stages; each
 stage is small enough to review in one sitting.
 
@@ -13,7 +13,7 @@ stage is small enough to review in one sitting.
 | 4 | Web backend | HTTP API, background jobs with progress, first-run model download, localisation plumbing |
 | 5 | Interface | First-run setup, import from card, nights and recordings, spectrogram, slowed playback, species totals, device view |
 | 6 | Translations | English, Polish, German. Local species names, always shown with the scientific name |
-| 7 | Distribution | One-command install (`pipx install nyctalus`), the browser opens on start |
+| 7 | Distribution | One-command install (`pipx install nocek`), the browser opens on start |
 | 8 | Documentation | User guide, translator guide, architecture notes |
 
 Later: manual verification of identifications; other recorders (AudioMoth).

@@ -1,8 +1,8 @@
-# Nyctalus
+# Nocek
 
 Identify bats from ultrasonic recordings, in your browser.
 
-Insert the memory card from your recorder, and Nyctalus copies the new
+Insert the memory card from your recorder, and Nocek copies the new
 recordings, finds the echolocation calls, names the species and shows you
 what has been flying past, night by night. It runs on your own computer
 (macOS, Windows or Linux) and your recordings never leave it.

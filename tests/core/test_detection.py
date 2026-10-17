@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from nyctalus.core.detection import Shape, detect, shape_of
+from nocek.core.detection import Shape, detect, shape_of
 from tests import synth
 
 PIPISTRELLE = synth.sweep(60, 46, 0.006)

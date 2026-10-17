@@ -4,12 +4,12 @@ from pathlib import Path
 import pytest
 import soundfile as sf
 
-from nyctalus.core import batdetect, battybird
-from nyctalus.core.audio import Samples
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.pipeline import DEFAULT_SETTINGS, Analyser, Pass, Settings, Skipped
-from nyctalus.core.region import Region
-from nyctalus.core.taxonomy import Taxon
+from nocek.core import batdetect, battybird
+from nocek.core.audio import Samples
+from nocek.core.batdetect import interpret
+from nocek.core.pipeline import DEFAULT_SETTINGS, Analyser, Pass, Settings, Skipped
+from nocek.core.region import Region
+from nocek.core.taxonomy import Taxon
 from tests import synth
 from tests.core.factories import FakeBatDetect, FakeBattyBird, calls, opinion
 
@@ -151,7 +151,7 @@ def test_records_what_produced_the_result(noctule_file: Path) -> None:
     versions = analyser().analyse(noctule_file).versions
 
     assert set(versions) == {
-        "nyctalus",
+        "nocek",
         Pass.BATDETECT2,
         f"{Pass.BATDETECT2}-device",
         Pass.BATTYBIRDNET,
@@ -163,11 +163,11 @@ def test_records_what_produced_the_result(noctule_file: Path) -> None:
 
 @pytest.mark.slow
 @pytest.mark.skipif(
-    "NYCTALUS_TEST_MODELS" not in os.environ,
-    reason="set NYCTALUS_TEST_MODELS to a directory with the BattyBirdNET files",
+    "NOCEK_TEST_MODELS" not in os.environ,
+    reason="set NOCEK_TEST_MODELS to a directory with the BattyBirdNET files",
 )
 def test_runs_the_real_models(noctule_file: Path) -> None:
-    result = Analyser(Path(os.environ["NYCTALUS_TEST_MODELS"]), ANYWHERE).analyse(noctule_file)
+    result = Analyser(Path(os.environ["NOCEK_TEST_MODELS"]), ANYWHERE).analyse(noctule_file)
 
     assert result.failures == ()
     assert result.batdetect is not None

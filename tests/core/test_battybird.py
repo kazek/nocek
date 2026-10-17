@@ -5,10 +5,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from nyctalus.core import battybird, taxonomy
-from nyctalus.core.battybird import ModelError, ModelFile, interpret
-from nyctalus.core.opinion import Abstention
-from nyctalus.core.taxonomy import Taxon
+from nocek.core import battybird, taxonomy
+from nocek.core.battybird import ModelError, ModelFile, interpret
+from nocek.core.opinion import Abstention
+from nocek.core.taxonomy import Taxon
 from tests import synth
 
 LABELS = [
@@ -162,11 +162,11 @@ def test_reports_a_failed_download(tmp_path: Path, repository: tuple[str, Path, 
 
 @pytest.mark.slow
 @pytest.mark.skipif(
-    "NYCTALUS_TEST_MODELS" not in os.environ,
-    reason="set NYCTALUS_TEST_MODELS to a directory with the BattyBirdNET files",
+    "NOCEK_TEST_MODELS" not in os.environ,
+    reason="set NOCEK_TEST_MODELS to a directory with the BattyBirdNET files",
 )
 def test_runs_the_real_model() -> None:
-    model = battybird.Model(Path(os.environ["NYCTALUS_TEST_MODELS"]))
+    model = battybird.Model(Path(os.environ["NOCEK_TEST_MODELS"]))
 
     analysis = model.analyse(synth.audio(synth.sequence(synth.sweep(60, 46, 0.006), n=10)))
 

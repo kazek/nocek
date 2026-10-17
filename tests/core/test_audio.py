@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from nyctalus.core.audio import AudioError, load
+from nocek.core.audio import AudioError, load
 from tests import synth
 
 

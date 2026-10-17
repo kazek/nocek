@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "nyctalus"
+name = "nocek"
 description = "Identify bats from ultrasonic recordings, in your browser."
 readme = "README.md"
 license = "MIT"
@@ -46,13 +46,13 @@ dev = [
 ]
 
 [project.scripts]
-nyctalus = "nyctalus.cli:main"
+nocek = "nocek.cli:main"
 
 [tool.hatch.version]
-path = "src/nyctalus/__init__.py"
+path = "src/nocek/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/nyctalus"]
+packages = ["src/nocek"]
 
 [tool.ruff]
 line-length = 100

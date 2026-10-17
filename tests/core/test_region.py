@@ -1,9 +1,9 @@
 import pytest
 
-from nyctalus.core import region
-from nyctalus.core.opinion import Candidate, Opinion
-from nyctalus.core.region import Region, Status, restrict
-from nyctalus.core.taxonomy import Taxon
+from nocek.core import region
+from nocek.core.opinion import Candidate, Opinion
+from nocek.core.region import Region, Status, restrict
+from nocek.core.taxonomy import Taxon
 
 NOCTULE = Taxon("Nyctalus noctula")
 LEISLER = Taxon("Nyctalus leisleri")

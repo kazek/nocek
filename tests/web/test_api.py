@@ -2,11 +2,11 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from nyctalus import __version__
-from nyctalus.storage.library import Library
-from nyctalus.web.app import create_app
-from nyctalus.web.security import COOKIE
-from nyctalus.web.state import AppState
+from nocek import __version__
+from nocek.storage.library import Library
+from nocek.web.app import create_app
+from nocek.web.security import COOKIE
+from nocek.web.state import AppState
 from tests.web.conftest import BASE, TOKEN
 
 
@@ -17,9 +17,9 @@ def test_health(client: TestClient) -> None:
 def test_about_names_the_versions(client: TestClient) -> None:
     about = client.get("/api/about").json()
 
-    assert about["versions"]["nyctalus"] == __version__
-    assert set(about["versions"]) == {"nyctalus", "batdetect2", "battybirdnet"}
-    assert about["log"].endswith("nyctalus.log")
+    assert about["versions"]["nocek"] == __version__
+    assert set(about["versions"]) == {"nocek", "batdetect2", "battybirdnet"}
+    assert about["log"].endswith("nocek.log")
 
 
 def test_quit_stops_the_server(app_state: AppState) -> None:
@@ -67,7 +67,7 @@ def test_no_library_at_first(client: TestClient) -> None:
     body = client.get("/api/library").json()
 
     assert body["open"] is False
-    assert body["default_path"].endswith("Nyctalus")
+    assert body["default_path"].endswith("Nocek")
 
 
 def test_creates_and_remembers_a_library(client: TestClient, tmp_path: Path) -> None:

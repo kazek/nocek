@@ -7,10 +7,10 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from nyctalus.core import consensus, opinion, pipeline, region, taxonomy
-from nyctalus.recorders import base, checks
-from nyctalus.storage import importer
-from nyctalus.web import i18n, jobs
+from nocek.core import consensus, opinion, pipeline, region, taxonomy
+from nocek.recorders import base, checks
+from nocek.storage import importer
+from nocek.web import i18n, jobs
 
 SOURCE = Path(i18n.__file__).parents[1]
 ENGLISH = i18n.raw("en")
@@ -200,7 +200,7 @@ def _find(data: dict[str, Any], dotted: str) -> Any:
 
 
 def test_every_sound_battybirdnet_can_report_has_a_text() -> None:
-    from nyctalus.core import battybird
+    from nocek.core import battybird
 
     sounds = {label for head in battybird.heads().values() for label in head.not_a_bat}
     assert sounds <= ENGLISH["recording"]["sound"].keys()

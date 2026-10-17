@@ -2,12 +2,12 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from nyctalus.storage import settings
-from nyctalus.storage.library import DATABASE, Library, LibraryError
+from nocek.storage import settings
+from nocek.storage.library import DATABASE, Library, LibraryError
 
 
 def test_creates_a_library_in_a_new_folder(tmp_path: Path) -> None:
-    with Library.create(tmp_path / "Nyctalus") as library:
+    with Library.create(tmp_path / "Nocek") as library:
         assert library.recordings_dir.is_dir()
         assert (library.root / DATABASE).is_file()
 
@@ -67,12 +67,12 @@ def test_settings_remember_the_library(tmp_path: Path) -> None:
     path = tmp_path / "config" / "settings.json"
 
     assert settings.load(path) == settings.Settings()
-    settings.save(settings.Settings(library=tmp_path / "Nyctalus"), path)
+    settings.save(settings.Settings(library=tmp_path / "Nocek"), path)
 
-    assert settings.load(path).library == tmp_path / "Nyctalus"
+    assert settings.load(path).library == tmp_path / "Nocek"
     assert not path.with_name("settings.json.part").exists()
 
 
 def test_application_folders_are_named_after_the_application() -> None:
-    assert settings.models_dir().parent.name.lower() == "nyctalus"
-    assert settings.default_library().name == "Nyctalus"
+    assert settings.models_dir().parent.name.lower() == "nocek"
+    assert settings.default_library().name == "Nocek"

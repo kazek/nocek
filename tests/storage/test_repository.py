@@ -4,12 +4,12 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from nyctalus.core.pipeline import RecordingResult
-from nyctalus.core.region import Status
-from nyctalus.core.taxonomy import Taxon
-from nyctalus.storage import database
-from nyctalus.storage.repository import Repository
-from nyctalus.storage.serialize import result_to_dict
+from nocek.core.pipeline import RecordingResult
+from nocek.core.region import Status
+from nocek.core.taxonomy import Taxon
+from nocek.storage import database
+from nocek.storage.repository import Repository
+from nocek.storage.serialize import result_to_dict
 
 HORSESHOE = Taxon("Rhinolophus hipposideros")
 

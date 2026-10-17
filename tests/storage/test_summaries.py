@@ -3,14 +3,14 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.consensus import combine
-from nyctalus.core.pipeline import RecordingResult
-from nyctalus.core.region import Region
-from nyctalus.core.taxonomy import Taxon
-from nyctalus.storage import database
-from nyctalus.storage.repository import Repository
-from nyctalus.storage.summaries import Filter, totals
+from nocek.core.batdetect import interpret
+from nocek.core.consensus import combine
+from nocek.core.pipeline import RecordingResult
+from nocek.core.region import Region
+from nocek.core.taxonomy import Taxon
+from nocek.storage import database
+from nocek.storage.repository import Repository
+from nocek.storage.summaries import Filter, totals
 from tests.core.factories import calls, measured
 
 NOCTULE = frozenset({Taxon("Nyctalus noctula")})

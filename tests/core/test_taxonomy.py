@@ -1,7 +1,7 @@
 import pytest
 
-from nyctalus.core import taxonomy
-from nyctalus.core.taxonomy import Rank, Taxon
+from nocek.core import taxonomy
+from nocek.core.taxonomy import Rank, Taxon
 
 
 def test_catalogue_has_species_and_their_genera() -> None:

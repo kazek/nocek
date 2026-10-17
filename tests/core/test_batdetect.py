@@ -3,10 +3,10 @@ from pathlib import Path
 import pytest
 import soundfile as sf
 
-from nyctalus.core import batdetect, taxonomy
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.opinion import Abstention
-from nyctalus.core.taxonomy import Taxon
+from nocek.core import batdetect, taxonomy
+from nocek.core.batdetect import interpret
+from nocek.core.opinion import Abstention
+from nocek.core.taxonomy import Taxon
 from tests import synth
 from tests.core.factories import calls
 

@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from nyctalus import __version__
-from nyctalus.cli import DEFAULT_PORT, HOST, HideToken, build_parser, free_port, main, running
-from nyctalus.shortcut import DesktopEntry
+from nocek import __version__
+from nocek.cli import DEFAULT_PORT, HOST, HideToken, build_parser, free_port, main, running
+from nocek.shortcut import DesktopEntry
 
 
 def test_prints_version(capsys: pytest.CaptureFixture[str]) -> None:
@@ -71,7 +71,7 @@ def test_a_port_just_released_by_a_server_is_free_again() -> None:
     assert free_port(port) == port
 
 
-def test_finds_a_nyctalus_already_running(client_port: int) -> None:
+def test_finds_a_nocek_already_running(client_port: int) -> None:
     assert running(client_port)
 
 
@@ -81,19 +81,19 @@ def test_nothing_running_on_a_free_port() -> None:
 
 def test_a_second_start_opens_the_first(monkeypatch: pytest.MonkeyPatch) -> None:
     opened: list[str] = []
-    monkeypatch.setattr("nyctalus.cli.running", lambda port: True)
-    monkeypatch.setattr("nyctalus.cli.setup_logging", lambda: None)
-    monkeypatch.setattr("nyctalus.cli.settings.token", lambda: "t0ken")
+    monkeypatch.setattr("nocek.cli.running", lambda port: True)
+    monkeypatch.setattr("nocek.cli.setup_logging", lambda: None)
+    monkeypatch.setattr("nocek.cli.settings.token", lambda: "t0ken")
     monkeypatch.setattr("webbrowser.open", opened.append)
-    monkeypatch.setattr("nyctalus.cli.serve", lambda *a, **k: pytest.fail("second server"))
+    monkeypatch.setattr("nocek.cli.serve", lambda *a, **k: pytest.fail("second server"))
 
     assert main([]) == 0
     assert opened == [f"http://{HOST}:{DEFAULT_PORT}/?token=t0ken"]
 
 
 def test_the_shortcut_command(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    made = DesktopEntry(tmp_path / "nyctalus.desktop", Path("/usr/bin/python3"))
-    monkeypatch.setattr("nyctalus.shortcut.for_this_system", lambda: made)
+    made = DesktopEntry(tmp_path / "nocek.desktop", Path("/usr/bin/python3"))
+    monkeypatch.setattr("nocek.shortcut.for_this_system", lambda: made)
 
     assert main(["shortcut"]) == 0
     assert made.path.exists()
@@ -103,7 +103,7 @@ def test_the_shortcut_command(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -
 
 @pytest.fixture
 def client_port() -> Iterator[int]:
-    """A stand-in Nyctalus answering /api/health."""
+    """A stand-in Nocek answering /api/health."""
 
     class Health(BaseHTTPRequestHandler):
         def do_GET(self) -> None:

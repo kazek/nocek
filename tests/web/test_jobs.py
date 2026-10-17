@@ -7,18 +7,18 @@ import pytest
 import soundfile as sf
 from fastapi.testclient import TestClient
 
-from nyctalus.core import battybird, pipeline
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.opinion import Abstention
-from nyctalus.core.pipeline import Analyser, RecordingResult
-from nyctalus.core.region import Region, Status
-from nyctalus.core.taxonomy import Taxon
-from nyctalus.storage.library import Library
-from nyctalus.storage.settings import Settings
-from nyctalus.web.app import create_app
-from nyctalus.web.jobs import Environment, JobRunner, Kind
-from nyctalus.web.security import COOKIE
-from nyctalus.web.state import AppState
+from nocek.core import battybird, pipeline
+from nocek.core.batdetect import interpret
+from nocek.core.opinion import Abstention
+from nocek.core.pipeline import Analyser, RecordingResult
+from nocek.core.region import Region, Status
+from nocek.core.taxonomy import Taxon
+from nocek.storage.library import Library
+from nocek.storage.settings import Settings
+from nocek.web.app import create_app
+from nocek.web.jobs import Environment, JobRunner, Kind
+from nocek.web.security import COOKIE
+from nocek.web.state import AppState
 from tests import synth
 from tests.core.factories import FakeBatDetect, FakeBattyBird, calls, opinion
 from tests.recorders.test_pippyg import settings as pippyg_settings
@@ -175,7 +175,7 @@ def test_stale_results_are_analysed_again(setup: Setup) -> None:
         repo = library.repository
         first = repo.result(1)
         assert first is not None
-        repo.save_result(1, replace(first, versions={"nyctalus": "0.0.1"}))
+        repo.save_result(1, replace(first, versions={"nocek": "0.0.1"}))
 
     assert setup.run(Kind.ANALYSE, scope="new")["result"]["analysed"] == 0
     assert setup.run(Kind.ANALYSE, scope="stale")["result"]["analysed"] == 1

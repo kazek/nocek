@@ -12,7 +12,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-PACKAGE = Path(__file__).parents[1] / "src" / "nyctalus"
+PACKAGE = Path(__file__).parents[1] / "src" / "nocek"
 OUT = PACKAGE / "icons"
 ACCENT = "#6a3fa0"
 SIZE = 1024
@@ -45,10 +45,10 @@ def draw() -> Image.Image:
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     icon = draw()
-    icon.resize((256, 256), Image.Resampling.LANCZOS).save(OUT / "nyctalus.png")
+    icon.resize((256, 256), Image.Resampling.LANCZOS).save(OUT / "nocek.png")
     icon.resize((64, 64), Image.Resampling.LANCZOS).save(PACKAGE / "web" / "static" / "favicon.png")
-    icon.save(OUT / "nyctalus.ico", sizes=[(16, 16), (32, 32), (48, 48), (256, 256)])
-    icon.save(OUT / "nyctalus.icns")
+    icon.save(OUT / "nocek.ico", sizes=[(16, 16), (32, 32), (48, 48), (256, 256)])
+    icon.save(OUT / "nocek.icns")
 
 
 if __name__ == "__main__":

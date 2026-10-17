@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from nyctalus.core import spectrogram
+from nocek.core import spectrogram
 from tests import synth
 
 

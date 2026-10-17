@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from nyctalus.recorders.base import Location, Problem
-from nyctalus.recorders.pippyg import Pippyg, parse_settings
+from nocek.recorders.base import Location, Problem
+from nocek.recorders.pippyg import Pippyg, parse_settings
 
 # As pippyg firmware 8.15.0 writes it.
 SETTINGS = {

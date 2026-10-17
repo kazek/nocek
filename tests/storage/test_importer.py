@@ -4,9 +4,9 @@ from pathlib import Path
 import pytest
 import soundfile as sf
 
-from nyctalus.recorders.checks import Issue
-from nyctalus.storage.importer import Notice, Skip, import_folder
-from nyctalus.storage.library import Library
+from nocek.recorders.checks import Issue
+from nocek.storage.importer import Notice, Skip, import_folder
+from nocek.storage.library import Library
 from tests import synth
 from tests.recorders.test_pippyg import settings
 

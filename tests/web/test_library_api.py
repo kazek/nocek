@@ -6,12 +6,12 @@ from pathlib import Path, PurePosixPath
 import pytest
 from fastapi.testclient import TestClient
 
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.consensus import combine
-from nyctalus.core.pipeline import RecordingResult
-from nyctalus.core.region import Region
-from nyctalus.storage.library import Library
-from nyctalus.web.state import AppState
+from nocek.core.batdetect import interpret
+from nocek.core.consensus import combine
+from nocek.core.pipeline import RecordingResult
+from nocek.core.region import Region
+from nocek.storage.library import Library
+from nocek.web.state import AppState
 from tests.core.factories import calls, measured
 from tests.recorders.test_pippyg import settings as pippyg_settings
 
@@ -20,7 +20,7 @@ def result(model_class: str, low_khz: float) -> RecordingResult:
     found = interpret(calls(model_class, low_khz))
     return RecordingResult(
         path=Path("x.wav"),
-        versions={"nyctalus": "test"},
+        versions={"nocek": "test"},
         batdetect=found,
         verdict=combine(Region("anywhere"), found, measured(end_khz=low_khz)),
     )
@@ -217,7 +217,7 @@ def test_exports_species_as_csv(client: TestClient, library: Library) -> None:
     response = client.get("/api/export/species.csv")
 
     assert response.headers["content-type"].startswith("text/csv")
-    assert 'filename="nyctalus-species.csv"' in response.headers["content-disposition"]
+    assert 'filename="nocek-species.csv"' in response.headers["content-disposition"]
     rows = list(csv.reader(io.StringIO(response.text.lstrip("﻿"))))
     assert rows[0][:4] == ["scientific_name", "name", "recordings", "nights"]
     assert rows[1][:4] == ["Nyctalus noctula", "Common noctule", "2", "2"]

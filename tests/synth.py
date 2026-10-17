@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from nyctalus.core.audio import Audio, Samples
+from nocek.core.audio import Audio, Samples
 
 SAMPLE_RATE = 384_000
 

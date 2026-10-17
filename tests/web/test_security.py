@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from nyctalus.web.security import COOKIE
+from nocek.web.security import COOKIE
 from tests.web.conftest import BASE, PORT, TOKEN
 
 
@@ -65,5 +65,5 @@ def test_serves_the_page(client: TestClient) -> None:
     response = client.get("/")
 
     assert response.status_code == 200
-    assert "Nyctalus" in response.text
+    assert "Nocek" in response.text
     assert BASE.startswith("http://127.0.0.1")

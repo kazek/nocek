@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from nyctalus.core.nights import night_of
+from nocek.core.nights import night_of
 
 
 def test_an_evening_belongs_to_its_own_night() -> None:

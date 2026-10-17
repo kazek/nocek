@@ -1,5 +1,5 @@
-from nyctalus.recorders.checks import Issue, check
-from nyctalus.recorders.pippyg import parse_settings
+from nocek.recorders.checks import Issue, check
+from nocek.recorders.pippyg import parse_settings
 from tests.recorders.test_pippyg import settings
 
 

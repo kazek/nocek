@@ -1,8 +1,8 @@
-from nyctalus.core.batdetect import interpret
-from nyctalus.core.consensus import Agreement, Note, combine, group_of
-from nyctalus.core.opinion import Abstention
-from nyctalus.core.region import Region, Status
-from nyctalus.core.taxonomy import Taxon
+from nocek.core.batdetect import interpret
+from nocek.core.consensus import Agreement, Note, combine, group_of
+from nocek.core.opinion import Abstention
+from nocek.core.region import Region, Status
+from nocek.core.taxonomy import Taxon
 from tests.core.factories import calls, measured, opinion
 
 ANYWHERE = Region("anywhere")

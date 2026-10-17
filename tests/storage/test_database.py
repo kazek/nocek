@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from nyctalus.storage import database
+from nocek.storage import database
 
 
 def test_a_new_database_gets_every_migration(tmp_path: Path) -> None:

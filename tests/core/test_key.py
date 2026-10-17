@@ -1,9 +1,9 @@
 import pytest
 
-from nyctalus.core import key, taxonomy
-from nyctalus.core.detection import Detection
-from nyctalus.core.opinion import Abstention
-from nyctalus.core.taxonomy import Taxon
+from nocek.core import key, taxonomy
+from nocek.core.detection import Detection
+from nocek.core.opinion import Abstention
+from nocek.core.taxonomy import Taxon
 from tests.core.factories import measured
 
 

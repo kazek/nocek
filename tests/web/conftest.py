@@ -4,9 +4,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from nyctalus.web.app import create_app
-from nyctalus.web.security import COOKIE
-from nyctalus.web.state import AppState
+from nocek.web.app import create_app
+from nocek.web.security import COOKIE
+from nocek.web.state import AppState
 
 PORT = 6475
 TOKEN = "test-token"
