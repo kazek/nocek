@@ -31,10 +31,14 @@ dependencies = [
     "soxr>=0.5",
     # Where application data and settings belong on each operating system.
     "platformdirs>=4",
+    # The local web server.
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
 ]
 
 [project.optional-dependencies]
 dev = [
+    "httpx2>=2.13",  # FastAPI's test client
     "mypy>=1.11",
     "pytest>=8",
     "ruff>=0.6",

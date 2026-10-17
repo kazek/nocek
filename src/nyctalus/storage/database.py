@@ -19,11 +19,15 @@ class DatabaseError(Exception):
     """A database this version of the application cannot use."""
 
 
-def connect(path: Path) -> sqlite3.Connection:
-    """Open, and migrate, the database at path."""
+def connect(path: Path, shared: bool = False) -> sqlite3.Connection:
+    """Open, and migrate, the database at path.
+
+    A shared connection may be used from several threads; the caller must
+    then make sure only one uses it at a time.
+    """
     # isolation_level=None: transactions are begun and ended explicitly by the
     # repository, never implicitly by the driver.
-    conn = sqlite3.connect(path, isolation_level=None)
+    conn = sqlite3.connect(path, isolation_level=None, check_same_thread=not shared)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     # Lets the interface read while an analysis is writing.

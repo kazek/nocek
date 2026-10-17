@@ -22,27 +22,27 @@ class LibraryError(Exception):
 
 
 class Library:
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, shared: bool = False) -> None:
         self.root = root
         self.recordings_dir = root / RECORDINGS
-        self.conn = database.connect(root / DATABASE)
+        self.conn = database.connect(root / DATABASE, shared=shared)
         self.repository = Repository(self.conn)
 
     @classmethod
-    def create(cls, root: Path) -> Library:
+    def create(cls, root: Path, shared: bool = False) -> Library:
         """A new library in an empty or missing folder."""
         if (root / DATABASE).exists():
             raise LibraryError(f"{root} is already a library")
         root.mkdir(parents=True, exist_ok=True)
         (root / RECORDINGS).mkdir(exist_ok=True)
-        return cls(root)
+        return cls(root, shared)
 
     @classmethod
-    def open(cls, root: Path) -> Library:
+    def open(cls, root: Path, shared: bool = False) -> Library:
         if not (root / DATABASE).is_file():
             raise LibraryError(f"{root} is not a library: {DATABASE} is missing")
         try:
-            return cls(root)
+            return cls(root, shared)
         except (database.DatabaseError, sqlite3.DatabaseError) as error:
             raise LibraryError(f"{root}: {error}") from error
 
