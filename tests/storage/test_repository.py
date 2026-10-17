@@ -26,14 +26,14 @@ def add(repo: Repository, sha: str = "a" * 64, at: datetime | None = None) -> in
 
 def test_a_site_region_follows_location_and_overrides(repo: Repository) -> None:
     krakow = repo.add_site("Balcony", 50.09, 19.99)
-    repo.set_species_status(krakow.id, HORSESHOE, Status.RARE)
+    repo.set_species_status(krakow.id, HORSESHOE, Status.OCCURS)
 
     region = repo.region_of(krakow)
 
     assert region.name == "Central Europe"
-    assert region.status(HORSESHOE) is Status.RARE
+    assert region.status(HORSESHOE) is Status.OCCURS
     repo.set_species_status(krakow.id, HORSESHOE, None)
-    assert repo.region_of(krakow).status(HORSESHOE) is Status.OCCURS
+    assert repo.region_of(krakow).status(HORSESHOE) is Status.RARE  # the profile's default
 
 
 def test_site_names_are_unique(repo: Repository) -> None:

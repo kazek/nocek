@@ -5,12 +5,13 @@ import * as i18n from "./i18n.js";
 import { watch } from "./jobs.js";
 import { showError } from "./notice.js";
 import { route, start } from "./router.js";
+import { devices } from "./views/devices.js";
 import { importer } from "./views/import.js";
 import { night, nights } from "./views/nights.js";
 import { recording } from "./views/recording.js";
 import { recordings } from "./views/recordings.js";
-import { later } from "./views/later.js";
 import { settings } from "./views/settings.js";
+import { sites } from "./views/sites.js";
 import { species } from "./views/species.js";
 import { welcome } from "./views/welcome.js";
 
@@ -21,8 +22,8 @@ route(/^\/nights$/, nights);
 route(/^\/nights\/(\d{4}-\d{2}-\d{2})$/, night);
 route(/^\/recordings$/, recordings);
 route(/^\/recording\/(\d+)$/, recording);
-route(/^\/sites$/, later("nav.sites"));
-route(/^\/devices$/, later("nav.devices"));
+route(/^\/sites$/, sites);
+route(/^\/devices$/, devices);
 route(/^\/$/, species);
 
 // Without a library there is nothing to show but the way to make one.

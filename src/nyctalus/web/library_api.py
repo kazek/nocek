@@ -25,9 +25,15 @@ from nyctalus.storage.repository import Site
 from nyctalus.storage.serialize import result_to_dict
 from nyctalus.storage.summaries import Filter
 from nyctalus.web.errors import ApiError
+from nyctalus.web.jobs import Kind
 from nyctalus.web.state import AppState
 
 router = APIRouter(prefix="/api")
+
+
+def rejudge(request: Request, site_id: int | None) -> None:
+    """Have the stored opinions combined again for a site's recordings."""
+    request.app.state.jobs.submit(Kind.VERDICTS, site_id=site_id)
 
 
 @contextmanager
@@ -106,13 +112,19 @@ def add_site(request: Request, body: SiteBody) -> dict[str, Any]:
 @router.put("/sites/{site_id}")
 def update_site(request: Request, site_id: int, body: SiteBody) -> dict[str, Any]:
     with opened(request) as library:
+        before = library.repository.site(site_id)
         try:
             site = library.repository.update_site(site_id, body.name, body.latitude, body.longitude)
         except sqlite3.IntegrityError as error:
             raise ApiError(409, "site-exists", body.name) from error
-        if site is None:
+        if site is None or before is None:
             raise ApiError(404, "no-such-site", str(site_id))
-        return _site(library, site)
+        moved = (before.latitude, before.longitude) != (site.latitude, site.longitude)
+        answer = _site(library, site)
+    # The position picks the region, and so what may be named there.
+    if moved:
+        rejudge(request, site_id)
+    return answer
 
 
 @router.put("/sites/{site_id}/species")
@@ -128,7 +140,9 @@ def set_status(request: Request, site_id: int, body: StatusBody) -> dict[str, An
         if site is None:
             raise ApiError(404, "no-such-site", str(site_id))
         library.repository.set_species_status(site_id, species, body.status)
-        return _site(library, site)
+        answer = _site(library, site)
+    rejudge(request, site_id)
+    return answer
 
 
 def _site(library: Library, site: Site) -> dict[str, Any]:
@@ -159,7 +173,10 @@ def assign_site(request: Request, import_id: int, body: AssignBody) -> dict[str,
     with opened(request) as library:
         if library.repository.site(body.site_id) is None:
             raise ApiError(404, "no-such-site", str(body.site_id))
-        return {"assigned": library.repository.assign_site(import_id, body.site_id)}
+        assigned = library.repository.assign_site(import_id, body.site_id)
+    if assigned:
+        rejudge(request, body.site_id)
+    return {"assigned": assigned}
 
 
 @router.get("/devices")

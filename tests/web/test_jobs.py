@@ -4,18 +4,22 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import soundfile as sf
 from fastapi.testclient import TestClient
 
 from nyctalus.core import battybird, pipeline
 from nyctalus.core.batdetect import interpret
+from nyctalus.core.opinion import Abstention
 from nyctalus.core.pipeline import Analyser, RecordingResult
-from nyctalus.core.region import Region
+from nyctalus.core.region import Region, Status
+from nyctalus.core.taxonomy import Taxon
 from nyctalus.storage.library import Library
 from nyctalus.storage.settings import Settings
 from nyctalus.web.app import create_app
 from nyctalus.web.jobs import Environment, JobRunner, Kind
 from nyctalus.web.security import COOKIE
 from nyctalus.web.state import AppState
+from tests import synth
 from tests.core.factories import FakeBatDetect, FakeBattyBird, calls, opinion
 from tests.recorders.test_pippyg import settings as pippyg_settings
 from tests.storage.test_importer import wav
@@ -230,3 +234,31 @@ def test_the_api_says_which_models_are_missing(api: TestClient) -> None:
 
     assert body["present"] is False
     assert "BirdNET_GLOBAL_6K_V2.4_Model_FP32.tflite" in body["missing"]
+
+
+def test_verdicts_are_judged_again_without_the_models(setup: Setup, tmp_path: Path) -> None:
+    # Recordings of noctule-like calls, which the detector confirms.
+    card = tmp_path / "calls"
+    for name in ("DEV_000_20260903_213000.wav", "DEV_000_20260903_213100.wav"):
+        card.mkdir(exist_ok=True)
+        call = synth.sweep(28, 19, 0.015) * (0.5 if "2131" in name else 0.4)
+        sf.write(card / name, synth.sequence(call, n=10, interval_s=0.3), synth.SAMPLE_RATE)
+    (card / "device_settings_20260903_1815.json").write_text(pippyg_settings())
+    imported = setup.run(Kind.IMPORT, folder=str(card))
+    assert setup.runner.wait(imported["result"]["analysis_job"])["status"] == "done"  # type: ignore[index]
+    assert all(r.verdict and r.verdict.named for r in setup.results())
+    with Library.open(setup.library_root) as library:
+        repo = library.repository
+        site = repo.add_site("Balcony")
+        repo.assign_site(imported["result"]["import_id"], site.id)
+        repo.set_species_status(site.id, Taxon("Nyctalus noctula"), Status.ABSENT)
+    analysers = setup.analysers
+
+    job = setup.run(Kind.VERDICTS, site_id=site.id)
+
+    assert job["result"] == {"judged": 2, "changed": 2}
+    assert setup.analysers == analysers  # no model was loaded or run
+    for result in setup.results():
+        assert result.verdict is not None
+        assert result.verdict.named == ()
+        assert result.verdict.sources[0].reasons == (Abstention.RULED_OUT,)

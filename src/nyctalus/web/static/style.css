@@ -282,3 +282,10 @@ audio { height: 36px; }
 .facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 8px 0; }
 .facts dt { color: var(--muted); }
 .facts dd { margin: 0; }
+
+/* Sites and recorders. */
+form label { flex-wrap: wrap; }
+form input[type="text"] { min-width: 12ch; }
+.species-status td { padding: 4px 8px; }
+.species-status tr.overridden td { font-weight: 600; }
+.scroll { overflow-x: auto; }

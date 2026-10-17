@@ -15,17 +15,20 @@ import logging
 import queue
 import threading
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from nyctalus.core import battybird, pipeline
+from nyctalus.core import battybird, consensus, pipeline
+from nyctalus.core.consensus import Verdict
 from nyctalus.core.pipeline import Analyser, Pass
 from nyctalus.core.region import Region, profile_for
+from nyctalus.core.taxonomy import Taxon
 from nyctalus.storage.importer import ImportReport, import_folder
 from nyctalus.storage.library import Library, LibraryError
+from nyctalus.storage.repository import Repository
 from nyctalus.storage.settings import Settings
 
 log = logging.getLogger(__name__)
@@ -35,6 +38,8 @@ class Kind(StrEnum):
     IMPORT = "import"
     ANALYSE = "analyse"
     MODELS = "models"
+    # Judge the stored opinions again, after something about a site changed.
+    VERDICTS = "verdicts"
 
 
 class Status(StrEnum):
@@ -49,6 +54,7 @@ class Phase(StrEnum):
     MODELS = "models"  # downloading model weights
     COPYING = "copying"
     ANALYSING = "analysing"
+    JUDGING = "judging"
 
 
 class JobError(Exception):
@@ -209,6 +215,7 @@ class JobRunner:
                 Kind.IMPORT: self._import,
                 Kind.ANALYSE: self._analyse,
                 Kind.MODELS: self._models,
+                Kind.VERDICTS: self._verdicts,
             }
             result = handler[job.kind](job)
             self._set(job, status=Status.DONE, result=result)
@@ -277,20 +284,14 @@ class JobRunner:
             if job.params.get("scope") == "stale":
                 stale = set(repo.results_from_other_versions(analyser.versions))
                 todo += [r for i in sorted(stale) if (r := repo.recording(i)) is not None]
-            regions: dict[int | None, Region] = {}
-            sites = {s.id: s for s in repo.sites()}
+            region_of = _regions(repo)
             report = self._progress(job, Phase.ANALYSING)
             failed = 0
             for done, recording in enumerate(todo):
                 report(done, len(todo), recording.file_name)
-                if recording.site_id not in regions:
-                    site = sites.get(recording.site_id) if recording.site_id else None
-                    regions[recording.site_id] = (
-                        repo.region_of(site) if site else profile_for(None, None).region
-                    )
                 try:
                     result = analyser.analyse(
-                        library.path_of(recording.path), regions[recording.site_id]
+                        library.path_of(recording.path), region_of(recording.site_id)
                     )
                     repo.save_result(recording.id, result)
                 except Exception:
@@ -298,6 +299,37 @@ class JobRunner:
                     failed += 1
             report(len(todo), len(todo), "")
         return {"analysed": len(todo) - failed, "failed": failed}
+
+    def _verdicts(self, job: Job) -> dict[str, Any]:
+        """Combine the opinions already stored, in each recording's region, without the models.
+
+        A species' status at a site, the site's position, or which site a
+        recording belongs to can change what may be named; the measurements
+        and the networks' opinions cannot.
+        """
+        with self._library() as library:
+            repo = library.repository
+            todo = repo.recordings_with_result(job.params.get("site_id"))
+            region_of = _regions(repo)
+            report = self._progress(job, Phase.JUDGING)
+            changed = 0
+            for done, (recording_id, site_id) in enumerate(todo):
+                report(done, len(todo), "")
+                result = repo.result(recording_id)
+                if result is None or result.batdetect is None:
+                    continue
+                verdict = consensus.combine(
+                    region_of(site_id),
+                    result.batdetect,
+                    result.detection,
+                    key_opinion=result.key,
+                    battybird_opinion=result.battybird.opinion if result.battybird else None,
+                )
+                if _named(verdict) != _named(result.verdict):
+                    changed += 1
+                repo.save_result(recording_id, replace(result, verdict=verdict))
+            report(len(todo), len(todo), "")
+        return {"judged": len(todo), "changed": changed}
 
     def _models(self, job: Job) -> dict[str, Any]:
         self._fetch_models(job, self._pipeline_settings().battybird.head)
@@ -323,6 +355,24 @@ class JobRunner:
         if self._analyser is None or self._analyser[0] != settings:
             self._analyser = (settings, self.env.make_analyser(self.env.models_dir, settings))
         return self._analyser[1]
+
+
+def _regions(repo: Repository) -> Callable[[int | None], Region]:
+    """Each site's region, looked up once; recordings without a site get the fallback."""
+    sites = {s.id: s for s in repo.sites()}
+    cache: dict[int | None, Region] = {}
+
+    def region_of(site_id: int | None) -> Region:
+        if site_id not in cache:
+            site = sites.get(site_id) if site_id is not None else None
+            cache[site_id] = repo.region_of(site) if site else profile_for(None, None).region
+        return cache[site_id]
+
+    return region_of
+
+
+def _named(verdict: Verdict | None) -> list[frozenset[Taxon] | None]:
+    return [s.taxa for s in verdict.sources] if verdict else []
 
 
 def report_to_dict(r: ImportReport) -> dict[str, Any]:

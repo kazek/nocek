@@ -261,3 +261,34 @@ def test_no_sun_times_without_a_position(client: TestClient, library: Library) -
     times = client.get("/api/sun", params={"night": "2026-09-07", "site_id": site["id"]}).json()
 
     assert times == {"sunset": None, "sunrise": None}
+
+
+def jobs_of(client: TestClient) -> list[tuple[str, int | None]]:
+    return [(j["kind"], j["params"].get("site_id")) for j in client.get("/api/jobs").json()]
+
+
+def test_changes_that_alter_what_may_be_named_judge_again(
+    client: TestClient, library: Library
+) -> None:
+    site_id = client.get("/api/sites").json()[0]["id"]
+    body = {"species": "Nyctalus noctula", "status": "absent"}
+
+    client.put(f"/api/sites/{site_id}/species", json=body)
+    client.put(
+        f"/api/sites/{site_id}", json={"name": "Balcony", "latitude": 50.2, "longitude": 19.9}
+    )
+    imported = client.get("/api/imports").json()[0]["id"]
+    client.post(f"/api/imports/{imported}/site", json={"site_id": site_id})
+
+    assert jobs_of(client) == [("verdicts", site_id)] * 3
+
+
+def test_a_new_name_alone_judges_nothing_again(client: TestClient, library: Library) -> None:
+    site = client.get("/api/sites").json()[0]
+
+    client.put(
+        f"/api/sites/{site['id']}",
+        json={"name": "Garden", "latitude": site["latitude"], "longitude": site["longitude"]},
+    )
+
+    assert jobs_of(client) == []

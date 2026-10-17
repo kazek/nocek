@@ -318,6 +318,15 @@ class Repository:
         ).fetchone()
         return row is not None
 
+    def recordings_with_result(self, site_id: int | None = None) -> list[tuple[int, int | None]]:
+        """(recording, site) for every analysed recording, or those of one site."""
+        rows = self.conn.execute(
+            "SELECT r.id, r.site_id FROM recording r JOIN result ON result.recording_id = r.id"
+            " WHERE ? IS NULL OR r.site_id = ? ORDER BY r.recorded_at, r.id",
+            (site_id, site_id),
+        )
+        return [(r["id"], r["site_id"]) for r in rows]
+
     def recordings_without_result(self) -> list[Recording]:
         rows = self.conn.execute(
             "SELECT * FROM recording WHERE id NOT IN (SELECT recording_id FROM result)"

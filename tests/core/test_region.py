@@ -28,11 +28,12 @@ def test_picks_a_profile_by_location() -> None:
 
 def test_a_site_overrides_its_profile() -> None:
     base = region.profile_for(50.09, 19.99).region
-    site = base.overridden({HORSESHOE: Status.RARE})
+    site = base.overridden({HORSESHOE: Status.RARE, NOCTULE: Status.ABSENT})
 
-    assert base.status(HORSESHOE) is Status.OCCURS
+    assert base.status(HORSESHOE) is Status.RARE  # horseshoe bats are rare by default
     assert site.status(HORSESHOE) is Status.RARE
-    assert site.status(NOCTULE) is Status.OCCURS
+    assert base.status(NOCTULE) is Status.OCCURS
+    assert site.status(NOCTULE) is Status.ABSENT
 
 
 def test_a_genus_is_present_while_any_species_is() -> None:

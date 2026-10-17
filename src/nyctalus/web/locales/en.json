@@ -139,7 +139,8 @@
     "kind": {
       "import": "Import",
       "analyse": "Analysis",
-      "models": "Model download"
+      "models": "Model download",
+      "verdicts": "Updating names"
     },
     "status": {
       "queued": "Waiting",
@@ -151,7 +152,8 @@
     "phase": {
       "models": "Downloading models",
       "copying": "Copying recordings",
-      "analysing": "Analysing recordings"
+      "analysing": "Analysing recordings",
+      "judging": "Judging the recordings again"
     },
     "idle": "Nothing is running.",
     "cancel": "Cancel",
@@ -207,8 +209,7 @@
     "import": "Import",
     "sites": "Sites",
     "devices": "Recorders",
-    "settings": "Settings",
-    "recording": "Recording"
+    "settings": "Settings"
   },
   "common": {
     "save": "Save",
@@ -216,7 +217,6 @@
     "back": "Back",
     "close": "Close",
     "loading": "Loading…",
-    "later": "This part arrives in a later version.",
     "saved": "Saved."
   },
   "folders": {
@@ -398,5 +398,39 @@
       "pro": "a recorder's own noise",
       "rain": "rain"
     }
+  },
+  "sites_page": {
+    "title": "Sites",
+    "intro": "Where your recorders listen. A site's position decides which bats are expected there; you can change that for any species.",
+    "empty": "No sites yet. One is suggested when you import recordings made somewhere new.",
+    "add": "Add a site",
+    "name": "Name",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "save": "Save",
+    "map": "Show on OpenStreetMap",
+    "region": "Expected bats: {region}",
+    "no_position": "Without a position, the European list is used.",
+    "species": "Which bats occur here",
+    "species_help": "Rare bats are named only on strong evidence. Absent bats are never named. Changing this updates the names of this site's recordings.",
+    "as_region": "As expected ({status})",
+    "updating": "Saved. The names of this site's recordings are being updated."
+  },
+  "devices_page": {
+    "title": "Recorders",
+    "empty": "No recorder yet. One appears with its first import.",
+    "label": "Name",
+    "save": "Save",
+    "identifier": "{kind}, identifier {uid}",
+    "configs": "Settings it was given",
+    "written": "Set on",
+    "number": "Number",
+    "firmware": "Firmware",
+    "schedule": "Listens",
+    "sensitivity": "Trigger sensitivity",
+    "position": "Position",
+    "issues": "Worth a look",
+    "none": "—",
+    "mode": "{wake}–{sleep}, {mode}"
   }
 }

@@ -1,19 +1,30 @@
 {
-  "notes": "Which species occur where. 'rare' means a name needs exceptionally strong evidence; 'absent' removes the species from every answer. A site can override any status. Bounds are a latitude/longitude box; the profile without bounds is the fallback.",
+  "notes": "Which species occur where. 'rare' means a name needs exceptionally strong evidence; 'absent' removes the species from every answer. A site can override any status. Bounds are a latitude/longitude box; the profile without bounds is the fallback. Horseshoe bats are rare by default: a steady machine tone near their frequency is the classic false positive, and a real horseshoe bat still clears the higher bar.",
   "profiles": [
     {
       "id": "central-europe",
       "name": "Central Europe",
-      "bounds": {"south": 45.5, "north": 55.5, "west": 5.5, "east": 24.5},
+      "bounds": {
+        "south": 45.5,
+        "north": 55.5,
+        "west": 5.5,
+        "east": 24.5
+      },
       "default": "occurs",
-      "species": {}
+      "species": {
+        "Rhinolophus ferrumequinum": "rare",
+        "Rhinolophus hipposideros": "rare"
+      }
     },
     {
       "id": "europe",
       "name": "Europe",
       "bounds": null,
       "default": "occurs",
-      "species": {}
+      "species": {
+        "Rhinolophus ferrumequinum": "rare",
+        "Rhinolophus hipposideros": "rare"
+      }
     }
   ]
 }
