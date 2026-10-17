@@ -19,6 +19,7 @@ import { sites as sitesPanel } from "./sites.js";
 
 const PAGE = 1000; // recordings fetched at a time; a night rarely holds more
 const NONE = "none"; // the tab of recordings without a site
+const ROWS = 6; // sites in a column before another begins
 
 export async function home(view, query) {
   const site = query.get("site");
@@ -28,12 +29,13 @@ export async function home(view, query) {
     recording: query.get("recording") ? Number(query.get("recording")) : null,
   };
   const sections = {
-    sites: h("section", { class: "site-tabs" }),
+    sites: h("section", { class: "card site-list" }),
     nights: h("section", { class: "card nights" }),
     night: h("section", { class: "card night" }),
     recording: h("section"),
   };
-  replace(view, importPanel(), Object.values(sections));
+  // The sites beside the calendar; the night, then the recording, the whole width under them.
+  replace(view, importPanel(), h("div", { class: "overview" }, sections.sites, sections.nights), sections.night, sections.recording);
 
   let sites = [];
   let devices = [];
@@ -102,18 +104,15 @@ export async function home(view, query) {
         label,
         detail ? h("span", { class: "site" }, ` · ${detail}`) : null,
       );
+    const tabs = [
+      ...sites.map((s) => tab(s.id, s.name, numbersOf(s) === s.name ? null : numbersOf(s))),
+      ...(withoutSite ? [tab(NONE, t("home.without_site"), formatNumber(withoutSite))] : []),
+    ];
     replace(
       sections.sites,
-      h("span", { class: "label" }, t("home.site")),
-      h(
-        "div",
-        { class: "row" },
-        // The numbers beside the name, unless the name is just the number.
-        sites.map((s) => tab(s.id, s.name, numbersOf(s) === s.name ? null : numbersOf(s))),
-        withoutSite ? tab(NONE, t("home.without_site"), formatNumber(withoutSite)) : null,
-      ),
-      h("span", { class: "muted" }, t("home.site_hint")),
-      moreMenu(),
+      h("div", { class: "section-head" }, h("h2", { title: t("home.site_hint") }, t("home.sites")), moreMenu()),
+      // One under another, in as many columns as it takes to keep beside the calendar.
+      h("div", { class: "sites", style: `--rows: ${Math.min(tabs.length, ROWS)}` }, tabs),
     );
   };
 

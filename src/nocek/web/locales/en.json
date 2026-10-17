@@ -3,8 +3,7 @@
     "name": "English"
   },
   "app": {
-    "title": "Nocek",
-    "tagline": "Identify bats from ultrasonic recordings"
+    "title": "Nocek"
   },
   "count": {
     "recordings": {
@@ -75,13 +74,11 @@
       "unreadable-settings": "Unreadable settings files"
     },
     "choose_folder": "Choose the folder with the recordings",
-    "folder": "Folder",
     "site": "Site",
     "site_auto": "By the recorder's number",
     "start": "Import",
     "other_folder": "Choose another folder",
-    "running": "Importing. You can leave this screen; the strip at the top shows how far it got.",
-    "report": "Import finished",
+    "running": "Importing. You can close this window; the line at the top keeps showing how far it got.",
     "copied": {
       "one": "{n} new recording copied into the library.",
       "other": "{n} new recordings copied into the library."
@@ -95,7 +92,6 @@
     "issues": "About the recorder's settings",
     "found": "Found in the folder",
     "analysis_started": "Identification has started on the new recordings.",
-    "see_results": "See who was here",
     "new_site": "These recordings were made at a new place",
     "new_site_name": "Site at {latitude}, {longitude}",
     "name": "Name",
@@ -128,7 +124,8 @@
       "other": "{n} recordings in this folder and the folders inside it."
     },
     "last": "Last import: {when}, {recordings}",
-    "new_number": "{number} has no site yet"
+    "new_number": "{number} has no site yet",
+    "load": "Load new recordings"
   },
   "config_issue": {
     "starts-after-sunset": "Starts recording at {1}, after sunset at {0}.",
@@ -156,9 +153,7 @@
       "analysing": "Analysing recordings",
       "judging": "Judging the recordings again"
     },
-    "idle": "Nothing is running.",
     "cancel": "Cancel",
-    "history": "Recent tasks",
     "progress": "{done} of {total}"
   },
   "status": {
@@ -205,11 +200,9 @@
     "Vespertilio": "Parti-coloured bats"
   },
   "common": {
-    "save": "Save",
     "cancel": "Cancel",
     "back": "Back",
     "close": "Close",
-    "loading": "Loading…",
     "saved": "Saved."
   },
   "folders": {
@@ -275,8 +268,6 @@
   "recording": {
     "previous": "Previous recording",
     "next": "Next recording",
-    "site": "Site",
-    "device": "Recorder",
     "zoom_hint": "Drag across the spectrogram to look closer.",
     "whole": "Show the whole recording",
     "slowed": "Played {n} times slower, so the calls fall where you can hear them.",
@@ -328,7 +319,9 @@
       "other": "something else",
       "pro": "a recorder's own noise",
       "rain": "rain"
-    }
+    },
+    "slowed_short": "{n}× slower",
+    "speed": "Speed"
   },
   "sites_page": {
     "intro": "Where your recorders listen. A site's position decides which bats are expected there; you can change that for any species.",
@@ -423,8 +416,10 @@
     "sunset": "Sunset {time}",
     "sunrise": "Sunrise {time}",
     "no_sun": "Give the site a position to see sunset and sunrise here.",
-    "site": "Site",
     "site_hint": "Each site has nights of its own; pick which to look at.",
-    "without_site": "No site yet"
+    "without_site": "No site yet",
+    "sites": "Sites",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out"
   }
 }

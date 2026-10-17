@@ -9,11 +9,10 @@ export function openDialog(label, render, { onClose = () => {}, wide = false } =
   // A menu item's "…" says a dialog follows; the dialog's own title does without it.
   const title = label.replace(/…$/, "");
   const dialog = h("wa-dialog", { label: title, class: wide ? "wide" : "", "light-dismiss": true }, body);
-  dialog.addEventListener("wa-after-hide", (event) => {
-    if (event.target !== dialog) return; // a dropdown inside closing, not the dialog
-    dialog.remove();
-    onClose();
-  });
+  // The page learns of the closing at once; the dialog goes once its animation has run.
+  // (Events from a dropdown inside closing are not the dialog's.)
+  dialog.addEventListener("wa-hide", (event) => event.target === dialog && onClose());
+  dialog.addEventListener("wa-after-hide", (event) => event.target === dialog && dialog.remove());
   document.body.append(dialog);
   Promise.resolve(render(body)).catch(showError);
   requestAnimationFrame(() => (dialog.open = true));

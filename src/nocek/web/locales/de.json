@@ -3,8 +3,7 @@
     "name": "Deutsch"
   },
   "app": {
-    "title": "Nocek",
-    "tagline": "Fledermäuse in Ultraschallaufnahmen erkennen"
+    "title": "Nocek"
   },
   "count": {
     "recordings": {
@@ -75,13 +74,11 @@
       "unreadable-settings": "Unlesbare Einstellungsdateien"
     },
     "choose_folder": "Ordner mit Aufnahmen wählen",
-    "folder": "Ordner",
     "site": "Standort",
     "site_auto": "Nach der Nummer des Rekorders",
     "start": "Importieren",
     "other_folder": "Anderen Ordner wählen",
-    "running": "Der Import läuft. Du kannst zu einer anderen Ansicht wechseln, die Leiste oben zeigt den Fortschritt.",
-    "report": "Import abgeschlossen",
+    "running": "Der Import läuft. Du kannst dieses Fenster schließen; die Zeile oben zeigt weiter den Fortschritt.",
     "copied": {
       "one": "{n} neue Aufnahme in die Bibliothek kopiert.",
       "other": "{n} neue Aufnahmen in die Bibliothek kopiert."
@@ -95,7 +92,6 @@
     "issues": "Zu den Einstellungen des Rekorders",
     "found": "Im Ordner gefunden",
     "analysis_started": "Die Erkennung der neuen Aufnahmen hat schon begonnen.",
-    "see_results": "Sieh nach, wer hier war",
     "new_site": "Diese Aufnahmen stammen von einem neuen Ort",
     "new_site_name": "Standort {latitude}, {longitude}",
     "name": "Name",
@@ -128,7 +124,8 @@
       "other": "{n} Aufnahmen in diesem Ordner und seinen Unterordnern."
     },
     "last": "Letzter Import: {when}, {recordings}",
-    "new_number": "{number} hat noch keinen Standort"
+    "new_number": "{number} hat noch keinen Standort",
+    "load": "Neue Aufnahmen laden"
   },
   "config_issue": {
     "starts-after-sunset": "Die Aufnahme beginnt um {1}, nach Sonnenuntergang um {0}.",
@@ -156,9 +153,7 @@
       "analysing": "Aufnahmen werden erkannt",
       "judging": "Aufnahmen werden neu beurteilt"
     },
-    "idle": "Gerade läuft nichts.",
     "cancel": "Abbrechen",
-    "history": "Letzte Aufträge",
     "progress": "{done} von {total}"
   },
   "status": {
@@ -205,11 +200,9 @@
     "Vespertilio": "Zweifarbfledermäuse"
   },
   "common": {
-    "save": "Speichern",
     "cancel": "Abbrechen",
     "back": "Zurück",
     "close": "Schließen",
-    "loading": "Wird geladen…",
     "saved": "Gespeichert."
   },
   "folders": {
@@ -275,8 +268,6 @@
   "recording": {
     "previous": "Vorherige Aufnahme",
     "next": "Nächste Aufnahme",
-    "site": "Standort",
-    "device": "Rekorder",
     "zoom_hint": "Zieh über das Spektrogramm, um genauer hinzusehen.",
     "whole": "Ganze Aufnahme zeigen",
     "slowed": "{n}-mal langsamer abgespielt, damit die Rufe hörbar werden.",
@@ -328,7 +319,9 @@
       "other": "etwas anderes",
       "pro": "Eigenrauschen des Rekorders",
       "rain": "Regen"
-    }
+    },
+    "slowed_short": "{n}× langsamer",
+    "speed": "Wiedergabegeschwindigkeit"
   },
   "sites_page": {
     "intro": "Die Orte, an denen deine Rekorder lauschen. Von der Position eines Standorts hängt ab, welche Fledermäuse dort zu erwarten sind; für jede Art kannst du das ändern.",
@@ -423,8 +416,10 @@
     "sunset": "Sonnenuntergang {time}",
     "sunrise": "Sonnenaufgang {time}",
     "no_sun": "Gib die Position des Standorts an, um hier Sonnenuntergang und -aufgang zu sehen.",
-    "site": "Standort",
     "site_hint": "Jeder Standort hat seine eigenen Nächte; wähle, welchen du ansiehst.",
-    "without_site": "Noch ohne Standort"
+    "without_site": "Noch ohne Standort",
+    "sites": "Standorte",
+    "zoom_in": "Vergrößern",
+    "zoom_out": "Verkleinern"
   }
 }

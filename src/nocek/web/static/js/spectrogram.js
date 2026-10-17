@@ -4,10 +4,10 @@
 // them reads the same for everyone.
 
 import { h, svg } from "./dom.js";
-import { formatNumber } from "./i18n.js";
+import { formatNumber, t } from "./i18n.js";
 import { MAGMA } from "./magma.js";
 
-const HEIGHT = 340;
+const HEIGHT = 280;
 const AXIS = { left: 44, bottom: 22 };
 const MIN_KHZ = 10;
 const MAX_KHZ = 130;
@@ -21,7 +21,7 @@ function niceStep(span, target) {
 export function spectrogram(recordingId, duration, sources, { onZoom }) {
   const canvas = h("canvas", { class: "pixels" });
   const overlay = svg("svg", { class: "overlay" });
-  const box = h("div", { class: "spectrogram" }, canvas, overlay);
+  const box = h("div", { class: "spectrogram", title: t("recording.zoom_hint") }, canvas, overlay);
   const state = { start: 0, end: duration, cursor: null, picture: null };
 
   const geometry = () => {

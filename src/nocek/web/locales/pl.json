@@ -3,8 +3,7 @@
     "name": "Polski"
   },
   "app": {
-    "title": "Nocek",
-    "tagline": "Rozpoznawanie nietoperzy z nagrań ultradźwięków"
+    "title": "Nocek"
   },
   "count": {
     "recordings": {
@@ -79,13 +78,11 @@
       "unreadable-settings": "Nieczytelne pliki ustawień"
     },
     "choose_folder": "Wybierz katalog z nagraniami",
-    "folder": "Katalog",
     "site": "Stanowisko",
     "site_auto": "Według numeru rejestratora",
     "start": "Importuj",
     "other_folder": "Wybierz inny katalog",
-    "running": "Trwa import. Możesz przejść do innego ekranu, a pasek u góry pokazuje postęp.",
-    "report": "Import zakończony",
+    "running": "Trwa import. Możesz zamknąć to okno; linia u góry nadal pokazuje postęp.",
     "copied": {
       "one": "Skopiowano do biblioteki {n} nowe nagranie.",
       "few": "Skopiowano do biblioteki {n} nowe nagrania.",
@@ -103,7 +100,6 @@
     "issues": "O ustawieniach rejestratora",
     "found": "Znalezione w katalogu",
     "analysis_started": "Rozpoznawanie nowych nagrań już się rozpoczęło.",
-    "see_results": "Zobacz, kto tu był",
     "new_site": "Te nagrania powstały w nowym miejscu",
     "new_site_name": "Stanowisko {latitude}, {longitude}",
     "name": "Nazwa",
@@ -146,7 +142,8 @@
       "other": "{n} nagrania w tym katalogu i jego podkatalogach."
     },
     "last": "Ostatni import: {when}, {recordings}",
-    "new_number": "{number} nie ma jeszcze stanowiska"
+    "new_number": "{number} nie ma jeszcze stanowiska",
+    "load": "Wczytaj nowe nagrania"
   },
   "config_issue": {
     "starts-after-sunset": "Nagrywanie zaczyna się o {1}, po zachodzie słońca o {0}.",
@@ -174,9 +171,7 @@
       "analysing": "Rozpoznawanie nagrań",
       "judging": "Ponowna ocena nagrań"
     },
-    "idle": "Nic nie jest uruchomione.",
     "cancel": "Anuluj",
-    "history": "Ostatnie zadania",
     "progress": "{done} z {total}"
   },
   "status": {
@@ -223,11 +218,9 @@
     "Vespertilio": "Mroczki posrebrzane"
   },
   "common": {
-    "save": "Zapisz",
     "cancel": "Anuluj",
     "back": "Wstecz",
     "close": "Zamknij",
-    "loading": "Wczytywanie…",
     "saved": "Zapisano."
   },
   "folders": {
@@ -295,8 +288,6 @@
   "recording": {
     "previous": "Poprzednie nagranie",
     "next": "Następne nagranie",
-    "site": "Stanowisko",
-    "device": "Rejestrator",
     "zoom_hint": "Przeciągnij po spektrogramie, żeby przyjrzeć się z bliska.",
     "whole": "Pokaż całe nagranie",
     "slowed": "Odtwarzane {n} razy wolniej, żeby wywołania znalazły się w zakresie słyszalnym.",
@@ -350,7 +341,9 @@
       "other": "coś innego",
       "pro": "własny szum rejestratora",
       "rain": "deszcz"
-    }
+    },
+    "slowed_short": "{n}× wolniej",
+    "speed": "Prędkość odtwarzania"
   },
   "sites_page": {
     "intro": "Miejsca, w których nasłuchują Twoje rejestratory. Od położenia stanowiska zależy, jakich nietoperzy się tam spodziewamy; dla każdego gatunku możesz to zmienić.",
@@ -447,8 +440,10 @@
     "sunset": "Zachód {time}",
     "sunrise": "Wschód {time}",
     "no_sun": "Podaj położenie stanowiska, żeby zobaczyć tu zachód i wschód słońca.",
-    "site": "Stanowisko",
     "site_hint": "Każde stanowisko ma swoje noce; wybierz, które oglądasz.",
-    "without_site": "Bez stanowiska"
+    "without_site": "Bez stanowiska",
+    "sites": "Stanowiska",
+    "zoom_in": "Przybliż",
+    "zoom_out": "Oddal"
   }
 }

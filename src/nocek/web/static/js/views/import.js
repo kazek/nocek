@@ -5,28 +5,35 @@ import { openDialog } from "../dialog.js";
 import { h, replace } from "../dom.js";
 import { chooseFolder } from "../folder-picker.js";
 import { formatDateTime, formatNumber, t } from "../i18n.js";
-import { run } from "../jobs.js";
+import { progressOf, run } from "../jobs.js";
 import { configIssue, numberName } from "../names.js";
 import { attempt } from "../notice.js";
 
 // Bringing recordings in, at the top of the main page: the button, the last import
-// in a line, and the earlier ones folded away.
+// and the earlier ones in a line. Once a folder is chosen, the rest happens in a dialog.
 export function importPanel() {
-  const body = h("div", { class: "import-flow" });
+  const flow = h("div", { class: "import-flow" });
   const last = h("span", { class: "muted" });
+  const button = h(
+    "wa-button",
+    { size: "small", variant: "brand" },
+    h("wa-icon", { slot: "start", name: "folder-open" }),
+    t("import.load"),
+  );
+  const ctx = { flow, last, button };
+  button.onclick = () => askForFolder(ctx);
   const earlier = h(
     "wa-button",
     {
       size: "small",
       appearance: "plain",
-      onclick: () => openDialog(t("import.history"), drawHistory, { wide: true, onClose: () => showLast(last) }),
+      onclick: () => openDialog(t("import.history"), drawHistory, { wide: true, onClose: () => showLast(ctx.last) }),
     },
     h("wa-icon", { slot: "start", name: "ellipsis" }),
     t("import.history"),
   );
-  askButton(body, last);
   showLast(last);
-  return h("section", { class: "import-panel" }, h("div", { class: "row" }, body, last, earlier));
+  return h("section", { class: "import-panel" }, h("div", { class: "row" }, button, last, earlier), flow);
 }
 
 // The last import, in a line.
@@ -40,60 +47,76 @@ async function showLast(last) {
     : "";
 }
 
-function askButton(body, last) {
-  const button = h(
-    "wa-button",
-    { size: "small", variant: "brand" },
-    h("wa-icon", { slot: "start", name: "folder-open" }),
-    t("import.choose_folder"),
+// The import's dialog has closed: let another begin.
+function done(ctx) {
+  replace(ctx.flow);
+  ctx.button.disabled = false;
+  ctx.dialog = null;
+  showLast(ctx.last);
+}
+
+// The folder comes from the system's own dialog; everything after it, from settling the
+// site to the report, happens in a dialog of ours, which "another folder" reuses.
+async function askForFolder(ctx) {
+  ctx.button.disabled = true; // while the system's dialog is open, and the import runs
+  // Where there is no system dialog, the page's own folder browser shows here instead.
+  const host = ctx.dialog ? ctx.body : ctx.flow;
+  const folder = await attempt(() => chooseFolder(host, { title: t("import.choose_folder") }));
+  replace(ctx.flow);
+  if (!folder) {
+    if (!ctx.dialog) done(ctx);
+    return;
+  }
+  if (ctx.dialog) return confirm(ctx, folder);
+  ctx.dialog = openDialog(
+    t("import.load"),
+    (body) => {
+      ctx.body = body;
+      return confirm(ctx, folder);
+    },
+    { wide: true, onClose: () => done(ctx) },
   );
-  button.onclick = () => {
-    button.disabled = true; // while the system's dialog is open
-    askForFolder(body, last);
-  };
-  replace(body, button);
 }
 
-async function askForFolder(body, last) {
-  const folder = await attempt(() => chooseFolder(body, { title: t("import.choose_folder") }));
-  if (folder) await confirm(body, last, folder);
-  else askButton(body, last);
-}
-
-async function confirm(body, last, folder) {
+async function confirm(ctx, folder) {
   const [sites, listing] = await Promise.all([get("/sites"), get(`/folders?path=${encodeURIComponent(folder)}&deep=true`)]);
   const site = h(
     "select",
-    { id: "site" },
+    { "aria-label": t("import.site") },
     h("option", { value: "" }, t("import.site_auto")),
     sites.map((s) => h("option", { value: s.id }, s.name)),
   );
-  const start = h("button", { class: "primary" }, t("import.start"));
+  const start = h("wa-button", { size: "small", variant: "brand" }, t("import.start"));
   start.onclick = async () => {
-    start.disabled = true;
-    replace(body, h("p", {}, t("import.running")));
+    // How the import goes, here as on the line under the header, which keeps it once
+    // the dialog is closed.
+    const progress = h("div", { class: "jobs-progress" });
+    replace(ctx.body, h("p", { class: "muted" }, t("import.running")), progress);
     const job = await attempt(() =>
-      run("/jobs/import", { folder, site_id: site.value ? Number(site.value) : null }),
+      run("/jobs/import", { folder, site_id: site.value ? Number(site.value) : null }, (now) =>
+        replace(progress, progressOf(now)),
+      ),
     );
-    if (job?.status === "done") showReport(body, last, job.result);
-    else askButton(body, last);
-    showLast(last);
+    showLast(ctx.last);
+    if (job?.status === "done") showReport(ctx, job.result);
+    else confirm(ctx, folder); // failed or cancelled: the error says why; try again from here
   };
+  const other = h("wa-button", { size: "small", appearance: "outlined", onclick: () => askForFolder(ctx) }, t("import.other_folder"));
   replace(
-    body,
+    ctx.body,
     h(
       "div",
-      { class: "card" },
-      h("h2", {}, t("import.folder")),
-      h("p", { class: "path" }, folder),
-      h("p", { class: "muted" }, t("import.in_folder", { n: formatNumber(listing.recordings), count: listing.recordings })),
+      { class: "row confirm" },
+      h("span", { class: "path" }, folder),
+      h("span", { class: "muted" }, t("import.in_folder", { n: formatNumber(listing.recordings), count: listing.recordings })),
       h("label", {}, t("import.site"), site),
-      h("div", { class: "row" }, start, h("button", { onclick: () => askForFolder(body, last) }, t("import.other_folder"))),
+      start,
+      other,
     ),
   );
 }
 
-async function showReport(body, last, report) {
+async function showReport(ctx, report) {
   const sites = await get("/sites");
   const n = (count) => ({ n: formatNumber(count), count });
   const skipped = Object.entries(report.skipped);
@@ -101,11 +124,10 @@ async function showReport(body, last, report) {
   const others = report.notices.filter((notice) => notice.notice !== "no-site");
 
   replace(
-    body,
+    ctx.body,
     h(
       "div",
-      { class: "card" },
-      h("h2", {}, t("import.report")),
+      { class: "report" },
       h("p", {}, report.copied ? t("import.copied", n(report.copied)) : t("import.nothing_new")),
       skipped.length
         ? h(
@@ -144,14 +166,14 @@ async function showReport(body, last, report) {
           )
         : null,
       report.analysis_job
-        ? h("p", {}, t("import.analysis_started"), " ", h("a", { href: "#/" }, t("import.see_results")))
+        ? h("p", { class: "muted" }, t("import.analysis_started"))
         : null,
     ),
     homeless.length
       ? h(
           "div",
           { class: "place-sites" },
-          homeless.map((notice) => placeSite(report.import_id, notice, sites, () => showLast(last))),
+          homeless.map((notice) => placeSite(report.import_id, notice, sites, () => showLast(ctx.last))),
         )
       : null,
   );

@@ -16,6 +16,7 @@
   --radius: var(--wa-border-radius-m);
   --gap: 10px;
   --page-width: none; /* the page spans the window; set a length to narrow it */
+  --header-height: 40px; /* the sticky header's, for what sticks under it */
   /* A denser interface than Web Awesome's default. */
   --wa-space-scale: 0.75;
   --wa-font-size-scale: 0.9;
@@ -58,11 +59,12 @@ a { color: var(--accent); }
   position: sticky;
   top: 0;
   z-index: 10;
+  height: var(--header-height);
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   gap: 8px var(--gap);
-  padding: 4px 16px;
+  padding: 0 16px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
@@ -129,8 +131,14 @@ button.primary {
 }
 
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* In a row, fields take the width they need, not the whole line. */
+.row :is(select, input[type="text"]) { width: auto; margin: 0; }
+.row > audio { margin: 0; }
+.row > label { margin: 0; width: auto; flex: none; }
 
 label { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+/* A field stands beside its label, never under it: no gap above it. */
+label > :is(select, input) { margin: 0; }
 
 .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
 .steps > li { counter-increment: step; }
@@ -138,12 +146,14 @@ label { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
 .steps > li.done h2 { color: var(--ok); }
 .steps > li.waiting { opacity: 0.55; }
 
-/* What runs in the background, in the header: one line that never changes height,
-   the file name cut short rather than pushing anything aside. */
+/* What runs in the background: a line of its own under the header, always one line
+   high, the file name cut short rather than pushing anything aside. */
 .jobs {
-  flex: 1 1 auto;
-  min-width: 0;
-  height: 32px;
+  position: sticky;
+  top: var(--header-height);
+  z-index: 9;
+  height: 30px;
+  padding: 0 16px;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -152,12 +162,14 @@ label { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
   white-space: nowrap;
   font-size: 0.85rem;
   color: var(--muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
-.jobs > * { flex: none; }
-.jobs progress { width: 140px; }
-.jobs .count { min-width: 7em; font-variant-numeric: tabular-nums; }
-.jobs .path { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.jobs > span:only-child { overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; min-width: 0; }
+.jobs-progress { display: flex; align-items: center; gap: 10px; white-space: nowrap; overflow: hidden; }
+:is(.jobs, .jobs-progress) > * { flex: none; }
+:is(.jobs, .jobs-progress) progress { width: 180px; }
+:is(.jobs, .jobs-progress) .count { min-width: 7em; font-variant-numeric: tabular-nums; }
+:is(.jobs, .jobs-progress) .path { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .jobs .failed { color: var(--error); }
 
 .notice {
@@ -246,7 +258,7 @@ table.recordings td:first-child, table.recordings th:first-child { width: 1%; wh
 .bats { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; }
 
 /* One recording: the spectrogram with its overlay, and what was heard. */
-.spectrogram { position: relative; height: 340px; margin-bottom: 10px; }
+.spectrogram { position: relative; height: 280px; margin-bottom: 8px; }
 .spectrogram canvas { position: absolute; top: 0; image-rendering: auto; }
 .spectrogram .overlay { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
 .spectrogram .axis { fill: var(--muted); font-size: 11px; }
@@ -256,12 +268,12 @@ table.recordings td:first-child, table.recordings th:first-child { width: 1%; wh
 .spectrogram .badge text { fill: #ffffff; font-size: 10px; font-weight: 700; }
 .spectrogram .cursor { stroke: #ffffff; stroke-width: 1.5; }
 .spectrogram .selection { fill: rgb(255 255 255 / 0.15); stroke: #ffffff; stroke-width: 1; }
-audio { height: 36px; }
+audio { height: var(--wa-form-control-height); }
 .spacer { flex: 1; }
-/* What was heard: one line per animal, under the player. */
-.verdict { display: flex; align-items: flex-start; gap: 12px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
-.verdict > .label { font-weight: 600; flex: none; line-height: 22px; }
-.verdict > wa-button { margin-left: auto; flex: none; }
+/* What was heard: a heading, an animal a line, then the link to the details. */
+.verdict { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+.verdict h3 { margin: 0 0 4px; }
+.verdict > a { display: inline-block; margin-top: 4px; font-size: 0.9rem; }
 .animals { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
 .animals > li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; line-height: 22px; }
 .animals .number {
@@ -290,11 +302,17 @@ form input[type="text"] { min-width: 12ch; }
 .import-flow > .card, .import-flow > .place-sites { flex-basis: 100%; margin: 6px 0 0; }
 .place-sites { display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: var(--gap); }
 .place-sites .card { margin: 0; }
-.place-sites label:has(> input) { display: grid; grid-template-columns: 6rem minmax(0, 1fr); align-items: center; gap: 8px; margin: 4px 0; }
+/* A new site's card is narrow: its fields one under another, each the card's width. */
+.place-sites .row:has(> label) { display: block; }
+.dialog-body .place-sites label:has(> input[type="text"]) {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+.place-sites label > input[type="text"] { width: 100%; }
 
-.site-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: var(--gap); }
-.site-tabs .label { font-weight: 600; }
-.site-tabs .site { color: inherit; opacity: 0.8; }
 
 /* Calendar: months side by side, arrows at either end. */
 .calendar { display: flex; align-items: center; gap: 4px; }
@@ -324,7 +342,23 @@ button.day { cursor: pointer; color: var(--text); }
 button.day:hover { outline: 1px solid var(--muted); }
 
 /* The night bar. */
-.nightbar { position: relative; padding-top: 18px; }
+.nightbar { position: relative; }
+/* Wider than its frame when looked at closer; the frame then scrolls sideways. */
+/* The scrollbar's room is always kept, so the page does not jump when zooming; only
+   its track and thumb come and go. */
+.nightbar .scroller { overflow-x: scroll; overflow-y: hidden; }
+/* Over a recording: open it. Elsewhere on a widened bar: take hold of it and move it. */
+.nightbar :is(.bar, .hours).pannable { cursor: grab; }
+.nightbar :is(.bar, .hours).panning { cursor: grabbing; user-select: none; }
+.nightbar .bar.over-mark { cursor: pointer; }
+/* A scrollbar that stays in sight, where macOS would hide it until scrolling. */
+.nightbar .scroller::-webkit-scrollbar { height: 8px; }
+.nightbar .scroller::-webkit-scrollbar-track { background: transparent; border-radius: 4px; }
+.nightbar .scroller.zoomed::-webkit-scrollbar-track { background: var(--bg); }
+.nightbar .scroller::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; }
+.nightbar .track { position: relative; min-width: 100%; padding: 18px 0 6px; }
+.legend .zoom { margin-left: auto; display: inline-flex; align-items: center; gap: 2px; }
+.legend .zoom-level { min-width: 3em; text-align: center; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.85rem; }
 .nightbar .bar {
   position: relative;
   height: 52px;
@@ -349,12 +383,11 @@ button.day:hover { outline: 1px solid var(--muted); }
 .nightbar .sun { position: absolute; top: -18px; bottom: 0; border-left: 1px dashed var(--warn); pointer-events: none; }
 .nightbar .sun span { position: absolute; top: 0; left: 4px; font-size: 0.75rem; color: var(--warn); white-space: nowrap; }
 .nightbar .sun.sunrise span { left: auto; right: 4px; }
-.nightbar .hours { position: relative; height: 18px; font-size: 0.75rem; color: var(--muted); }
+.nightbar .hours { position: relative; height: 18px; font-size: 0.75rem; color: var(--muted); user-select: none; }
 .nightbar .hours span { position: absolute; transform: translateX(-50%); top: 2px; }
 .nightbar .tip {
   position: absolute;
-  bottom: calc(100% + 6px);
-  transform: translateX(-50%);
+  transform: translate(-50%, calc(-100% - 6px));
   z-index: 5;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -404,3 +437,28 @@ wa-dialog.wide { --width: min(56rem, 94vw); }
 .dialog-body .card { padding: 8px 12px; }
 .numbers { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 8px; }
 .numbers select { width: auto; }
+
+/* The sites beside the calendar, as tall as it; one above the other where it is narrow. */
+.overview { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--gap); margin-bottom: var(--gap); }
+.overview > .card { margin: 0; min-width: 0; }
+@media (max-width: 800px) { .overview { grid-template-columns: minmax(0, 1fr); } }
+
+/* Sites one under another, a new column after every --rows. */
+.site-list .sites {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--rows), auto);
+  grid-auto-columns: minmax(10rem, max-content);
+  gap: 4px 8px;
+}
+.site-list .sites wa-button { width: 100%; }
+.site-list .sites wa-button::part(base) { justify-content: flex-start; }
+.site-list .sites .site { opacity: 0.8; }
+
+/* The player starts where the spectrogram's picture does, past its kHz axis. */
+.player { padding-left: 44px; }
+.player select { width: auto; }
+
+/* A box's close button sits in its top right corner. */
+.card:has(> .close) { position: relative; padding-right: 40px; }
+.card > .close { position: absolute; top: 4px; right: 4px; }

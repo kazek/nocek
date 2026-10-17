@@ -1,30 +1,41 @@
 // One recording: see it, hear it, and what each method made of it.
 
-import { get } from "../api.js";
 import { openDialog } from "../dialog.js";
 import { h, replace } from "../dom.js";
 import { formatDateTime, formatNumber, lang, t } from "../i18n.js";
 import { taxaLabel } from "../names.js";
 import { spectrogram } from "../spectrogram.js";
 
-const SLOWDOWN = 10;
+// How many times slower the sound plays, so that the calls fall where a person can hear
+// them; the choice is kept in this browser.
+const SLOWDOWNS = [5, 10, 20, 40];
+const SLOWDOWN_KEY = "nocek-slowdown";
+
+function storedSlowdown() {
+  try {
+    const stored = Number(localStorage.getItem(SLOWDOWN_KEY));
+    if (SLOWDOWNS.includes(stored)) return stored;
+  } catch {
+    // Without storage, the usual speed.
+  }
+  return 10;
+}
 
 // One recording, ready to be placed anywhere: the spectrogram, the player and the
 // verdict. previous and next are the neighbouring recordings' ids, onStep(id) moves.
 export async function recordingPanel(rec, { previous = null, next = null, onStep = () => {} } = {}) {
-  const [sites, devices] = await Promise.all([get("/sites"), get("/devices")]);
   const id = rec.id;
   const result = rec.result;
   const sources = result?.batdetect ?? [];
-  const site = sites.find((s) => s.id === rec.site_id);
-  const device = devices.find((d) => d.id === rec.device_id);
 
-  const audio = h("audio", { controls: true, preload: "none", src: `/api/recordings/${id}/audio?slowdown=${SLOWDOWN}` });
+  let slowdown = storedSlowdown();
+  const source = () => `/api/recordings/${id}/audio?slowdown=${slowdown}`;
+  const audio = h("audio", { controls: true, preload: "none", src: source() });
   const whole = h("button", { hidden: true }, t("recording.whole"));
   const picture = spectrogram(id, rec.duration_s ?? 0, sources, {
     onZoom: (start, end) => {
       whole.hidden = start <= 0 && end >= rec.duration_s;
-      audio.currentTime = start * SLOWDOWN;
+      audio.currentTime = start * slowdown;
     },
   });
   whole.onclick = () => picture.zoom(0, rec.duration_s);
@@ -32,28 +43,64 @@ export async function recordingPanel(rec, { previous = null, next = null, onStep
   // The cursor follows the sound; playback stays inside the stretch on screen.
   const follow = () => {
     const [start, end] = picture.range();
-    const at = audio.currentTime / SLOWDOWN;
+    const at = audio.currentTime / slowdown;
     if (at >= end) {
       audio.pause();
-      audio.currentTime = start * SLOWDOWN;
+      audio.currentTime = start * slowdown;
     }
-    picture.cursor(audio.currentTime / SLOWDOWN);
+    picture.cursor(audio.currentTime / slowdown);
     if (!audio.paused) requestAnimationFrame(follow);
   };
   audio.addEventListener("play", () => {
     const [start, end] = picture.range();
-    const at = audio.currentTime / SLOWDOWN;
-    if (at < start || at >= end) audio.currentTime = start * SLOWDOWN;
+    const at = audio.currentTime / slowdown;
+    if (at < start || at >= end) audio.currentTime = start * slowdown;
     requestAnimationFrame(follow);
   });
-  audio.addEventListener("pause", () => picture.cursor(audio.currentTime / SLOWDOWN));
+  audio.addEventListener("pause", () => picture.cursor(audio.currentTime / slowdown));
+
+  // Another speed: the same moment of the recording, at the new pace.
+  const speed = h(
+    "select",
+    {
+      "aria-label": t("recording.speed"),
+      title: t("recording.slowed", { n: slowdown }),
+      onchange: (event) => {
+        const at = audio.currentTime / slowdown;
+        const playing = !audio.paused;
+        slowdown = Number(event.target.value);
+        event.target.title = t("recording.slowed", { n: slowdown });
+        try {
+          localStorage.setItem(SLOWDOWN_KEY, String(slowdown));
+        } catch {
+          // Kept for this recording only.
+        }
+        audio.src = source();
+        audio.addEventListener(
+          "loadedmetadata",
+          () => {
+            audio.currentTime = at * slowdown;
+            if (playing) audio.play();
+          },
+          { once: true },
+        );
+        audio.load();
+      },
+    },
+    SLOWDOWNS.map((n) => h("option", { value: n, selected: n === slowdown }, t("recording.slowed_short", { n }))),
+  );
 
   const step = (direction, other) =>
     h(
       "wa-button",
-      { size: "small", appearance: "outlined", disabled: !other, onclick: () => other && onStep(other) },
-      h("wa-icon", { slot: direction === "previous" ? "start" : "end", name: `chevron-${direction === "previous" ? "left" : "right"}` }),
-      t(`recording.${direction}`),
+      {
+        size: "small",
+        appearance: "outlined",
+        title: t(`recording.${direction}`),
+        disabled: !other,
+        onclick: () => other && onStep(other),
+      },
+      h("wa-icon", { name: `chevron-${direction === "previous" ? "left" : "right"}`, label: t(`recording.${direction}`) }),
     );
 
   const element = h(
@@ -65,13 +112,7 @@ export async function recordingPanel(rec, { previous = null, next = null, onStep
       step("previous", previous),
       h("strong", {}, rec.recorded_at ? formatDateTime(rec.recorded_at) : rec.file_name),
       step("next", next),
-      h(
-        "span",
-        { class: "muted" },
-        h("span", { class: "path" }, rec.file_name),
-        site ? ` · ${t("recording.site")}: ${site.name}` : "",
-        device ? ` · ${t("recording.device")}: ${device.label ?? device.uid}` : "",
-      ),
+      h("span", { class: "path muted" }, rec.file_name),
     ),
     h(
       "div",
@@ -79,10 +120,10 @@ export async function recordingPanel(rec, { previous = null, next = null, onStep
       picture.element,
       h(
         "div",
-        { class: "row" },
+        { class: "row player" },
         audio,
         whole,
-        h("span", { class: "muted" }, t("recording.slowed", { n: SLOWDOWN }), " ", t("recording.zoom_hint")),
+        speed,
       ),
       verdict(result),
     ),
@@ -107,21 +148,22 @@ function verdict(result) {
   const percent = new Intl.NumberFormat(lang(), { style: "percent" });
   const sources = result.verdict ?? [];
   const more = h(
-    "wa-button",
+    "a",
     {
-      size: "small",
-      appearance: "plain",
-      onclick: () => openDialog(t("recording.details"), (body) => replace(body, explanation(result, percent)), { wide: true }),
+      href: "#",
+      onclick: (event) => {
+        event.preventDefault();
+        openDialog(t("recording.details"), (body) => replace(body, explanation(result, percent)), { wide: true });
+      },
     },
-    h("wa-icon", { slot: "start", name: "info" }),
     t("recording.details"),
   );
   return h(
     "div",
     { class: "verdict" },
-    h("span", { class: "label" }, t("recording.verdict")),
+    h("h3", {}, t("recording.verdict")),
     sources.length === 0
-      ? h("span", { class: "muted" }, t("recording.no_calls"))
+      ? h("p", { class: "muted" }, t("recording.no_calls"))
       : h(
           "ol",
           { class: "animals" },

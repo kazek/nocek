@@ -1,7 +1,8 @@
 // One night as a single bar from sunset to sunrise: a mark for every recording, as
 // tall as what it holds (a named bat, calls without a name, or nothing) and coloured
 // by the bat. Hovering shows what a mark is; clicking opens it. The legend under the
-// bar counts each kind and, hovered or clicked, picks out its marks.
+// bar counts each kind and, hovered or clicked, picks out its marks. A busy night can
+// be looked at closer: the bar widens and scrolls sideways.
 
 import { colourOf, partsOf } from "./bat-colours.js";
 import { h, replace } from "./dom.js";
@@ -11,6 +12,10 @@ import { localName } from "./names.js";
 const HEIGHT = { bat: 44, withheld: 22, quiet: 8, unanalysed: 8 };
 const NEAR_PX = 10; // how close the pointer must be to a mark to point at it
 const MARGIN_MIN = 10;
+const ZOOMS = [1, 2, 4, 8, 16, 32];
+const LABEL_PX = 56; // the least room between two time labels
+const STEPS_MIN = [5, 10, 15, 30, 60, 120]; // the spacings time labels may take
+let lastZoom = 1; // kept from one night to the next
 
 // rows: the night's recordings in time order; sun: {sunset, sunrise} or nulls;
 // hues: from assignHues(); selected: a recording id; onSelect(id).
@@ -45,7 +50,6 @@ export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}
     dusk !== null ? sunLine("sunset", x(dusk), t("home.sunset", { time: formatTime(sun.sunset) })) : null,
     dawn !== null ? sunLine("sunrise", x(dawn), t("home.sunrise", { time: formatTime(sun.sunrise) })) : null,
     marks,
-    tip,
   );
 
   // The mark nearest the pointer, if it is near enough.
@@ -59,9 +63,15 @@ export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}
     const px = best < 0 ? Infinity : Math.abs(((times[best] - at) / (to - from)) * box.width);
     return px <= NEAR_PX ? best : -1;
   };
+  // Set up once the scrolling frame exists, below: the bar can be taken hold of away
+  // from any recording.
+  let grab = null;
+
   let pointed = -1;
   bar.addEventListener("pointermove", (event) => {
+    if (grab.active()) return;
     const i = nearest(event);
+    bar.classList.toggle("over-mark", i >= 0);
     if (i === pointed) return;
     marks[pointed]?.classList.remove("pointed");
     pointed = i;
@@ -71,7 +81,11 @@ export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}
     }
     marks[i].classList.add("pointed");
     replace(tip, h("strong", {}, formatTime(rows[i].recorded_at)), describe(rows[i], hues));
-    tip.style.left = `${x(times[i])}%`;
+    // The tip sits outside the scrolling frame, which would clip it, over the mark.
+    const outer = element.getBoundingClientRect();
+    const mark = marks[i].getBoundingClientRect();
+    tip.style.left = `${mark.left + mark.width / 2 - outer.left}px`;
+    tip.style.top = `${bar.getBoundingClientRect().top - outer.top}px`;
     tip.hidden = false;
   });
   bar.addEventListener("pointerleave", () => {
@@ -80,6 +94,7 @@ export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}
     tip.hidden = true;
   });
   bar.addEventListener("click", (event) => {
+    if (grab.dragged()) return; // the end of a drag, not a click
     const i = nearest(event);
     if (i >= 0) onSelect(rows[i].id);
   });
@@ -115,14 +130,130 @@ export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}
     ),
   );
 
+  // Closer: the track holding the bar and its times widens, its frame scrolls sideways.
+  const hours = h("div", { class: "hours" });
+  const track = h("div", { class: "track" }, bar, hours);
+  const scroller = h("div", { class: "scroller" }, track);
+  grab = grabbable(bar, scroller, (event) => nearest(event) < 0);
+  grabbable(hours, scroller);
+  const level = h("span", { class: "zoom-level" });
+  const zoomButton = (by) => {
+    const label = t(by > 0 ? "home.zoom_in" : "home.zoom_out");
+    return h(
+      "wa-button",
+      { size: "small", appearance: "plain", title: label, onclick: () => zoomBy(by) },
+      h("wa-icon", { name: by > 0 ? "zoom-in" : "zoom-out", label }),
+    );
+  };
+  let zoom = lastZoom;
+  const drawHours = () => {
+    const width = (scroller.clientWidth || 1000) * zoom;
+    const perMinute = width / (to - from);
+    const step = STEPS_MIN.find((m) => m * perMinute >= LABEL_PX) ?? STEPS_MIN.at(-1);
+    replace(hours, timeLabels(from, to, step).map((m) => h("span", { style: `left: ${x(m)}%` }, clock(m))));
+  };
+  // A new zoom, keeping the moment under `anchor` (a point on screen) where it is.
+  const setZoom = (wanted, anchor = null) => {
+    const next = Math.min(ZOOMS.at(-1), Math.max(1, wanted));
+    const frame = scroller.getBoundingClientRect();
+    const at = anchor ?? frame.left + frame.width / 2;
+    const fraction = (scroller.scrollLeft + at - frame.left) / (scroller.scrollWidth || 1);
+    zoom = lastZoom = next;
+    track.style.width = `${zoom * 100}%`;
+    bar.classList.toggle("pannable", zoom > 1);
+    hours.classList.toggle("pannable", zoom > 1);
+    scroller.classList.toggle("zoomed", zoom > 1);
+    scroller.scrollLeft = fraction * scroller.scrollWidth - (at - frame.left);
+    level.textContent = `${formatNumber(Math.round(zoom * 10) / 10)}×`;
+    drawHours();
+  };
+  // The next level up or down from wherever the wheel left it.
+  const zoomBy = (direction) => {
+    const next =
+      direction > 0
+        ? (ZOOMS.find((z) => z > zoom + 0.01) ?? ZOOMS.at(-1))
+        : ([...ZOOMS].reverse().find((z) => z < zoom - 0.01) ?? 1);
+    setZoom(next);
+    reveal();
+  };
+  // Ctrl and the wheel, or a pinch on a trackpad, zoom around the pointer.
+  scroller.addEventListener(
+    "wheel",
+    (event) => {
+      if (!event.ctrlKey && !event.metaKey) return;
+      event.preventDefault();
+      setZoom(zoom * Math.exp(-event.deltaY / 200), event.clientX);
+    },
+    { passive: false },
+  );
+  // The selected recording kept in view when the bar is wider than its frame.
+  const reveal = () => {
+    const mark = marks.find((m) => m.classList.contains("selected"));
+    if (!mark || zoom === 1) return;
+    const frame = scroller.getBoundingClientRect();
+    const box = mark.getBoundingClientRect();
+    if (box.left < frame.left + 20 || box.right > frame.right - 20) {
+      scroller.scrollLeft += box.left - frame.left - frame.width / 2;
+    }
+  };
+  new ResizeObserver(drawHours).observe(scroller);
+
   const element = h(
     "div",
     { class: "nightbar" },
-    bar,
-    h("div", { class: "hours" }, hourLabels(from, to).map((m) => h("span", { style: `left: ${x(m)}%` }, clock(m)))),
-    h("div", { class: "legend" }, legendItems),
+    scroller,
+    tip,
+    h(
+      "div",
+      { class: "legend" },
+      legendItems,
+      h("span", { class: "zoom" }, zoomButton(-1), level, zoomButton(1)),
+    ),
   );
-  return { element, select };
+  setZoom(zoom);
+  requestAnimationFrame(reveal);
+  return {
+    element,
+    select: (id) => {
+      select(id);
+      reveal();
+    },
+  };
+}
+
+// Taking hold of `surface` and moving the pointer moves the frame's content sideways,
+// when it is wider than the frame and canStart(event) agrees. dragged() says, once,
+// whether the pointer moved, so the click ending a drag can be told from a click.
+function grabbable(surface, scroller, canStart = () => true) {
+  let drag = null;
+  let moved = false;
+  surface.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || scroller.scrollWidth <= scroller.clientWidth || !canStart(event)) return;
+    drag = { x: event.clientX, left: scroller.scrollLeft };
+    moved = false;
+    surface.setPointerCapture(event.pointerId);
+    surface.classList.add("panning");
+  });
+  surface.addEventListener("pointermove", (event) => {
+    if (!drag) return;
+    const dx = event.clientX - drag.x;
+    if (Math.abs(dx) > 3) moved = true;
+    scroller.scrollLeft = drag.left - dx;
+  });
+  const release = () => {
+    drag = null;
+    surface.classList.remove("panning");
+  };
+  surface.addEventListener("pointerup", release);
+  surface.addEventListener("pointercancel", release);
+  return {
+    active: () => drag !== null,
+    dragged: () => {
+      const was = moved;
+      moved = false;
+      return was;
+    },
+  };
 }
 
 // A mark's parts as the legend's kinds: "h1".."h4" for the four hues, then "other",
@@ -173,9 +304,8 @@ function sunLine(which, left, label) {
   return h("div", { class: `sun ${which}`, style: `left: ${left}%` }, h("span", {}, label));
 }
 
-// Whole hours inside the bar, every second one when the night is long.
-function hourLabels(from, to) {
-  const step = to - from > 10 * 60 ? 120 : 60;
+// Times every `step` minutes inside the bar.
+function timeLabels(from, to, step) {
   const out = [];
   for (let m = Math.ceil(from / step) * step; m <= to; m += step) out.push(m);
   return out;
@@ -189,6 +319,7 @@ function minutes(iso) {
 }
 
 function clock(m) {
-  const hours = Math.floor(m / 60) % 24;
-  return `${String(hours).padStart(2, "0")}:00`;
+  const rounded = Math.round(m);
+  const hours = Math.floor(rounded / 60) % 24;
+  return `${String(hours).padStart(2, "0")}:${String(rounded % 60).padStart(2, "0")}`;
 }
