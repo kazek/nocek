@@ -56,6 +56,8 @@ class Settings:
     batdetect: batdetect.Params = batdetect.DEFAULT_PARAMS
     battybird: battybird.Params = battybird.DEFAULT_PARAMS
     consensus: consensus.Params = consensus.DEFAULT_PARAMS
+    # Where BatDetect2 runs ("cpu", "mps", "cuda"); None picks the fastest available.
+    device: str | None = None
 
 
 DEFAULT_SETTINGS = Settings()
@@ -102,11 +104,12 @@ class Analyser:
     ) -> None:
         self.region = region
         self.settings = settings
-        self._batdetect = batdetect_model or batdetect.Model(settings.batdetect)
+        self._batdetect = batdetect_model or batdetect.Model(settings.batdetect, settings.device)
         self._battybird = battybird_model or battybird.Model(models_dir, settings.battybird)
         self.versions = MappingProxyType(_versions(settings))
 
-    def analyse(self, path: Path) -> RecordingResult:
+    def analyse(self, path: Path, region: Region | None = None) -> RecordingResult:
+        """One recording's result, judged in its site's region (by default the analyser's)."""
         s = self.settings
         failures: list[Failure] = []
         skipped = {p: Skipped.DISABLED for p in Pass if p not in s.passes}
@@ -158,7 +161,7 @@ class Analyser:
                 {**self.versions, f"{Pass.BATDETECT2}-device": self._batdetect.device}
             )
             verdict = consensus.combine(
-                self.region,
+                region or self.region,
                 sources,
                 found,
                 key_opinion=opinion,
