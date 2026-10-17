@@ -486,5 +486,14 @@
     "anyway": "Zakończ mimo to",
     "stopped": "Nocek został zamknięty",
     "close_tab": "Możesz zamknąć tę kartę. Uruchomisz go ponownie poleceniem nocek albo skrótem."
+  },
+  "header": {
+    "language": "Język",
+    "theme": "Motyw"
+  },
+  "theme": {
+    "system": "Jak w systemie",
+    "light": "Jasny",
+    "dark": "Ciemny"
   }
 }

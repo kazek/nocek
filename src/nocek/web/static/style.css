@@ -1,69 +1,55 @@
-/* Nocek: one stylesheet, light and dark from the system's setting. */
+/* Nocek: Web Awesome's theme underneath, and the few things that are Nocek's own.
+   Colours come from Web Awesome's tokens, so light and dark follow the wa-light /
+   wa-dark class on <html>. */
 
 :root {
-  --bg: #fbfaf7;
-  --surface: #ffffff;
-  --text: #1f1d1a;
-  --muted: #6b6760;
-  --line: #e3e0d9;
-  --accent: #6a3fa0;
-  --accent-text: #ffffff;
-  --warn: #9a5b00;
-  --error: #b3261e;
-  --ok: #2e7d32;
-  --chart: #6a3fa0;
-  --radius: 8px;
+  --bg: var(--wa-color-surface-lowered);
+  --surface: var(--wa-color-surface-default);
+  --text: var(--wa-color-text-normal);
+  --muted: var(--wa-color-text-quiet);
+  --line: var(--wa-color-surface-border);
+  --accent: var(--wa-color-text-link);
+  --warn: var(--wa-color-warning-on-quiet);
+  --error: var(--wa-color-danger-on-quiet);
+  --ok: var(--wa-color-success-on-quiet);
+  --chart: #6a3fa0; /* validated against both surfaces */
+  --radius: var(--wa-border-radius-m);
   --gap: 16px;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 15px;
-  line-height: 1.45;
-  color-scheme: light dark;
+  --page-width: none; /* the page spans the window; set a length to narrow it */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #141317;
-    --surface: #1d1c21;
-    --text: #ece9f1;
-    --muted: #a19daa;
-    --line: #34323a;
-    --accent: #b48ef0;
-    --accent-text: #141317;
-    --warn: #f0b354;
-    --error: #ff8a80;
-    --ok: #81c784;
-    --chart: #a17ae6;
-  }
-}
+.wa-dark { --chart: #a17ae6; }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-}
+body { background: var(--bg); }
 
 a { color: var(--accent); }
 
 .top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--gap);
-  padding: 10px 20px;
+  gap: 8px var(--gap);
+  padding: 8px 24px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   font-size: 1.15rem;
   text-decoration: none;
   color: var(--text);
 }
 
-.top nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.brand img { width: 28px; height: 28px; }
+
+.top nav { display: flex; flex-wrap: wrap; gap: 2px; }
 
 .top nav a {
   padding: 6px 10px;
@@ -72,21 +58,23 @@ a { color: var(--accent); }
   color: var(--muted);
 }
 
-.top .quit { margin-left: auto; }
-
 .top nav a[aria-current="page"] {
   color: var(--text);
   background: var(--bg);
   font-weight: 600;
 }
 
+.top .tools { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+
 main {
-  max-width: 1100px;
+  max-width: var(--page-width);
   margin: 0 auto;
-  padding: 24px 20px 48px;
+  padding: 24px 24px 48px;
 }
 
 main:focus { outline: none; }
+
+main p { max-width: 75ch; }
 
 h1 { font-size: 1.5rem; margin: 0 0 var(--gap); }
 h2 { font-size: 1.1rem; margin: 24px 0 8px; }
@@ -117,41 +105,15 @@ h3 { font-size: 1rem; margin: 16px 0 4px; }
 }
 .ok { color: var(--ok); }
 
-button {
-  font: inherit;
-  padding: 7px 14px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-}
-
 button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-text);
-}
-
-button:disabled { opacity: 0.5; cursor: default; }
-
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  background: var(--wa-color-brand-fill-loud);
+  border-color: var(--wa-color-brand-border-loud);
+  color: var(--wa-color-brand-on-loud);
 }
 
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 label { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
-
-select, input[type="text"] {
-  font: inherit;
-  padding: 6px 8px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--text);
-}
 
 .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
 .steps > li { counter-increment: step; }
@@ -159,25 +121,22 @@ select, input[type="text"] {
 .steps > li.done h2 { color: var(--ok); }
 .steps > li.waiting { opacity: 0.55; }
 
-/* Background tasks, under the header. */
+/* What runs in the background, in the header. */
 .jobs {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 6px 20px;
-  border-bottom: 1px solid var(--line);
+  gap: 4px 12px;
   font-size: 0.9rem;
   color: var(--muted);
-  min-height: 34px;
 }
 
 .jobs progress { width: 220px; }
 .jobs .failed { color: var(--error); }
 
 .notice {
-  max-width: 1100px;
-  margin: 12px auto 0;
+  margin: 12px 24px 0;
   padding: 10px 14px;
   border-radius: var(--radius);
   border: 1px solid var(--error);
@@ -202,7 +161,8 @@ select, input[type="text"] {
 
 /* Overviews: filters, figures, tables. */
 .filters { margin-bottom: var(--gap); }
-.filters label { margin: 0; }
+.filters label { margin: 0; white-space: nowrap; }
+.filters :is(select, input) { width: auto; }
 
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--gap); margin-bottom: var(--gap); }
 .tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; }

@@ -1,10 +1,11 @@
-// The page: texts first, then the task strip, then whichever screen the address names.
+// The page: texts first, then the header, then whichever screen the address names.
 
+import { registerIconLibrary } from "../vendor/webawesome/webawesome.js";
 import { get } from "./api.js";
+import { tools } from "./header.js";
 import * as i18n from "./i18n.js";
 import { watch } from "./jobs.js";
 import { showError } from "./notice.js";
-import { quitButton } from "./quit.js";
 import { route, start } from "./router.js";
 import { devices } from "./views/devices.js";
 import { importer } from "./views/import.js";
@@ -27,6 +28,9 @@ route(/^\/sites$/, sites);
 route(/^\/devices$/, devices);
 route(/^\/$/, species);
 
+// Icons come from the copy of Lucide that ships with Nocek, never from the network.
+registerIconLibrary("default", { resolver: (name) => `/static/vendor/lucide/${name}.svg` });
+
 // Without a library there is nothing to show but the way to make one.
 async function needsLibrary(path) {
   if (path === "/welcome" || path === "/settings") return null;
@@ -37,7 +41,7 @@ async function needsLibrary(path) {
 try {
   await i18n.load();
   watch()();
-  quitButton(document.getElementById("quit"), document.getElementById("view"));
+  await tools(document.getElementById("tools"), document.getElementById("view"));
   await start(document.getElementById("view"), needsLibrary);
 } catch (error) {
   showError(error);

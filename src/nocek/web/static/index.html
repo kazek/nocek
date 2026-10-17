@@ -1,17 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="wa-theme-default wa-palette-default wa-brand-purple">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
   <title>Nocek</title>
   <link rel="icon" href="/static/favicon.png">
+  <script src="/static/js/theme-early.js"></script>
+  <link rel="stylesheet" href="/static/vendor/webawesome/styles/webawesome.css">
   <link rel="stylesheet" href="/static/style.css">
+  <script type="module" src="/static/vendor/webawesome/webawesome.loader.js"></script>
   <script type="module" src="/static/js/app.js"></script>
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="#/" data-text="app.title">Nocek</a>
+    <a class="brand" href="#/"><img src="/static/favicon.png" alt=""><span data-text="app.title">Nocek</span></a>
     <nav aria-label="Main">
       <a href="#/" data-text="nav.species"></a>
       <a href="#/nights" data-text="nav.nights"></a>
@@ -20,9 +22,9 @@
       <a href="#/devices" data-text="nav.devices"></a>
       <a href="#/settings" data-text="nav.settings"></a>
     </nav>
-    <button type="button" id="quit" class="quit" data-text="nav.quit"></button>
+    <section id="jobs" class="jobs" aria-live="polite"></section>
+    <div id="tools" class="tools"></div>
   </header>
-  <section id="jobs" class="jobs" aria-live="polite"></section>
   <div id="notice" class="notice" role="alert" hidden></div>
   <main id="view" tabindex="-1"></main>
 </body>

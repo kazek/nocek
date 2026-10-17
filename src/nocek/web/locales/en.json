@@ -460,5 +460,14 @@
     "anyway": "Quit anyway",
     "stopped": "Nocek has stopped",
     "close_tab": "You can close this tab. Start Nocek again with the nocek command or its shortcut."
+  },
+  "header": {
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "theme": {
+    "system": "As the system",
+    "light": "Light",
+    "dark": "Dark"
   }
 }

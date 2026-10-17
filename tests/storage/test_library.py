@@ -67,9 +67,10 @@ def test_settings_remember_the_library(tmp_path: Path) -> None:
     path = tmp_path / "config" / "settings.json"
 
     assert settings.load(path) == settings.Settings()
-    settings.save(settings.Settings(library=tmp_path / "Nocek"), path)
+    settings.save(settings.Settings(library=tmp_path / "Nocek", theme="dark"), path)
 
     assert settings.load(path).library == tmp_path / "Nocek"
+    assert settings.load(path).theme == "dark"
     assert not path.with_name("settings.json.part").exists()
 
 

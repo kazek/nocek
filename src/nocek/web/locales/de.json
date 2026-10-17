@@ -460,5 +460,14 @@
     "anyway": "Trotzdem beenden",
     "stopped": "Nocek wurde beendet",
     "close_tab": "Du kannst diesen Tab schließen. Starte Nocek wieder mit dem Befehl nocek oder über die Verknüpfung."
+  },
+  "header": {
+    "language": "Sprache",
+    "theme": "Farbschema"
+  },
+  "theme": {
+    "system": "Wie im System",
+    "light": "Hell",
+    "dark": "Dunkel"
   }
 }

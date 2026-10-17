@@ -12,6 +12,10 @@ export async function load() {
   texts = await get(`/locales/${chosen}`);
   plurals = new Intl.PluralRules(chosen);
   document.documentElement.lang = chosen;
+  if (chosen !== "en") {
+    // Web Awesome's own few words, such as a dialog's close button.
+    await import(`../vendor/webawesome/translations/${chosen}.js`).catch(() => {});
+  }
   for (const element of document.querySelectorAll("[data-text]")) {
     element.textContent = t(element.dataset.text);
   }

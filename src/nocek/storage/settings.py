@@ -22,6 +22,7 @@ APP = "Nocek"
 
 PASSES = ("key", "batdetect2", "battybirdnet")
 DEVICES = ("auto", "cpu", "mps", "cuda")
+THEMES = ("system", "light", "dark")
 LANGUAGE = re.compile(r"[a-z]{2,3}(-[A-Z]{2})?")
 
 
@@ -38,6 +39,8 @@ class Settings:
     sieve: bool = True
     # Where BatDetect2 runs; "auto" picks a GPU when there is one.
     device: str = "auto"
+    # "system" follows the operating system's light or dark appearance.
+    theme: str = "system"
 
     def __post_init__(self) -> None:
         if self.language is not None and not LANGUAGE.fullmatch(self.language):
@@ -46,6 +49,8 @@ class Settings:
             raise SettingsError(f"passes {self.passes!r}")
         if self.device not in DEVICES:
             raise SettingsError(f"device {self.device!r}")
+        if self.theme not in THEMES:
+            raise SettingsError(f"theme {self.theme!r}")
 
 
 def config_dir() -> Path:
@@ -77,6 +82,7 @@ def load(path: Path | None = None) -> Settings:
         passes=tuple(data.get("passes", defaults.passes)),
         sieve=bool(data.get("sieve", defaults.sieve)),
         device=data.get("device", defaults.device),
+        theme=data.get("theme", defaults.theme),
     )
 
 
@@ -89,6 +95,7 @@ def save(settings: Settings, path: Path | None = None) -> None:
         "passes": list(settings.passes),
         "sieve": settings.sieve,
         "device": settings.device,
+        "theme": settings.theme,
     }
     _write(path, json.dumps(data, indent=2))
 

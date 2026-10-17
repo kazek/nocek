@@ -183,7 +183,8 @@ def _placeholders(value: Any) -> set[str]:
 def test_every_text_the_page_asks_for_exists() -> None:
     static = SOURCE / "web" / "static"
     pattern = re.compile(r"""\bt\(\s*["']([\w.-]+)["']""")
-    wanted = {key for js in static.rglob("*.js") for key in pattern.findall(js.read_text("utf-8"))}
+    ours = [js for js in static.rglob("*.js") if "vendor" not in js.parts]
+    wanted = {key for js in ours for key in pattern.findall(js.read_text("utf-8"))}
     wanted |= set(re.findall(r'data-text="([\w.-]+)"', (static / "index.html").read_text("utf-8")))
 
     assert len(wanted) > 20  # the search itself works

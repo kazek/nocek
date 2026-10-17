@@ -32,6 +32,7 @@ class SettingsChange(BaseModel):
     passes: list[str] | None = None
     sieve: bool | None = None
     device: str | None = None
+    theme: str | None = None
 
 
 class PathBody(BaseModel):
@@ -78,6 +79,7 @@ def put_settings(request: Request, change: SettingsChange) -> dict[str, Any]:
             passes=tuple(change.passes) if change.passes is not None else current.passes,
             sieve=change.sieve if change.sieve is not None else current.sieve,
             device=change.device or current.device,
+            theme=change.theme or current.theme,
         )
     except SettingsError as error:
         raise ApiError(422, "invalid-setting", str(error)) from error
@@ -147,6 +149,7 @@ def _settings(s: app_settings.Settings) -> dict[str, Any]:
         "passes": list(s.passes),
         "sieve": s.sieve,
         "device": s.device,
+        "theme": s.theme,
     }
 
 

@@ -38,6 +38,7 @@ def test_settings_start_from_the_defaults(client: TestClient) -> None:
         "passes": ["key", "batdetect2", "battybirdnet"],
         "sieve": True,
         "device": "auto",
+        "theme": "system",
     }
 
 
@@ -54,6 +55,12 @@ def test_settings_are_changed_and_kept(client: TestClient, app_state: AppState) 
         client.put("/api/settings", json={"follow_browser_language": True}).json()["language"]
         is None
     )
+
+
+def test_the_theme_is_kept(client: TestClient, app_state: AppState) -> None:
+    assert client.put("/api/settings", json={"theme": "dark"}).json()["theme"] == "dark"
+    assert client.put("/api/settings", json={"theme": "sepia"}).status_code == 422
+    assert app_state.settings.theme == "dark"
 
 
 def test_an_invalid_setting_is_refused(client: TestClient) -> None:
