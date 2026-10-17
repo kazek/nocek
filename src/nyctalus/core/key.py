@@ -109,33 +109,44 @@ def fit(value: float, band: Band, tolerance: float) -> float:
 
 
 def _score(taxon: Taxon, b: Bands, group: DominantGroup, params: Params) -> Candidate | None:
-    """Weighted mean of the fits, or None if any measurement rules the taxon out."""
-    # An interval shorter than the published one says the bat was closing on
-    # prey, not which bat it was, so it is left out rather than counted against
-    # the species. Nothing lengthens intervals in the same way, so a longer one
-    # remains evidence.
-    interval = group.interval_ms
+    """Weighted mean of the fits, or None if the call itself rules the taxon out."""
+    end = fit(group.end_khz, b.end_khz, params.tolerance)
+    duration = fit(group.duration_ms, b.duration_ms, params.tolerance)
+    interval = _interval_fit(group.interval_ms, b, params)
     evidence: dict[str, float | None] = {
-        "end_khz": fit(group.end_khz, b.end_khz, params.tolerance),
-        "duration_ms": fit(group.duration_ms, b.duration_ms, params.tolerance),
-        "interval_ms": (
-            None
-            if interval is None or interval < b.interval_ms[0]
-            else fit(interval, b.interval_ms, params.tolerance)
-        ),
+        "end_khz": end,
+        "duration_ms": duration,
+        "interval_ms": interval,
     }
+    # Frequency or duration far outside the band rules a species out however
+    # well the rest fits: a 3 ms pulse is not a horseshoe bat, at any
+    # frequency. The interval only lowers the score. It depends on what the
+    # bat was doing and on how many pulses reached the microphone, so on its
+    # own it is not enough to exclude a species.
+    if end == 0.0 or duration == 0.0:
+        return None
     weighted = [
-        (params.end_weight, evidence["end_khz"]),
-        (params.duration_weight, evidence["duration_ms"]),
-        (params.interval_weight, evidence["interval_ms"]),
+        (params.end_weight, end),
+        (params.duration_weight, duration),
+        (params.interval_weight, interval),
     ]
     measured = [(weight, value) for weight, value in weighted if value is not None]
-    # One measurement far outside its band rules a species out however well
-    # the rest fits: a 3 ms pulse is not a horseshoe bat, at any frequency.
-    if any(value == 0.0 for _, value in measured):
-        return None
     score = sum(w * v for w, v in measured) / sum(w for w, _ in measured)
     return Candidate(taxa=frozenset({taxon}), score=score, evidence=evidence)
+
+
+def _interval_fit(interval: float | None, b: Bands, params: Params) -> float | None:
+    """The interval's fit, or None when the interval is no evidence either way.
+
+    An interval shorter than the published one says the bat was closing on
+    prey, not which bat it was. Nothing lengthens intervals in the same way,
+    so a longer one remains evidence. The spread of the intervals is not used:
+    clean reference recordings of a single bat range from 0.3 to 1.6, so it
+    does not separate a regular sequence from an irregular one.
+    """
+    if interval is None or interval < b.interval_ms[0]:
+        return None
+    return fit(interval, b.interval_ms, params.tolerance)
 
 
 def _band(name: str, values: list[float]) -> Band:

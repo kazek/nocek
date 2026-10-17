@@ -141,3 +141,13 @@ def test_rejects_a_malformed_band(monkeypatch: pytest.MonkeyPatch, band: list[fl
             key.bands()
     finally:
         key.bands.cache_clear()
+
+
+def test_an_interval_alone_does_not_rule_a_species_out() -> None:
+    # Missed pulses double the interval; the call itself still fits.
+    opinion = key.identify(measured(end_khz=50, duration_ms=6, interval_ms=300))
+
+    assert opinion.leader is not None
+    assert opinion.leader.taxa == {Taxon("Pipistrellus pipistrellus")}
+    assert opinion.leader.evidence["interval_ms"] == 0.0
+    assert opinion.leader.score < 1.0
