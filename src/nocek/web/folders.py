@@ -1,7 +1,8 @@
 """Browsing folders, so the user can point at a card or a library from the page.
 
-A browser does not tell a page where a chosen folder is on disk, and native
-dialogs are not available everywhere, so the server lists folders itself.
+A browser does not tell a page where a chosen folder is on disk. Where the
+system's own dialog cannot be opened (dialog.py), the server lists folders
+itself.
 It lists folders only, never file contents, and counts the recordings in each.
 """
 

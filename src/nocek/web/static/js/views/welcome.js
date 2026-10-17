@@ -2,7 +2,7 @@
 
 import { get, post } from "../api.js";
 import { h, replace } from "../dom.js";
-import { pickFolder } from "../folder-picker.js";
+import { chooseFolder } from "../folder-picker.js";
 import { t } from "../i18n.js";
 import { run } from "../jobs.js";
 import { attempt } from "../notice.js";
@@ -81,7 +81,7 @@ export async function welcome(view) {
   }
 
   async function choose(endpoint, title) {
-    const path = await pickFolder(view, { title });
+    const path = await chooseFolder(view, { title });
     if (path) await use(endpoint, path);
     else redraw();
   }

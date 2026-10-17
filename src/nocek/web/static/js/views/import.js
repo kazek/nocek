@@ -2,7 +2,7 @@
 
 import { get, post } from "../api.js";
 import { h, replace } from "../dom.js";
-import { pickFolder } from "../folder-picker.js";
+import { chooseFolder } from "../folder-picker.js";
 import { formatDateTime, formatNumber, t } from "../i18n.js";
 import { run } from "../jobs.js";
 import { configIssue } from "../names.js";
@@ -13,13 +13,22 @@ export async function importer(view) {
   const history = h("section");
   replace(view, h("h1", {}, t("import.title")), h("p", { class: "muted" }, t("import.intro")), body, history);
   drawHistory(history);
-  await chooseFolder(body, history);
+  askButton(body, history);
 }
 
-async function chooseFolder(body, history) {
-  const folder = await pickFolder(body, { title: t("import.choose_folder") });
+function askButton(body, history) {
+  const button = h("button", { class: "primary" }, t("import.choose_folder"));
+  button.onclick = () => {
+    button.disabled = true; // while the system's dialog is open
+    askForFolder(body, history);
+  };
+  replace(body, button);
+}
+
+async function askForFolder(body, history) {
+  const folder = await attempt(() => chooseFolder(body, { title: t("import.choose_folder") }));
   if (folder) await confirm(body, history, folder);
-  else replace(body, h("button", { class: "primary", onclick: () => chooseFolder(body, history) }, t("import.choose_folder")));
+  else askButton(body, history);
 }
 
 async function confirm(body, history, folder) {
@@ -38,7 +47,7 @@ async function confirm(body, history, folder) {
       run("/jobs/import", { folder, site_id: site.value ? Number(site.value) : null }),
     );
     if (job?.status === "done") showReport(body, history, job.result);
-    else replace(body, h("button", { class: "primary", onclick: () => chooseFolder(body, history) }, t("import.choose_folder")));
+    else askButton(body, history);
     drawHistory(history);
   };
   replace(
@@ -50,7 +59,7 @@ async function confirm(body, history, folder) {
       h("p", { class: "path" }, folder),
       h("p", { class: "muted" }, t("import.in_folder", { n: formatNumber(listing.recordings), count: listing.recordings })),
       h("label", {}, t("import.site"), site),
-      h("div", { class: "row" }, start, h("button", { onclick: () => chooseFolder(body, history) }, t("import.other_folder"))),
+      h("div", { class: "row" }, start, h("button", { onclick: () => askForFolder(body, history) }, t("import.other_folder"))),
     ),
   );
 }

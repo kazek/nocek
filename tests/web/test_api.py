@@ -123,3 +123,12 @@ def test_a_relative_library_path_is_refused(client: TestClient) -> None:
 
     assert response.status_code == 422
     assert response.json()["error"] == "not-an-absolute-path"
+
+
+def test_the_page_and_its_files_are_checked_before_reuse(client: TestClient) -> None:
+    for path in ("/", "/static/js/app.js", "/static/style.css"):
+        response = client.get(path)
+        assert response.status_code == 200
+        assert response.headers["cache-control"] == "no-cache", path
+    etag = client.get("/static/js/app.js").headers["etag"]
+    assert client.get("/static/js/app.js", headers={"if-none-match": etag}).status_code == 304

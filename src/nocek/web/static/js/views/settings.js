@@ -2,7 +2,7 @@
 
 import { get, post, put } from "../api.js";
 import { h, replace } from "../dom.js";
-import { pickFolder } from "../folder-picker.js";
+import { chooseFolder } from "../folder-picker.js";
 import { t } from "../i18n.js";
 import { attempt } from "../notice.js";
 
@@ -69,7 +69,7 @@ export async function settings(view) {
   );
 
   const library = async (endpoint, title) => {
-    const path = await pickFolder(view, { title, start: current.library });
+    const path = await chooseFolder(view, { title, start: current.library });
     if (path) await attempt(() => post(endpoint, { path }));
     redraw();
   };

@@ -14,7 +14,7 @@ from nocek.core import pipeline
 from nocek.storage import settings as app_settings
 from nocek.storage.library import Library, LibraryError
 from nocek.storage.settings import SettingsError
-from nocek.web import folders, i18n
+from nocek.web import dialog, folders, i18n
 from nocek.web.errors import ApiError
 from nocek.web.state import AppState
 
@@ -37,6 +37,11 @@ class SettingsChange(BaseModel):
 
 class PathBody(BaseModel):
     path: str
+
+
+class DialogBody(BaseModel):
+    title: str = ""
+    start: str | None = None
 
 
 @router.get("/health")
@@ -125,6 +130,19 @@ def get_folders(path: str | None = None, deep: bool = False) -> dict[str, Any]:
         "recordings": found.recordings,
         "folders": _folders(found.folders),
     }
+
+
+@router.post("/folders/choose")
+def choose_folder(body: DialogBody) -> dict[str, str | None]:
+    """Show the system's folder dialog and wait for the user; null if they cancelled.
+
+    A POST, so only the application's own page can make a dialog appear.
+    """
+    try:
+        chosen = dialog.choose_folder(body.title, Path(body.start) if body.start else None)
+    except dialog.NoDialog as error:
+        raise ApiError(501, "no-folder-dialog", str(error)) from error
+    return {"path": str(chosen) if chosen else None}
 
 
 def _switch(request: Request, path: str, how: Any) -> dict[str, Any]:

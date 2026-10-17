@@ -14,8 +14,11 @@
   --ok: var(--wa-color-success-on-quiet);
   --chart: #6a3fa0; /* validated against both surfaces */
   --radius: var(--wa-border-radius-m);
-  --gap: 16px;
+  --gap: 12px;
   --page-width: none; /* the page spans the window; set a length to narrow it */
+  /* A denser interface than Web Awesome's default. */
+  --wa-space-scale: 0.85;
+  --wa-font-size-scale: 0.95;
 }
 
 .wa-dark { --chart: #a17ae6; }
@@ -69,15 +72,15 @@ a { color: var(--accent); }
 main {
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: 24px 24px 48px;
+  padding: 16px 24px 32px;
 }
 
 main:focus { outline: none; }
 
 main p { max-width: 75ch; }
 
-h1 { font-size: 1.5rem; margin: 0 0 var(--gap); }
-h2 { font-size: 1.1rem; margin: 24px 0 8px; }
+h1 { font-size: 1.4rem; margin: 0 0 var(--gap); }
+h2 { font-size: 1.1rem; margin: 16px 0 8px; }
 
 .card {
   background: var(--surface);

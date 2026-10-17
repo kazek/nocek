@@ -41,7 +41,8 @@
     "invalid-spectrogram": "Those spectrogram settings are out of range.",
     "no-such-job": "That task no longer exists.",
     "job-not-running": "That task has already finished.",
-    "no-such-language": "That language is not available."
+    "no-such-language": "That language is not available.",
+    "no-folder-dialog": "This computer has no folder dialog Nocek can open."
   },
   "abstention": {
     "too-short": "The recording is too short to judge.",

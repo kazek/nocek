@@ -41,7 +41,8 @@
     "invalid-spectrogram": "Diese Spektrogramm-Einstellungen liegen außerhalb des Bereichs.",
     "no-such-job": "Diesen Auftrag gibt es nicht mehr.",
     "job-not-running": "Dieser Auftrag ist schon beendet.",
-    "no-such-language": "Diese Sprache ist nicht verfügbar."
+    "no-such-language": "Diese Sprache ist nicht verfügbar.",
+    "no-folder-dialog": "Auf diesem Computer gibt es keinen Ordnerdialog, den Nocek öffnen kann."
   },
   "abstention": {
     "too-short": "Die Aufnahme ist zu kurz, um sie zu beurteilen.",

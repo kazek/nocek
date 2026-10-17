@@ -1,12 +1,23 @@
 // Choosing a folder on this computer, through the server: browsers do not tell
-// a page where a folder is, so the server lists folders for it.
+// a page where a folder is. The server opens the system's own dialog, or, where
+// there is none, lists folders for the page to show.
 
-import { get } from "./api.js";
+import { get, post } from "./api.js";
 import { h, replace } from "./dom.js";
 import { t, formatNumber } from "./i18n.js";
 import { attempt } from "./notice.js";
 
-// Resolves with the chosen folder's path, or null if the user went back.
+// Resolves with the chosen folder's path, or null if the user cancelled.
+export async function chooseFolder(container, { start = null, title = t("folders.title") } = {}) {
+  try {
+    return (await post("/folders/choose", { title, start })).path;
+  } catch (error) {
+    if (error.code !== "no-folder-dialog") throw error;
+    return pickFolder(container, { start, title });
+  }
+}
+
+// The page's own folder browser. Resolves with the chosen folder's path, or null if the user went back.
 export function pickFolder(container, { start = null, title = t("folders.title") } = {}) {
   return new Promise((resolve) => {
     const list = h("ul", { class: "folders" });

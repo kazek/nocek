@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
+from starlette.types import Scope
 
 from nocek import __version__
 from nocek.storage import settings as app_settings
@@ -19,6 +20,17 @@ from nocek.web.security import COOKIE, Guard
 from nocek.web.state import AppState
 
 STATIC = Path(__file__).parent / "static"
+# Reuse a stored copy only after asking whether it is still current (a cheap
+# 304 when it is): a script kept from before an update would otherwise run
+# against the new server.
+REVALIDATE = {"Cache-Control": "no-cache"}
+
+
+class RevalidatedFiles(StaticFiles):
+    async def get_response(self, path: str, scope: Scope) -> Response:
+        response = await super().get_response(path, scope)
+        response.headers.update(REVALIDATE)
+        return response
 
 
 def create_app(
@@ -73,7 +85,7 @@ def create_app(
                     max_age=10 * 365 * 24 * 3600,
                 )
             return response
-        return FileResponse(STATIC / "index.html")
+        return FileResponse(STATIC / "index.html", headers=REVALIDATE)
 
-    app.mount("/static", StaticFiles(directory=STATIC), name="static")
+    app.mount("/static", RevalidatedFiles(directory=STATIC), name="static")
     return app

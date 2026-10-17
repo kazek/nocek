@@ -45,7 +45,8 @@
     "invalid-spectrogram": "Te ustawienia spektrogramu są poza zakresem.",
     "no-such-job": "To zadanie już nie istnieje.",
     "job-not-running": "To zadanie już się zakończyło.",
-    "no-such-language": "Ten język nie jest dostępny."
+    "no-such-language": "Ten język nie jest dostępny.",
+    "no-folder-dialog": "Na tym komputerze nie ma okna wyboru katalogu, które Nocek mógłby otworzyć."
   },
   "abstention": {
     "too-short": "Nagranie jest za krótkie, żeby je ocenić.",
