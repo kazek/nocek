@@ -15,6 +15,7 @@ from nyctalus.core import region as regions
 from nyctalus.core import taxonomy
 from nyctalus.core.region import Status
 from nyctalus.core.taxonomy import Taxon
+from nyctalus.recorders import sun
 from nyctalus.recorders.base import Config
 from nyctalus.recorders.checks import check
 from nyctalus.recorders.registry import RECORDERS
@@ -352,3 +353,19 @@ def get_nights(
 
 def _names(taxa: frozenset[Taxon]) -> list[str]:
     return sorted(t.name for t in taxa)
+
+
+@router.get("/sun")
+def get_sun(request: Request, night: date, site_id: int) -> dict[str, str | None]:
+    """When the sun set and rose around a night at a site, in local time."""
+    with opened(request) as library:
+        site = library.repository.site(site_id)
+    if site is None:
+        raise ApiError(404, "no-such-site", str(site_id))
+    if site.latitude is None or site.longitude is None:
+        return {"sunset": None, "sunrise": None}
+    dusk, dawn = sun.local_night(night, site.latitude, site.longitude)
+    return {
+        "sunset": dusk.isoformat(timespec="minutes") if dusk else None,
+        "sunrise": dawn.isoformat(timespec="minutes") if dawn else None,
+    }

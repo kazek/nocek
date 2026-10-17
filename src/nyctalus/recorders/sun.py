@@ -70,3 +70,20 @@ def _sun(moment: datetime) -> tuple[float, float]:
         - 1.25 * ecc * ecc * math.sin(2 * mean_anom)
     )
     return declination, equation_of_time
+
+
+def local_night(
+    night: date, latitude: float, longitude: float
+) -> tuple[datetime | None, datetime | None]:
+    """Sunset on the evening a night begins and sunrise the next morning, in local time.
+
+    Local means this computer's time zone on that date, as recorders keep
+    the local clock their phone gave them.
+    """
+    zone = datetime(night.year, night.month, night.day, 12).astimezone().tzinfo
+    dusk = sunset(night, latitude, longitude)
+    dawn = sunrise(night + timedelta(days=1), latitude, longitude)
+    return (
+        dusk.astimezone(zone).replace(tzinfo=None) if dusk else None,
+        dawn.astimezone(zone).replace(tzinfo=None) if dawn else None,
+    )

@@ -243,3 +243,17 @@ figure { margin: 0 0 var(--gap); }
 figcaption h2 { margin-top: 0; }
 details { margin-top: 8px; }
 summary { cursor: pointer; color: var(--muted); }
+
+/* One night: lanes of recordings, the sun's times, and the list by the hour. */
+.timeline .lane-label { fill: var(--text); font-size: 12px; }
+.timeline .tick.named { fill: var(--chart); }
+.timeline .tick.withheld { fill: var(--muted); }
+.timeline .tick.quiet { fill: var(--line); }
+.timeline .sun { stroke: var(--warn); stroke-width: 1; }
+.timeline .sun-label { fill: var(--warn); }
+details.hour { border-bottom: 1px solid var(--line); padding: 8px 0; margin: 0; }
+details.hour summary { color: var(--text); }
+details.hour table { margin-top: 8px; }
+table.recordings td:first-child, table.recordings th:first-child { width: 1%; white-space: nowrap; }
+.pager { margin-bottom: 8px; }
+.bats { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; }

@@ -207,7 +207,8 @@
     "import": "Import",
     "sites": "Sites",
     "devices": "Recorders",
-    "settings": "Settings"
+    "settings": "Settings",
+    "recording": "Recording"
   },
   "common": {
     "save": "Save",
@@ -299,5 +300,45 @@
     "from": "From the night of",
     "to": "To the night of",
     "clear": "Clear filters"
+  },
+  "nights_page": {
+    "title": "Nights",
+    "night": "Night",
+    "all_nights": "All nights",
+    "recordings": "Recordings",
+    "with_calls": "With bat calls",
+    "named": "With a named bat",
+    "timeline": "Recordings through the night",
+    "sunset": "Sunset {time}",
+    "sunrise": "Sunrise {time}",
+    "no_sun": "Give the site a position to see sunset and sunrise here.",
+    "withheld": "Calls, name withheld",
+    "no_calls": "No bat calls",
+    "not_analysed": "Not analysed yet",
+    "by_hour": "Hour by hour",
+    "empty": "No recordings on this night.",
+    "tooltip": "{time} · {file}",
+    "hour_summary": "{time} · {recordings} · {named}",
+    "named_count": {
+      "one": "{n} with a named bat",
+      "other": "{n} with a named bat"
+    }
+  },
+  "recordings_page": {
+    "title": "Recordings",
+    "time": "Time",
+    "site": "Site",
+    "bats": "Bats",
+    "withheld": {
+      "one": "calls, name withheld",
+      "other": "{n} animals, names withheld"
+    },
+    "no_calls": "no bat calls",
+    "not_analysed": "not analysed yet",
+    "earlier": "Earlier",
+    "later": "Later",
+    "showing": "{first}–{last} of {total}",
+    "none": "No recordings match.",
+    "open": "Open"
   }
 }

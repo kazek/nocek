@@ -242,3 +242,22 @@ def test_nights_follow_the_date_filter(client: TestClient, library: Library) -> 
     nights = client.get("/api/nights", params={"first_night": "2026-09-08"}).json()
 
     assert [n["night"] for n in nights] == ["2026-09-08"]
+
+
+def test_sun_times_for_a_night_at_a_site(client: TestClient, library: Library) -> None:
+    site_id = client.get("/api/sites").json()[0]["id"]
+
+    times = client.get("/api/sun", params={"night": "2026-09-07", "site_id": site_id}).json()
+
+    assert times["sunset"].startswith("2026-09-07T")
+    assert times["sunrise"].startswith("2026-09-08T")
+    assert "17:00" < times["sunset"][11:] < "21:00"
+    assert "04:00" < times["sunrise"][11:] < "08:00"
+
+
+def test_no_sun_times_without_a_position(client: TestClient, library: Library) -> None:
+    site = client.post("/api/sites", json={"name": "Somewhere"}).json()
+
+    times = client.get("/api/sun", params={"night": "2026-09-07", "site_id": site["id"]}).json()
+
+    assert times == {"sunset": None, "sunrise": None}

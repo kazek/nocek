@@ -18,11 +18,12 @@ export function apiQuery(filters, extra = {}) {
   return new URLSearchParams({ ...filters, ...extra }).toString();
 }
 
-// A row of controls; changing one navigates to path with the new filters.
-export function filterBar(path, filters, sites, devices) {
+// A row of controls; changing one navigates to path with the new filters,
+// keeping the other parameters of the address (keep), such as a chosen bat.
+export function filterBar(path, filters, sites, devices, keep = {}) {
   const go = (change) => {
     const next = { ...filters, ...change };
-    const query = new URLSearchParams();
+    const query = new URLSearchParams(keep);
     for (const [short, long] of Object.entries(KEYS)) {
       if (next[long]) query.set(short, next[long]);
     }
@@ -55,7 +56,11 @@ export function filterBar(path, filters, sites, devices) {
     h("label", {}, t("filters.from"), day("first_night")),
     h("label", {}, t("filters.to"), day("last_night")),
     Object.keys(filters).length
-      ? h("button", { onclick: () => (location.hash = `#${path}`) }, t("filters.clear"))
+      ? h(
+          "button",
+          { onclick: () => (location.hash = `#${path}${Object.keys(keep).length ? `?${new URLSearchParams(keep)}` : ""}`) },
+          t("filters.clear"),
+        )
       : null,
   );
 }

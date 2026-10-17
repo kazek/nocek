@@ -8,7 +8,7 @@ const SVG = "http://www.w3.org/2000/svg";
 const HEIGHT = 200;
 const PAD = { top: 12, right: 8, bottom: 26, left: 36 };
 
-function svg(tag, attributes = {}) {
+export function svg(tag, attributes = {}) {
   const element = document.createElementNS(SVG, tag);
   for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
   return element;
