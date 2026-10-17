@@ -1,9 +1,10 @@
 """Where the application keeps its own files, and how the user set it up.
 
 The settings file, the access token and the model weights live in the
-platform's usual place for application data (on macOS ~/Library/Application
-Support/Nocek, on Windows %LOCALAPPDATA%\\Nocek, on Linux
-~/.local/share/nocek). The library is wherever the user chose to put it.
+platform's usual places for application data (on macOS ~/Library/Application
+Support/Nocek, on Windows %LOCALAPPDATA%\\Nocek, on Linux ~/.config/Nocek for the
+settings and ~/.local/share/Nocek for the models). The library is wherever the
+user chose to put it.
 """
 
 from __future__ import annotations

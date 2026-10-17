@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "nocek"
 description = "Identify bats from ultrasonic recordings, in your browser."
 readme = "README.md"
-license = "MIT"
+license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dynamic = ["version"]

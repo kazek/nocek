@@ -276,7 +276,7 @@
     "about": {
       "title": "O programie",
       "version": "Wersja {version}",
-      "licence": "Nocek to wolne oprogramowanie na licencji MIT. Modele, z których korzysta, wolno używać tylko do celów niekomercyjnych.",
+      "licence": "Nocka wolno używać tylko do celów niekomercyjnych, na licencji PolyForm Noncommercial 1.0.0; tak samo modeli, z których korzysta.",
       "private": "Twoje nagrania zostają na tym komputerze. Nocek łączy się z internetem tylko po to, żeby pobrać pliki modelu BattyBirdNET.",
       "models": "Modele",
       "based_on": "Oparty na {model}: {authors}",

@@ -256,7 +256,7 @@
     "about": {
       "title": "Über Nocek",
       "version": "Version {version}",
-      "licence": "Nocek ist freie Software unter der MIT-Lizenz. Die verwendeten Modelle dürfen nur für nicht kommerzielle Zwecke genutzt werden.",
+      "licence": "Nocek darf nur für nicht kommerzielle Zwecke genutzt werden, unter der PolyForm Noncommercial License 1.0.0; ebenso die Modelle, die es verwendet.",
       "private": "Deine Aufnahmen bleiben auf diesem Computer. Nocek geht nur online, um die Modelldateien von BattyBirdNET herunterzuladen.",
       "models": "Modelle",
       "based_on": "Basiert auf {model}: {authors}",
