@@ -331,10 +331,14 @@ def get_totals(
 
 @router.get("/nights")
 def get_nights(
-    request: Request, site_id: int | None = None, device_id: int | None = None
+    request: Request,
+    site_id: int | None = None,
+    device_id: int | None = None,
+    first_night: date | None = None,
+    last_night: date | None = None,
 ) -> list[dict[str, Any]]:
     with opened(request) as library:
-        found = summaries.nights(library.conn, _filter(site_id, device_id, None, None))
+        found = summaries.nights(library.conn, _filter(site_id, device_id, first_night, last_night))
     return [
         {
             "night": n.night.isoformat(),

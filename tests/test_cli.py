@@ -1,5 +1,6 @@
 import logging
 import socket
+import sys
 
 import pytest
 
@@ -45,3 +46,20 @@ def test_the_token_never_reaches_the_log() -> None:
 
     assert "s3cret" not in record.getMessage()
     assert "/?token=…&x=1" in record.getMessage()
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="TIME_WAIT behaves differently on Windows")
+def test_a_port_just_released_by_a_server_is_free_again() -> None:
+    # A server that served a request and stopped leaves its port in TIME_WAIT.
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind((HOST, 0))
+    server.listen()
+    port = server.getsockname()[1]
+    client = socket.create_connection((HOST, port))
+    accepted, _ = server.accept()
+    accepted.close()  # the server side closes first, so it holds TIME_WAIT
+    server.close()
+    client.close()
+
+    assert free_port(port) == port

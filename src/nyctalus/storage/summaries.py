@@ -201,3 +201,57 @@ def _recording_row(r: sqlite3.Row) -> RecordingRow:
             frozenset(Taxon(n) for n in json.loads(taxa)) for taxa in json.loads(r["named"])
         ),
     )
+
+
+@dataclass(frozen=True)
+class VerdictRow:
+    """One animal in one recording, or the recording alone when it has none."""
+
+    file_name: str
+    recorded_at: str | None
+    night: str | None
+    site: str | None
+    device: str | None
+    analysed: bool
+    model_class: str | None
+    taxa: tuple[str, ...] | None
+    reasons: tuple[str, ...]
+    agreeing: int | None
+    named: int | None
+    best_score: float | None
+    n_calls: int | None
+
+
+def verdict_rows(conn: sqlite3.Connection, where: Filter | None = None) -> list[VerdictRow]:
+    condition, params = _condition(where or Filter())
+    rows = conn.execute(
+        "SELECT r.file_name, r.recorded_at, r.night, s.name AS site,"
+        " COALESCE(d.label, d.uid) AS device,"
+        " EXISTS (SELECT 1 FROM result WHERE recording_id = r.id) AS analysed,"
+        " v.model_class, v.taxa, v.reasons, v.agreeing, v.named, v.best_score, v.n_calls"
+        " FROM recording r"
+        " LEFT JOIN site s ON s.id = r.site_id"
+        " LEFT JOIN device d ON d.id = r.device_id"
+        " LEFT JOIN source_verdict v ON v.recording_id = r.id"
+        f" WHERE {condition}"
+        " ORDER BY r.recorded_at, r.id, v.position",
+        params,
+    ).fetchall()
+    return [
+        VerdictRow(
+            file_name=r["file_name"],
+            recorded_at=r["recorded_at"],
+            night=r["night"],
+            site=r["site"],
+            device=r["device"],
+            analysed=bool(r["analysed"]),
+            model_class=r["model_class"],
+            taxa=tuple(json.loads(r["taxa"])) if r["taxa"] else None,
+            reasons=tuple(json.loads(r["reasons"])) if r["reasons"] else (),
+            agreeing=r["agreeing"],
+            named=r["named"],
+            best_score=r["best_score"],
+            n_calls=r["n_calls"],
+        )
+        for r in rows
+    ]

@@ -1,3 +1,5 @@
+import csv
+import io
 from datetime import datetime
 from pathlib import Path, PurePosixPath
 
@@ -209,3 +211,34 @@ def test_totals_for_one_site(client: TestClient, library: Library) -> None:
     site_id = client.get("/api/sites").json()[0]["id"]
 
     assert client.get("/api/totals", params={"site_id": site_id}).json()["recordings"] == 2
+
+
+def test_exports_species_as_csv(client: TestClient, library: Library) -> None:
+    response = client.get("/api/export/species.csv")
+
+    assert response.headers["content-type"].startswith("text/csv")
+    assert 'filename="nyctalus-species.csv"' in response.headers["content-disposition"]
+    rows = list(csv.reader(io.StringIO(response.text.lstrip("﻿"))))
+    assert rows[0][:4] == ["scientific_name", "name", "recordings", "nights"]
+    assert rows[1][:4] == ["Nyctalus noctula", "Common noctule", "2", "2"]
+
+
+def test_exports_every_recording_as_csv(client: TestClient, library: Library) -> None:
+    site_id = client.get("/api/sites").json()[0]["id"]
+
+    every = list(
+        csv.DictReader(io.StringIO(client.get("/api/export/recordings.csv").text.lstrip("﻿")))
+    )
+    one_site = client.get("/api/export/recordings.csv", params={"site_id": site_id}).text
+
+    assert [r["status"] for r in every] == ["named", "named", "named"]
+    assert every[1]["scientific_name"] == "Pipistrellus pipistrellus"
+    assert every[1]["name"] == "Common pipistrelle"
+    assert every[0]["site"] == "Balcony" and every[2]["site"] == ""
+    assert one_site.count("\n") == 3  # header and two recordings
+
+
+def test_nights_follow_the_date_filter(client: TestClient, library: Library) -> None:
+    nights = client.get("/api/nights", params={"first_night": "2026-09-08"}).json()
+
+    assert [n["night"] for n in nights] == ["2026-09-08"]

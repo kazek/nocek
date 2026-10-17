@@ -191,15 +191,15 @@
     "Vespertilio murinus": "Parti-coloured bat"
   },
   "genus": {
-    "Barbastella": "barbastelles",
-    "Eptesicus": "serotines",
+    "Barbastella": "Barbastelles",
+    "Eptesicus": "Serotines",
     "Hypsugo": "Savi's pipistrelles",
-    "Myotis": "mouse-eared bats",
-    "Nyctalus": "noctules",
-    "Pipistrellus": "pipistrelles",
-    "Plecotus": "long-eared bats",
-    "Rhinolophus": "horseshoe bats",
-    "Vespertilio": "parti-coloured bats"
+    "Myotis": "Mouse-eared bats",
+    "Nyctalus": "Noctules",
+    "Pipistrellus": "Pipistrelles",
+    "Plecotus": "Long-eared bats",
+    "Rhinolophus": "Horseshoe bats",
+    "Vespertilio": "Parti-coloured bats"
   },
   "nav": {
     "species": "Who was here",
@@ -267,5 +267,37 @@
     "library": "Library",
     "open_other": "Open another library",
     "create_other": "Create a new library"
+  },
+  "species_page": {
+    "title": "Who was here",
+    "recordings": "Recordings",
+    "nights": "Nights",
+    "with_calls": "With bat calls",
+    "analysed": "Analysed",
+    "bat": "Bat",
+    "first_night": "First night",
+    "last_night": "Last night",
+    "best_score": "Best score",
+    "best_score_help": "The most confident the network ever was about this bat. A bat met often whose best stays low may be something else mistaken for it.",
+    "none_named": "No bat has been named in these recordings yet.",
+    "empty": "There are no recordings here yet.",
+    "import_first": "Import recordings",
+    "chart": "Recordings with a named bat, night by night",
+    "chart_table": "Show the nights as a table",
+    "night": "Night",
+    "tooltip": "{named} with a named bat · {with_calls} with calls · {recordings} recordings",
+    "download": "Download as CSV",
+    "download_species": "these totals",
+    "download_recordings": "every recording with its verdict",
+    "named": "With a named bat"
+  },
+  "filters": {
+    "site": "Site",
+    "all_sites": "All sites",
+    "device": "Recorder",
+    "all_devices": "All recorders",
+    "from": "From the night of",
+    "to": "To the night of",
+    "clear": "Clear filters"
   }
 }

@@ -1,4 +1,5 @@
-// Screens by address: #/settings, #/nights/2026-09-02, ...
+// Screens by address: #/settings, #/nights/2026-09-02, #/?site=1 ...
+// A screen gets its address's parts, then the query as URLSearchParams.
 
 const routes = [];
 
@@ -13,19 +14,20 @@ export function go(path) {
 export function start(view, before) {
   const show = async () => {
     const path = location.hash.slice(1) || "/";
-    const redirect = await before(path);
-    if (redirect && redirect !== path) return go(redirect);
+    const [pathname, search = ""] = path.split("?");
+    const redirect = await before(pathname);
+    if (redirect && redirect !== pathname) return go(redirect);
     for (const link of document.querySelectorAll(".top nav a")) {
       const target = link.getAttribute("href").slice(1);
-      const current = target === "/" ? path === "/" : path.startsWith(target);
+      const current = target === "/" ? pathname === "/" : pathname.startsWith(target);
       link.toggleAttribute("aria-current", false);
       if (current) link.setAttribute("aria-current", "page");
     }
     for (const { pattern, render } of routes) {
-      const match = path.match(pattern);
+      const match = pathname.match(pattern);
       if (match) {
         view.replaceChildren();
-        await render(view, ...match.slice(1).map(decodeURIComponent));
+        await render(view, ...match.slice(1).map(decodeURIComponent), new URLSearchParams(search));
         view.focus();
         return;
       }

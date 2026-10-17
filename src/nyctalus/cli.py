@@ -9,6 +9,7 @@ import argparse
 import logging
 import re
 import socket
+import sys
 import webbrowser
 from collections.abc import Sequence
 from logging.handlers import RotatingFileHandler
@@ -70,9 +71,17 @@ def serve(port: int, open_browser: bool) -> None:
 
 
 def free_port(wanted: int, attempts: int = 20) -> int:
-    """The wanted port, or the first free one after it."""
+    """The wanted port, or the first free one after it.
+
+    Tested the way the server will bind it: with SO_REUSEADDR, so a port
+    still holding connections from a server that just stopped counts as
+    free, as it is to the server. (On Windows that option would let a port
+    in use be taken over, so there it is left off.)
+    """
     for port in range(wanted, wanted + attempts):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if sys.platform != "win32":
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 s.bind((HOST, port))
             except OSError:
