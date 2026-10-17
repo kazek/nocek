@@ -23,6 +23,8 @@ class Abstention(StrEnum):
     MIXED_SOURCES = "mixed-sources"  # several animals or noise calling at once
     RULED_OUT = "ruled-out"  # every candidate was excluded
     NO_MATCH = "no-match"  # the best candidate scores too low
+    OUT_OF_BAND = "out-of-band"  # the calls' frequency contradicts their label
+    INCONCLUSIVE = "inconclusive"  # the calls vote evenly between labels
 
 
 @dataclass(frozen=True)

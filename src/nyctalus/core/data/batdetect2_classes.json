@@ -1,0 +1,31 @@
+{
+  "notes": [
+    "What each BatDetect2 class can stand for. The model was trained on British bats; species it has no class for are measured landing in the nearest class it has, so that class stands for them too (from its results on reference recordings of known species): Eptesicus nilssonii and Vespertilio murinus in Nyctalus leisleri, Pipistrellus kuhlii in Pipistrellus nathusii. Myotis and Plecotus are reported to genus only, as calls do not separate their species reliably.",
+    "low_khz: plausible median low edge of the model's call boxes (roughly the end frequency) for the class, from published ranges with a margin of about 6 kHz. A source whose calls sit outside it contradicts its own label. Horseshoe bats end their constant-frequency call with a sweep downwards, so their boxes reach well below the frequency they are known by."
+  ],
+  "classes": {
+    "Barbastellus barbastellus": {"taxa": ["Barbastella barbastellus"], "low_khz": [24, 46]},
+    "Eptesicus serotinus": {"taxa": ["Eptesicus serotinus"], "low_khz": [19, 36]},
+    "Myotis alcathoe": {"taxa": ["Myotis"], "low_khz": [25, 95]},
+    "Myotis bechsteinii": {"taxa": ["Myotis"], "low_khz": [25, 95]},
+    "Myotis brandtii": {"taxa": ["Myotis"], "low_khz": [25, 95]},
+    "Myotis daubentonii": {"taxa": ["Myotis"], "low_khz": [25, 95]},
+    "Myotis mystacinus": {"taxa": ["Myotis"], "low_khz": [25, 95]},
+    "Myotis nattereri": {"taxa": ["Myotis"], "low_khz": [25, 95]},
+    "Nyctalus leisleri": {
+      "taxa": ["Nyctalus leisleri", "Vespertilio murinus", "Eptesicus nilssonii"],
+      "low_khz": [17, 38]
+    },
+    "Nyctalus noctula": {"taxa": ["Nyctalus noctula"], "low_khz": [12, 28]},
+    "Pipistrellus nathusii": {
+      "taxa": ["Pipistrellus nathusii", "Pipistrellus kuhlii"],
+      "low_khz": [30, 48]
+    },
+    "Pipistrellus pipistrellus": {"taxa": ["Pipistrellus pipistrellus"], "low_khz": [38, 56]},
+    "Pipistrellus pygmaeus": {"taxa": ["Pipistrellus pygmaeus"], "low_khz": [47, 66]},
+    "Plecotus auritus": {"taxa": ["Plecotus"], "low_khz": [16, 52]},
+    "Plecotus austriacus": {"taxa": ["Plecotus"], "low_khz": [16, 52]},
+    "Rhinolophus ferrumequinum": {"taxa": ["Rhinolophus ferrumequinum"], "low_khz": [58, 92]},
+    "Rhinolophus hipposideros": {"taxa": ["Rhinolophus hipposideros"], "low_khz": [80, 125]}
+  }
+}
