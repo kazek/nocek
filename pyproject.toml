@@ -26,8 +26,9 @@ dependencies = [
     # BatDetect2 1.3.1 imports audioread, which newer librosa no longer pulls in.
     "audioread>=3.0",
     "batdetect2==1.3.1",
-    # BattyBirdNET: the maintained TFLite runtime, and the resampler to 256 kHz.
-    "ai-edge-litert>=1.2",
+    # BattyBirdNET: the maintained TFLite runtime (2.1.2 is the first with
+    # wheels for Windows), and the resampler to 256 kHz.
+    "ai-edge-litert>=2.1.2",
     "soxr>=0.5",
     # Where application data and settings belong on each operating system.
     "platformdirs>=4",
