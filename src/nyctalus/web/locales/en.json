@@ -1,0 +1,139 @@
+{
+  "language": {
+    "name": "English"
+  },
+  "app": {
+    "title": "Nyctalus",
+    "tagline": "Identify bats from ultrasonic recordings"
+  },
+  "count": {
+    "recordings": {"one": "{n} recording", "other": "{n} recordings"},
+    "nights": {"one": "{n} night", "other": "{n} nights"}
+  },
+  "error": {
+    "failed": "Something went wrong.",
+    "internal-error": "Something unexpected went wrong. The log file has the details.",
+    "forbidden-host": "This page is not Nyctalus's own page.",
+    "forbidden-origin": "Another web page tried to change Nyctalus.",
+    "missing-token": "Open Nyctalus from the address it showed when it started.",
+    "invalid-setting": "That setting has a value Nyctalus does not accept.",
+    "no-library": "No library is open.",
+    "library-unavailable": "That folder cannot be used as a library.",
+    "folder-not-writable": "Nyctalus cannot write to that folder.",
+    "folder-not-readable": "Nyctalus cannot read that folder.",
+    "not-a-folder": "That is not a folder.",
+    "not-an-absolute-path": "Choose a folder with its full path.",
+    "site-exists": "A site with that name already exists.",
+    "no-such-site": "That site no longer exists.",
+    "unknown-species": "That species is not in the catalogue.",
+    "not-a-species": "Choose a species, not a genus.",
+    "no-such-device": "That recorder no longer exists.",
+    "no-such-recording": "That recording no longer exists.",
+    "file-missing": "The recording's file is missing from the library folder.",
+    "unreadable-recording": "The recording's file cannot be read.",
+    "invalid-slowdown": "Playback can be slowed down 1 to 40 times.",
+    "invalid-spectrogram": "Those spectrogram settings are out of range.",
+    "no-such-job": "That task no longer exists.",
+    "job-not-running": "That task has already finished.",
+    "no-such-language": "That language is not available."
+  },
+  "abstention": {
+    "too-short": "The recording is too short to judge.",
+    "too-few-pulses": "Too few calls to measure.",
+    "mixed-sources": "Several animals or noise calling at once.",
+    "ruled-out": "Every candidate was ruled out, or does not occur here.",
+    "no-match": "Nothing matches well enough.",
+    "out-of-band": "The calls' frequency contradicts the name.",
+    "inconclusive": "The calls vote evenly between names.",
+    "uncorroborated": "The measurement did not confirm that a bat was there.",
+    "contradicted": "Two other methods agree it is a different bat."
+  },
+  "note": {
+    "measured-like-common-pipistrelle": "The measured end frequency points to the common pipistrelle.",
+    "measured-like-nathusius-pipistrelle": "The measured end frequency points to Nathusius' or Kuhl's pipistrelle."
+  },
+  "import": {
+    "skip": {
+      "known": "already in the library",
+      "not-bat-mode": "recorded in a mode other than bat",
+      "unreadable": "empty or unreadable"
+    },
+    "notice": {
+      "no-device": "Some recordings could not be tied to a recorder.",
+      "no-site": "Some recordings were made where no site is set up yet.",
+      "clock-ahead": "Some recordings are dated in the future: the recorder's clock may be fast."
+    },
+    "problem": {
+      "empty-settings": "An empty settings file was found.",
+      "unreadable-settings": "A settings file could not be read."
+    }
+  },
+  "config_issue": {
+    "starts-after-sunset": "Starts recording at {1}, after sunset at {0}.",
+    "ends-before-sunrise": "Stops recording at {1}, before sunrise at {0}.",
+    "not-bat-mode": "Set to record in {0} mode.",
+    "sensitivity-changed": "Trigger sensitivity changed from {0} to {1}."
+  },
+  "job": {
+    "kind": {
+      "import": "Import",
+      "analyse": "Analysis",
+      "models": "Model download"
+    },
+    "status": {
+      "queued": "Waiting",
+      "running": "Running",
+      "done": "Done",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "phase": {
+      "models": "Downloading models",
+      "copying": "Copying recordings",
+      "analysing": "Analysing recordings"
+    }
+  },
+  "status": {
+    "occurs": "occurs",
+    "rare": "rare",
+    "absent": "absent"
+  },
+  "species": {
+    "Barbastella barbastellus": "Western barbastelle",
+    "Eptesicus nilssonii": "Northern bat",
+    "Eptesicus serotinus": "Serotine",
+    "Hypsugo savii": "Savi's pipistrelle",
+    "Myotis alcathoe": "Alcathoe bat",
+    "Myotis bechsteinii": "Bechstein's bat",
+    "Myotis brandtii": "Brandt's bat",
+    "Myotis dasycneme": "Pond bat",
+    "Myotis daubentonii": "Daubenton's bat",
+    "Myotis emarginatus": "Geoffroy's bat",
+    "Myotis myotis": "Greater mouse-eared bat",
+    "Myotis mystacinus": "Whiskered bat",
+    "Myotis nattereri": "Natterer's bat",
+    "Nyctalus lasiopterus": "Greater noctule",
+    "Nyctalus leisleri": "Leisler's bat",
+    "Nyctalus noctula": "Common noctule",
+    "Pipistrellus kuhlii": "Kuhl's pipistrelle",
+    "Pipistrellus nathusii": "Nathusius' pipistrelle",
+    "Pipistrellus pipistrellus": "Common pipistrelle",
+    "Pipistrellus pygmaeus": "Soprano pipistrelle",
+    "Plecotus auritus": "Brown long-eared bat",
+    "Plecotus austriacus": "Grey long-eared bat",
+    "Rhinolophus ferrumequinum": "Greater horseshoe bat",
+    "Rhinolophus hipposideros": "Lesser horseshoe bat",
+    "Vespertilio murinus": "Parti-coloured bat"
+  },
+  "genus": {
+    "Barbastella": "barbastelles",
+    "Eptesicus": "serotines",
+    "Hypsugo": "Savi's pipistrelles",
+    "Myotis": "mouse-eared bats",
+    "Nyctalus": "noctules",
+    "Pipistrellus": "pipistrelles",
+    "Plecotus": "long-eared bats",
+    "Rhinolophus": "horseshoe bats",
+    "Vespertilio": "parti-coloured bats"
+  }
+}

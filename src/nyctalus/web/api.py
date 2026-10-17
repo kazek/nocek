@@ -13,7 +13,7 @@ from nyctalus import __version__
 from nyctalus.storage import settings as app_settings
 from nyctalus.storage.library import Library, LibraryError
 from nyctalus.storage.settings import SettingsError
-from nyctalus.web import folders
+from nyctalus.web import folders, i18n
 from nyctalus.web.errors import ApiError
 from nyctalus.web.state import AppState
 
@@ -132,3 +132,18 @@ def _settings(s: app_settings.Settings) -> dict[str, Any]:
 
 def _folders(found: Any) -> list[dict[str, Any]]:
     return [{"name": f.name, "path": str(f.path), "recordings": f.recordings} for f in found]
+
+
+@router.get("/locales")
+def get_locales(request: Request) -> dict[str, Any]:
+    """The languages available, and the one to show this browser."""
+    chosen = i18n.choose(state(request).settings.language, request.headers.get("accept-language"))
+    return {"available": i18n.names(), "chosen": chosen}
+
+
+@router.get("/locales/{language}")
+def get_locale(language: str) -> dict[str, Any]:
+    try:
+        return i18n.texts(language)
+    except KeyError as error:
+        raise ApiError(404, "no-such-language", language) from error
