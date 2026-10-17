@@ -67,6 +67,9 @@ class Pippyg:
         configs.sort(key=lambda c: c.written_at)
         return Scan(recordings=tuple(recordings), configs=tuple(configs), findings=tuple(findings))
 
+    def parse_config(self, raw: str) -> Config:
+        return parse_settings(raw)
+
 
 def parse_settings(raw: str) -> Config:
     """A device_settings file. Raises ValueError, KeyError or TypeError if malformed."""

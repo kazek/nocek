@@ -140,6 +140,19 @@ class Repository:
             )
         return cur.rowcount == 1
 
+    def devices(self, kind: str) -> list[Device]:
+        rows = self.conn.execute("SELECT * FROM device WHERE kind = ? ORDER BY id", (kind,))
+        return [Device(r["id"], r["kind"], r["uid"], r["label"]) for r in rows]
+
+    def device_configs(self, kind: str) -> list[str]:
+        """Every stored configuration of that kind of recorder, as it was written."""
+        rows = self.conn.execute(
+            "SELECT c.settings FROM device_config c JOIN device d ON d.id = c.device_id"
+            " WHERE d.kind = ? ORDER BY c.written_at",
+            (kind,),
+        )
+        return [r["settings"] for r in rows]
+
     # --- Imports ---------------------------------------------------------
 
     def start_import(
@@ -216,6 +229,19 @@ class Repository:
     def recording_by_sha256(self, sha256: str) -> Recording | None:
         r = self.conn.execute("SELECT * FROM recording WHERE sha256 = ?", (sha256,)).fetchone()
         return _recording(r) if r else None
+
+    def has_file(self, device_id: int | None, file_name: str, size_bytes: int) -> bool:
+        """Whether a file of that name and size from that device is already here.
+
+        A quick test that needs no reading of the file; the checksum is still
+        what decides for a file that passes it.
+        """
+        row = self.conn.execute(
+            "SELECT 1 FROM recording WHERE file_name = ? AND size_bytes = ?"
+            " AND device_id IS ? LIMIT 1",
+            (file_name, size_bytes, device_id),
+        ).fetchone()
+        return row is not None
 
     def recordings_without_result(self) -> list[Recording]:
         rows = self.conn.execute(

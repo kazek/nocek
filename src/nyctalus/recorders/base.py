@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, time
 from enum import StrEnum
@@ -13,6 +15,14 @@ from typing import Protocol
 class Location:
     latitude: float
     longitude: float
+
+    def distance_m(self, other: Location) -> float:
+        """Great-circle distance, in metres."""
+        lat1, lat2 = math.radians(self.latitude), math.radians(other.latitude)
+        dlat = lat2 - lat1
+        dlon = math.radians(other.longitude - self.longitude)
+        a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+        return 2 * 6_371_000 * math.asin(math.sqrt(a))
 
 
 @dataclass(frozen=True)
@@ -75,10 +85,13 @@ class Scan:
 
     def config_at(self, moment: datetime, device_number: int) -> Config | None:
         """The latest configuration of that device written before a moment."""
-        earlier = [
-            c for c in self.configs if c.device_number == device_number and c.written_at <= moment
-        ]
-        return earlier[-1] if earlier else None
+        return config_at(self.configs, moment, device_number)
+
+
+def config_at(configs: Iterable[Config], moment: datetime, device_number: int) -> Config | None:
+    """The latest of the configurations of that device written before a moment."""
+    earlier = [c for c in configs if c.device_number == device_number and c.written_at <= moment]
+    return max(earlier, key=lambda c: c.written_at) if earlier else None
 
 
 class Recorder(Protocol):
@@ -89,3 +102,7 @@ class Recorder(Protocol):
         ...
 
     def scan(self, folder: Path) -> Scan: ...
+
+    def parse_config(self, raw: str) -> Config:
+        """A configuration stored earlier, exactly as the recorder wrote it."""
+        ...
