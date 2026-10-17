@@ -32,6 +32,9 @@ def connect(path: Path, shared: bool = False) -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys = ON")
     # Lets the interface read while an analysis is writing.
     conn.execute("PRAGMA journal_mode = WAL")
+    # A write that meets another connection's write waits for it instead of
+    # failing at once: the server and the worker share the database.
+    conn.execute("PRAGMA busy_timeout = 5000")
     migrate(conn)
     return conn
 

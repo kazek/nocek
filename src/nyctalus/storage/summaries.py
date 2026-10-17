@@ -49,6 +49,87 @@ class Totals:
     nights: int
 
 
+@dataclass(frozen=True)
+class NightActivity:
+    night: date
+    recordings: int
+    with_calls: int
+    named: int  # recordings with at least one named animal
+
+
+@dataclass(frozen=True)
+class RecordingRow:
+    """One line of the recordings list: what is needed without opening the result."""
+
+    id: int
+    file_name: str
+    recorded_at: str | None
+    night: date | None
+    site_id: int | None
+    device_id: int | None
+    duration_s: float | None
+    analysed: bool
+    sources: int
+    named: tuple[frozenset[Taxon], ...]
+
+
+@dataclass(frozen=True)
+class Page:
+    rows: tuple[RecordingRow, ...]
+    total: int  # rows matching, across all pages
+
+
+def recordings(
+    conn: sqlite3.Connection,
+    where: Filter | None = None,
+    taxa: frozenset[Taxon] | None = None,
+    with_calls: bool = False,
+    offset: int = 0,
+    limit: int = 100,
+) -> Page:
+    """Recordings in time order. taxa keeps those naming exactly that animal."""
+    condition, params = _condition(where or Filter())
+    if taxa is not None:
+        condition += (
+            " AND EXISTS (SELECT 1 FROM source_verdict v"
+            " WHERE v.recording_id = r.id AND v.taxa = ?)"
+        )
+        params.append(json.dumps(sorted(t.name for t in taxa)))
+    if with_calls:
+        condition += " AND EXISTS (SELECT 1 FROM source_verdict v WHERE v.recording_id = r.id)"
+    total = conn.execute(f"SELECT COUNT(*) FROM recording r WHERE {condition}", params).fetchone()[
+        0
+    ]
+    rows = conn.execute(
+        "SELECT r.*,"
+        " EXISTS (SELECT 1 FROM result WHERE recording_id = r.id) AS analysed,"
+        " (SELECT COUNT(*) FROM source_verdict v WHERE v.recording_id = r.id) AS sources,"
+        " (SELECT json_group_array(v.taxa) FROM source_verdict v"
+        "  WHERE v.recording_id = r.id AND v.taxa IS NOT NULL) AS named"
+        f" FROM recording r WHERE {condition}"
+        " ORDER BY r.recorded_at, r.id LIMIT ? OFFSET ?",
+        [*params, limit, offset],
+    ).fetchall()
+    return Page(rows=tuple(_recording_row(r) for r in rows), total=total)
+
+
+def nights(conn: sqlite3.Connection, where: Filter | None = None) -> list[NightActivity]:
+    condition, params = _condition(where or Filter())
+    rows = conn.execute(
+        "SELECT r.night, COUNT(*) AS recordings,"
+        " SUM(EXISTS (SELECT 1 FROM source_verdict v WHERE v.recording_id = r.id)) AS with_calls,"
+        " SUM(EXISTS (SELECT 1 FROM source_verdict v"
+        "  WHERE v.recording_id = r.id AND v.taxa IS NOT NULL)) AS named"
+        f" FROM recording r WHERE r.night IS NOT NULL AND {condition}"
+        " GROUP BY r.night ORDER BY r.night",
+        params,
+    ).fetchall()
+    return [
+        NightActivity(date.fromisoformat(r["night"]), r["recordings"], r["with_calls"], r["named"])
+        for r in rows
+    ]
+
+
 def totals(conn: sqlite3.Connection, where: Filter | None = None) -> Totals:
     condition, params = _condition(where or Filter())
     species = conn.execute(
@@ -102,4 +183,21 @@ def _species_total(row: sqlite3.Row) -> SpeciesTotal:
         first_night=date.fromisoformat(row["first_night"]),
         last_night=date.fromisoformat(row["last_night"]),
         best_score=row["best_score"],
+    )
+
+
+def _recording_row(r: sqlite3.Row) -> RecordingRow:
+    return RecordingRow(
+        id=r["id"],
+        file_name=r["file_name"],
+        recorded_at=r["recorded_at"],
+        night=date.fromisoformat(r["night"]) if r["night"] else None,
+        site_id=r["site_id"],
+        device_id=r["device_id"],
+        duration_s=r["duration_s"],
+        analysed=bool(r["analysed"]),
+        sources=r["sources"],
+        named=tuple(
+            frozenset(Taxon(n) for n in json.loads(taxa)) for taxa in json.loads(r["named"])
+        ),
     )

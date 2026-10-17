@@ -41,6 +41,17 @@ class Device:
 
 
 @dataclass(frozen=True)
+class Import:
+    id: int
+    source: str
+    started_at: str
+    finished_at: str | None
+    copied: int
+    skipped: int
+    without_site: int
+
+
+@dataclass(frozen=True)
 class Recording:
     id: int
     sha256: str
@@ -94,6 +105,37 @@ class Repository:
         rows = self.conn.execute("SELECT * FROM site ORDER BY name")
         return [Site(r["id"], r["name"], r["latitude"], r["longitude"]) for r in rows]
 
+    def site(self, site_id: int) -> Site | None:
+        r = self.conn.execute("SELECT * FROM site WHERE id = ?", (site_id,)).fetchone()
+        return Site(r["id"], r["name"], r["latitude"], r["longitude"]) if r else None
+
+    def update_site(
+        self, site_id: int, name: str, latitude: float | None, longitude: float | None
+    ) -> Site | None:
+        with self.transaction():
+            self.conn.execute(
+                "UPDATE site SET name = ?, latitude = ?, longitude = ? WHERE id = ?",
+                (name, latitude, longitude, site_id),
+            )
+        return self.site(site_id)
+
+    def species_statuses(self, site_id: int) -> dict[Taxon, Status]:
+        """The statuses a site sets itself, over its region's."""
+        rows = self.conn.execute(
+            "SELECT species, status FROM site_species_status WHERE site_id = ? ORDER BY species",
+            (site_id,),
+        )
+        return {Taxon(r["species"]): Status(r["status"]) for r in rows}
+
+    def assign_site(self, import_id: int, site_id: int) -> int:
+        """Give an import's recordings that have no site this one. Returns how many."""
+        with self.transaction():
+            cur = self.conn.execute(
+                "UPDATE recording SET site_id = ? WHERE import_id = ? AND site_id IS NULL",
+                (site_id, import_id),
+            )
+        return cur.rowcount
+
     def set_species_status(self, site_id: int, species: Taxon, status: Status | None) -> None:
         """Override a species' status at a site; None returns it to the profile's."""
         with self.transaction():
@@ -109,12 +151,8 @@ class Repository:
 
     def region_of(self, site: Site) -> Region:
         """The profile for the site's location, with the site's own statuses on top."""
-        rows = self.conn.execute(
-            "SELECT species, status FROM site_species_status WHERE site_id = ?", (site.id,)
-        )
-        overrides: Mapping[Taxon, Status] = {Taxon(r["species"]): Status(r["status"]) for r in rows}
         profile = regions.profile_for(site.latitude, site.longitude)
-        return profile.region.overridden(overrides)
+        return profile.region.overridden(self.species_statuses(site.id))
 
     # --- Devices ---------------------------------------------------------
 
@@ -153,7 +191,44 @@ class Repository:
         )
         return [r["settings"] for r in rows]
 
+    def all_devices(self) -> list[Device]:
+        rows = self.conn.execute("SELECT * FROM device ORDER BY kind, id")
+        return [Device(r["id"], r["kind"], r["uid"], r["label"]) for r in rows]
+
+    def set_device_label(self, device_id: int, label: str | None) -> None:
+        with self.transaction():
+            self.conn.execute("UPDATE device SET label = ? WHERE id = ?", (label, device_id))
+
+    def configs_of(self, device_id: int) -> list[str]:
+        """One device's stored configurations, oldest first, as written."""
+        rows = self.conn.execute(
+            "SELECT settings FROM device_config WHERE device_id = ? ORDER BY written_at",
+            (device_id,),
+        )
+        return [r["settings"] for r in rows]
+
     # --- Imports ---------------------------------------------------------
+
+    def imports(self, limit: int = 50) -> list[Import]:
+        """The latest imports, newest first, with how many recordings still have no site."""
+        rows = self.conn.execute(
+            "SELECT i.*, (SELECT COUNT(*) FROM recording r"
+            "  WHERE r.import_id = i.id AND r.site_id IS NULL) AS without_site"
+            " FROM import i ORDER BY i.id DESC LIMIT ?",
+            (limit,),
+        )
+        return [
+            Import(
+                id=r["id"],
+                source=r["source"],
+                started_at=r["started_at"],
+                finished_at=r["finished_at"],
+                copied=r["copied"],
+                skipped=r["skipped"],
+                without_site=r["without_site"],
+            )
+            for r in rows
+        ]
 
     def start_import(
         self, source: str, device_id: int | None = None, site_id: int | None = None
