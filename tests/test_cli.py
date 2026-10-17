@@ -1,11 +1,17 @@
+import json
 import logging
 import socket
 import sys
+import threading
+from collections.abc import Iterator
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 
 import pytest
 
 from nyctalus import __version__
-from nyctalus.cli import DEFAULT_PORT, HOST, HideToken, build_parser, free_port, main
+from nyctalus.cli import DEFAULT_PORT, HOST, HideToken, build_parser, free_port, main, running
+from nyctalus.shortcut import DesktopEntry
 
 
 def test_prints_version(capsys: pytest.CaptureFixture[str]) -> None:
@@ -63,3 +69,55 @@ def test_a_port_just_released_by_a_server_is_free_again() -> None:
     client.close()
 
     assert free_port(port) == port
+
+
+def test_finds_a_nyctalus_already_running(client_port: int) -> None:
+    assert running(client_port)
+
+
+def test_nothing_running_on_a_free_port() -> None:
+    assert not running(free_port(DEFAULT_PORT + 100))
+
+
+def test_a_second_start_opens_the_first(monkeypatch: pytest.MonkeyPatch) -> None:
+    opened: list[str] = []
+    monkeypatch.setattr("nyctalus.cli.running", lambda port: True)
+    monkeypatch.setattr("nyctalus.cli.setup_logging", lambda: None)
+    monkeypatch.setattr("nyctalus.cli.settings.token", lambda: "t0ken")
+    monkeypatch.setattr("webbrowser.open", opened.append)
+    monkeypatch.setattr("nyctalus.cli.serve", lambda *a, **k: pytest.fail("second server"))
+
+    assert main([]) == 0
+    assert opened == [f"http://{HOST}:{DEFAULT_PORT}/?token=t0ken"]
+
+
+def test_the_shortcut_command(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    made = DesktopEntry(tmp_path / "nyctalus.desktop", Path("/usr/bin/python3"))
+    monkeypatch.setattr("nyctalus.shortcut.for_this_system", lambda: made)
+
+    assert main(["shortcut"]) == 0
+    assert made.path.exists()
+    assert main(["shortcut", "--remove"]) == 0
+    assert not made.path.exists()
+
+
+@pytest.fixture
+def client_port() -> Iterator[int]:
+    """A stand-in Nyctalus answering /api/health."""
+
+    class Health(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            body = json.dumps({"version": __version__}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *args: object) -> None:
+            pass
+
+    server = HTTPServer((HOST, 0), Health)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    yield server.server_address[1]
+    server.shutdown()

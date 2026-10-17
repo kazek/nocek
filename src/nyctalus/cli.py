@@ -6,10 +6,12 @@ The application is used through the browser; the command line only starts it.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import re
 import socket
 import sys
+import urllib.request
 import webbrowser
 from collections.abc import Sequence
 from logging.handlers import RotatingFileHandler
@@ -36,14 +38,52 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"port to listen on (default {DEFAULT_PORT}; the next free one if taken)",
     )
     parser.add_argument("--no-browser", action="store_true", help="do not open a browser")
+    commands = parser.add_subparsers(dest="command", metavar="command")
+    shortcut = commands.add_parser(
+        "shortcut", help="add Nyctalus to the system's menu, to start it without a terminal"
+    )
+    shortcut.add_argument("--remove", action="store_true", help="remove the shortcut instead")
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "shortcut":
+        return make_shortcut(remove=args.remove)
     setup_logging()
+    if running(args.port):
+        # Started again, from a shortcut say: show the one already running.
+        log.info("Nyctalus is already running at http://%s:%d", HOST, args.port)
+        if not args.no_browser:
+            webbrowser.open(f"http://{HOST}:{args.port}/?token={settings.token()}")
+        return 0
     serve(free_port(args.port), open_browser=not args.no_browser)
     return 0
+
+
+def make_shortcut(remove: bool) -> int:
+    from nyctalus import shortcut
+
+    made = shortcut.for_this_system()
+    try:
+        if remove:
+            print(f"Removed {made.path}" if made.remove() else f"There was no {made.path}")
+        else:
+            made.create()
+            print(f"Nyctalus can now be started from {made.path}")
+    except (OSError, shortcut.ShortcutError) as error:
+        print(f"Could not {'remove' if remove else 'make'} the shortcut: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def running(port: int) -> bool:
+    """Whether Nyctalus already answers on this port."""
+    try:
+        with urllib.request.urlopen(f"http://{HOST}:{port}/api/health", timeout=1) as response:
+            return "version" in json.loads(response.read())
+    except (OSError, ValueError):
+        return False
 
 
 def serve(port: int, open_browser: bool) -> None:
@@ -115,8 +155,11 @@ def setup_logging() -> None:
     folder.mkdir(parents=True, exist_ok=True)
     file = RotatingFileHandler(folder / "nyctalus.log", maxBytes=1_000_000, backupCount=3)
     file.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
-    console = logging.StreamHandler()
-    console.setFormatter(logging.Formatter("%(message)s"))
-    for handler in (file, console):
+    handlers: list[logging.Handler] = [file]
+    if sys.stderr is not None:  # started without a console, as pythonw does, there is none
+        console = logging.StreamHandler()
+        console.setFormatter(logging.Formatter("%(message)s"))
+        handlers.append(console)
+    for handler in handlers:
         handler.addFilter(HideToken())
-    logging.basicConfig(level=logging.INFO, handlers=[file, console], force=True)
+    logging.basicConfig(level=logging.INFO, handlers=handlers, force=True)
