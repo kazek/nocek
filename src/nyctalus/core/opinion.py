@@ -39,7 +39,8 @@ class Opinion:
     ranking: tuple[Candidate, ...]
     # The leader must score at least this to be named.
     min_score: float
-    # Candidates scoring at least this fraction of the leader are named with it.
+    # Candidates scoring at least this fraction of the leader, and at least
+    # min_score, are named with it.
     shortlist_ratio: float
     # Set when the pass declined before scoring anything.
     declined: Abstention | None = None
@@ -63,7 +64,8 @@ class Opinion:
         """Everything the pass considers as likely as its leader, or None."""
         if self.leader is None or self.abstention:
             return None
-        cut = self.leader.score * self.shortlist_ratio
+        # A candidate too weak to be named on its own is not named alongside.
+        cut = max(self.leader.score * self.shortlist_ratio, self.min_score)
         return frozenset().union(*(c.taxa for c in self.ranking if c.score >= cut))
 
     def excluding(self, rule: Callable[[Candidate], bool]) -> Opinion:

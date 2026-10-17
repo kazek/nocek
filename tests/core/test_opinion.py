@@ -54,3 +54,10 @@ def test_excluding_redraws_the_conclusion() -> None:
 
     assert without.taxa == frozenset({LEISLER, SEROTINE})
     assert o.taxa == frozenset({NOCTULE})
+
+
+def test_a_candidate_below_min_score_is_not_named_with_the_leader() -> None:
+    # 0.9 of the leader would let 0.49 in, but 0.49 is below min_score (0.5).
+    o = opinion((NOCTULE, 0.53), (LEISLER, 0.49))
+
+    assert o.taxa == frozenset({NOCTULE})

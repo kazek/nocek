@@ -252,8 +252,11 @@ def _measure(
     while end + 1 < len(inside) and inside[end + 1]:
         end += 1
 
-    # The analysis window smears the edges, so calls under about 2 ms read a
-    # little long. That is a limit of the measurement, not of the bat.
+    # Duration is the extent above the -20 dB level, so it depends on the
+    # call's envelope as well as its length: the analysis window lengthens a
+    # call with abrupt edges by up to a millisecond, while the quiet ends of a
+    # tapered call fall below the level and shorten it. No fixed correction
+    # fits both, and none improved the key on the reference recordings.
     duration_ms = (end - start + 1) * spec.frame_ms
     if not params.min_ms <= duration_ms <= params.max_ms:
         return None
