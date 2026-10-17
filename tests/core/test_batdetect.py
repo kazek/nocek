@@ -4,26 +4,11 @@ import pytest
 import soundfile as sf
 
 from nyctalus.core import batdetect, taxonomy
-from nyctalus.core.batdetect import Call, interpret
+from nyctalus.core.batdetect import interpret
 from nyctalus.core.opinion import Abstention
 from nyctalus.core.taxonomy import Taxon
 from tests import synth
-
-
-def calls(model_class: str, low_khz: float, n: int = 10, prob: float = 0.8) -> list[Call]:
-    """n calls one tenth of a second apart, boxed from low_khz to 15 kHz above."""
-    return [
-        Call(
-            start_s=i * 0.1,
-            end_s=i * 0.1 + 0.005,
-            low_khz=low_khz,
-            high_khz=low_khz + 15,
-            model_class=model_class,
-            class_prob=prob,
-            det_prob=0.9,
-        )
-        for i in range(n)
-    ]
+from tests.core.factories import calls
 
 
 def test_every_class_stands_for_catalogued_taxa() -> None:

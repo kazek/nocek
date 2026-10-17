@@ -1,0 +1,19 @@
+{
+  "notes": "Which species occur where. 'rare' means a name needs exceptionally strong evidence; 'absent' removes the species from every answer. A site can override any status. Bounds are a latitude/longitude box; the profile without bounds is the fallback.",
+  "profiles": [
+    {
+      "id": "central-europe",
+      "name": "Central Europe",
+      "bounds": {"south": 45.5, "north": 55.5, "west": 5.5, "east": 24.5},
+      "default": "occurs",
+      "species": {}
+    },
+    {
+      "id": "europe",
+      "name": "Europe",
+      "bounds": null,
+      "default": "occurs",
+      "species": {}
+    }
+  ]
+}

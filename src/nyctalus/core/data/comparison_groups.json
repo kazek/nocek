@@ -1,0 +1,9 @@
+{
+  "notes": "Taxa the passes are compared at. Within a group no pass has shown on recordings of known species that it can tell the members apart: BattyBirdNET swaps P. nathusii and P. kuhlii at full confidence and takes V. murinus for a noctule, BatDetect2 has no class for three of them. So two passes naming different members of one group agree, and no pass may narrow a group to one of its members. Taxa in no group are compared as themselves.",
+  "groups": [
+    ["Nyctalus leisleri", "Vespertilio murinus", "Eptesicus nilssonii"],
+    ["Pipistrellus nathusii", "Pipistrellus kuhlii"],
+    ["Myotis"],
+    ["Plecotus"]
+  ]
+}

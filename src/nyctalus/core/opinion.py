@@ -26,6 +26,8 @@ class Abstention(StrEnum):
     NO_MATCH = "no-match"  # the best candidate scores too low
     OUT_OF_BAND = "out-of-band"  # the calls' frequency contradicts their label
     INCONCLUSIVE = "inconclusive"  # the calls vote evenly between labels
+    UNCORROBORATED = "uncorroborated"  # the detector found too little to confirm a bat
+    CONTRADICTED = "contradicted"  # two other passes agree on a different animal
 
 
 @dataclass(frozen=True)

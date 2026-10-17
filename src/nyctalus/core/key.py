@@ -56,6 +56,10 @@ class Params:
     # whichever source happened to win.
     min_pulses: int = 3
     min_energy_share: float = 0.5
+    # A species that rarely occurs in a region must score at least this. The
+    # horseshoe-bat reference recording fits all three ranges and scores 1.0;
+    # the archive recordings that reached the name scored 0.67 to 0.68.
+    rare_min_score: float = 0.95
 
 
 DEFAULT_PARAMS = Params()

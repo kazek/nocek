@@ -1,29 +1,10 @@
 import pytest
 
 from nyctalus.core import key, taxonomy
-from nyctalus.core.detection import Detection, DominantGroup
+from nyctalus.core.detection import Detection
 from nyctalus.core.opinion import Abstention
 from nyctalus.core.taxonomy import Taxon
-
-
-def measured(
-    end_khz: float,
-    duration_ms: float,
-    interval_ms: float | None,
-    n_pulses: int = 10,
-    energy_share: float = 1.0,
-) -> Detection:
-    group = DominantGroup(
-        n_pulses=n_pulses,
-        energy_share=energy_share,
-        peak_khz=end_khz,
-        end_khz=end_khz,
-        duration_ms=duration_ms,
-        best_snr_db=30.0,
-        interval_ms=interval_ms,
-        interval_spread=0.1,
-    )
-    return Detection(sample_rate=384_000, duration_s=5.0, pulses=(), dominant=group)
+from tests.core.factories import measured
 
 
 def test_every_band_names_a_catalogued_taxon() -> None:
