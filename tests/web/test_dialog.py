@@ -135,3 +135,18 @@ def test_the_api_says_when_there_is_no_dialog(
 
 def test_another_page_cannot_open_a_dialog(stranger: TestClient) -> None:
     assert stranger.post("/api/folders/choose", json={}).status_code == 403
+
+
+def test_no_console_window_comes_with_the_dialog(monkeypatch: pytest.MonkeyPatch) -> None:
+    flags: list[int] = []
+
+    def run(*args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        flags.append(kwargs["creationflags"])
+        return subprocess.CompletedProcess(args, 0, "C:/Cards\n", "")
+
+    monkeypatch.setattr(dialog, "command", lambda title, start: ["powershell"])
+    monkeypatch.setattr(dialog, "NO_WINDOW", 0x08000000)  # CREATE_NO_WINDOW, as on Windows
+    monkeypatch.setattr(subprocess, "run", run)
+
+    assert dialog.choose_folder("Card") == Path("C:/Cards")
+    assert flags == [0x08000000]

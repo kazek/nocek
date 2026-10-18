@@ -30,6 +30,9 @@ MAC_SCRIPT = [
     "end run",
 ]
 MAC_CANCELLED = "(-128)"
+# On Windows, keeps PowerShell from opening a console window of its own beside the
+# dialog: Nocek started from its shortcut has no console for it to share.
+NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
 class NoDialog(Exception):
@@ -68,7 +71,9 @@ def choose_folder(title: str, start: Path | None = None) -> Path | None:
     if start is not None and not start.is_dir():
         start = None
     shown = command(title, start)
-    done = subprocess.run(shown, capture_output=True, text=True, check=False)
+    done = subprocess.run(
+        shown, capture_output=True, text=True, check=False, creationflags=NO_WINDOW
+    )
     chosen = done.stdout.strip()
     if done.returncode == 0:
         return Path(chosen) if chosen else None
