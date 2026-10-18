@@ -3,8 +3,8 @@
 Identify bats from ultrasonic recordings, in your browser.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
-  <img alt="Nocek's main page: three sites, a calendar of nights, one night's recordings from sunset to sunrise, and a recording with two bats in its spectrogram" src="docs/screenshot-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kazek/nocek/main/docs/screenshot-dark.png">
+  <img alt="Nocek's main page: three sites, a calendar of nights, one night's recordings from sunset to sunrise, and a recording with two bats in its spectrogram" src="https://raw.githubusercontent.com/kazek/nocek/main/docs/screenshot-light.png">
 </picture>
 
 Bring in the recordings from your recorder's card, and Nocek copies the new
@@ -29,44 +29,38 @@ never leave it.
 
 ## Install
 
-Nocek is installed with [uv](https://docs.astral.sh/uv/), which also brings the
-version of Python Nocek needs, so you do not need Python installed already.
+On **macOS or Linux**, open a terminal and paste:
 
-1. Install uv. On macOS or Linux, in a terminal:
+```
+curl -LsSf https://raw.githubusercontent.com/kazek/nocek/main/install.sh | sh
+```
 
-   ```
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
+On **Windows**, open PowerShell and paste:
 
-   On Windows, in PowerShell:
+```
+powershell -ExecutionPolicy ByPass -c "irm https://raw.githubusercontent.com/kazek/nocek/main/install.ps1 | iex"
+```
 
-   ```
-   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-   ```
+That is all. The script installs [uv](https://docs.astral.sh/uv/), which brings
+the Python Nocek needs (so you do not need Python already), then Nocek itself with
+the build of PyTorch that suits your computer, puts Nocek in your system's menu
+(Applications on macOS, the Start menu on Windows, the applications menu on
+Linux), and starts it. The first time it downloads about 1 GB.
 
-   Then open a new terminal, so that it finds `uv`.
+### Installing by hand
 
-2. Install Nocek:
+If you would rather see each step, or already use uv or pipx:
 
-   ```
-   uv tool install --python 3.13 --torch-backend auto git+https://github.com/kazek/nocek
-   ```
+```
+uv tool install --torch-backend auto nocek
+nocek shortcut
+```
 
-   `--torch-backend auto` picks the build of PyTorch that suits your computer:
-   with an NVIDIA graphics card, one that uses it; without one, the much smaller
-   build for the processor alone. uv still calls the option experimental; should
-   it ever fail, leave it out.
-
-3. Put Nocek in your system's menu, so you can start it without a terminal:
-
-   ```
-   nocek shortcut
-   ```
-
-   On macOS this adds Nocek to Applications (and so to Launchpad and
-   Spotlight), on Windows to the Start menu, on Linux to the applications menu.
-   If the terminal does not find `nocek`, run `uv tool update-shell` and open a
-   new terminal.
+`--torch-backend auto` picks the build of PyTorch that suits your computer: with
+an NVIDIA graphics card, one that uses it; without one, the much smaller build for
+the processor alone. uv still calls the option experimental; should it ever fail,
+leave it out. With pipx, `pipx install nocek` works too. If the terminal does not
+find `nocek`, run `uv tool update-shell` and open a new terminal.
 
 ## First start
 
@@ -129,11 +123,8 @@ corner. Nocek speaks English, Polish and German.
 
 ## Update
 
-```
-uv tool upgrade nocek
-```
-
-Your library and settings are kept.
+Run the install command again, or `uv tool upgrade nocek`. Your library and
+settings are kept. If Nocek was running, quit it and start it again.
 
 ## Uninstall
 
@@ -165,7 +156,7 @@ them, stay where you put them.
 ## Licence
 
 Nocek may be used for non-commercial purposes only, under the
-[PolyForm Noncommercial License 1.0.0](LICENSE): by individuals, for research,
+[PolyForm Noncommercial License 1.0.0](https://github.com/kazek/nocek/blob/main/LICENSE): by individuals, for research,
 teaching and conservation, and by charities and public bodies. For any other
 use, please ask.
 
@@ -200,4 +191,4 @@ python3 -m venv .venv
 On Windows, use `.venv\Scripts\` instead of `.venv/bin/`. The interface is plain
 JavaScript modules with no build step: change a file under
 `src/nocek/web/static` and reload the page. See
-[docs/roadmap.md](docs/roadmap.md) for how Nocek came about.
+[docs/roadmap.md](https://github.com/kazek/nocek/blob/main/docs/roadmap.md) for how Nocek came about.

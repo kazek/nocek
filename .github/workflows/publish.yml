@@ -1,0 +1,49 @@
+# Builds Nocek and publishes it, with PyPI's trusted publishing (no passwords or tokens
+# kept anywhere):
+#   - pushing a tag v0.1.0, v0.2.0, ... publishes that version to PyPI;
+#   - running this workflow by hand (Actions, "Publish", Run workflow) publishes to
+#     TestPyPI, to try a release out first.
+# The tag must name the version in src/nocek/__init__.py.
+
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Build
+        run: uv build
+      - name: Check the tag names the version being published
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version=$(python3 -c "import re; print(re.search(r'__version__ = \"(.+)\"', open('src/nocek/__init__.py').read())[1])")
+          test "${GITHUB_REF_NAME}" = "v${version}" || { echo "tag ${GITHUB_REF_NAME} but version ${version}"; exit 1; }
+      - name: Check the package's metadata
+        run: uvx twine check --strict dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    # A tag goes to PyPI, a run by hand to TestPyPI.
+    environment: ${{ startsWith(github.ref, 'refs/tags/') && 'pypi' || 'testpypi' }}
+    permissions:
+      id-token: write # what trusted publishing signs in with
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: ${{ startsWith(github.ref, 'refs/tags/') && 'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}

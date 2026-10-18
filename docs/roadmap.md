@@ -13,7 +13,7 @@ stage is small enough to review in one sitting.
 | 4 | Web backend | HTTP API, background jobs with progress, first-run model download, localisation plumbing | ✓ |
 | 5 | Interface | One page: import, sites by recorder number, a calendar of nights, the night as one bar from sunset to sunrise, the recording with its spectrogram and slowed playback. Web Awesome components, light and dark themes | ✓ |
 | 6 | Translations | English, Polish, German. Local species names, always shown with the scientific name | ✓ |
-| 7 | Distribution | Install from the repository with `uv tool install`, a shortcut in the system's menu, the browser opens on start | ✓ |
+| 7 | Distribution | Published on PyPI; a one-line install script for each system, a shortcut in the system's menu, the browser opens on start | ✓ |
 | 8 | Documentation | User guide, translator guide, architecture notes | |
 
 Later: manual verification of identifications; other recorders (AudioMoth).

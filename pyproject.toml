@@ -10,9 +10,15 @@ license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dynamic = ["version"]
+authors = [{ name = "kazek" }]
+keywords = ["bats", "bioacoustics", "echolocation", "bat detector", "pippyg", "ultrasound"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
     "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Natural Language :: German",
+    "Natural Language :: Polish",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
@@ -45,6 +51,11 @@ dev = [
     "ruff>=0.6",
 ]
 
+[project.urls]
+Homepage = "https://github.com/kazek/nocek"
+Source = "https://github.com/kazek/nocek"
+Issues = "https://github.com/kazek/nocek/issues"
+
 [project.scripts]
 nocek = "nocek.cli:main"
 
@@ -53,6 +64,10 @@ path = "src/nocek/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/nocek"]
+
+[tool.hatch.build.targets.sdist]
+# The screenshots are for the repository's front page; the package does without them.
+exclude = ["/docs/*.png"]
 
 [tool.ruff]
 line-length = 100
