@@ -2,7 +2,10 @@
 
 Identify bats from ultrasonic recordings, in your browser.
 
-![Nocek's main page: sites, a calendar of nights, one night's recordings and a spectrogram](docs/screenshot.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
+  <img alt="Nocek's main page: three sites, a calendar of nights, one night's recordings from sunset to sunrise, and a recording with two bats in its spectrogram" src="docs/screenshot-light.png">
+</picture>
 
 Bring in the recordings from your recorder's card, and Nocek copies the new
 ones, finds the echolocation calls, names the bats and shows you what has been
