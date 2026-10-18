@@ -343,7 +343,8 @@
       "rain": "deszcz"
     },
     "slowed_short": "{n}× wolniej",
-    "speed": "Prędkość odtwarzania"
+    "speed": "Prędkość odtwarzania",
+    "normal_speed": "Normalna prędkość"
   },
   "sites_page": {
     "intro": "Miejsca, w których nasłuchują Twoje rejestratory. Od położenia stanowiska zależy, jakich nietoperzy się tam spodziewamy; dla każdego gatunku możesz to zmienić.",

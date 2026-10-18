@@ -44,6 +44,7 @@ export async function home(view, query) {
   let rows = [];
   let bar = null;
   let panel = null;
+  let autoPicked = false; // whether the recording shown was chosen for the user
   // Each answer is used only if nothing newer was asked for meanwhile.
   const latest = { site: 0, night: 0, recording: 0 };
 
@@ -198,10 +199,15 @@ export async function home(view, query) {
         ? { sunset: null, sunrise: null }
         : await get(`/sun?night=${state.night}&site_id=${state.site}`);
     if (ticket !== latest.night) return;
-    if (!rows.some((r) => r.id === state.recording)) {
+    // The night opens on its first recording with a named bat. A recording picked that
+    // way, before the night was analysed, gives way to such a one once there is one;
+    // one the user picked stays.
+    const current = rows.find((r) => r.id === state.recording);
+    if (!current || (autoPicked && !current.named.length)) {
       state.recording = (rows.find((r) => r.named.length) ?? rows[0])?.id ?? null;
+      autoPicked = true;
     }
-    bar = nightBar(rows, sun, hues, { selected: state.recording, onSelect: showRecording });
+    bar = nightBar(rows, sun, hues, { selected: state.recording, onSelect: pick });
     sections.night.hidden = false;
     replace(
       sections.night,
@@ -221,6 +227,12 @@ export async function home(view, query) {
     await showRecording(state.recording);
   };
 
+  // A recording the user chose, from the bar or by stepping.
+  const pick = (id) => {
+    autoPicked = false;
+    return showRecording(id);
+  };
+
   const showRecording = async (id) => {
     const ticket = ++latest.recording;
     state.recording = id;
@@ -236,7 +248,7 @@ export async function home(view, query) {
     const made = await recordingPanel(rec, {
       previous: rows[at - 1]?.id ?? null,
       next: rows[at + 1]?.id ?? null,
-      onStep: showRecording,
+      onStep: pick,
     });
     if (ticket !== latest.recording) return;
     panel = made;

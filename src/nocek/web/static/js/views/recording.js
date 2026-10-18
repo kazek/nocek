@@ -8,7 +8,7 @@ import { spectrogram } from "../spectrogram.js";
 
 // How many times slower the sound plays, so that the calls fall where a person can hear
 // them; the choice is kept in this browser.
-const SLOWDOWNS = [5, 10, 20, 40];
+const SLOWDOWNS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40];
 const SLOWDOWN_KEY = "nocek-slowdown";
 
 function storedSlowdown() {
@@ -87,7 +87,9 @@ export async function recordingPanel(rec, { previous = null, next = null, onStep
         audio.load();
       },
     },
-    SLOWDOWNS.map((n) => h("option", { value: n, selected: n === slowdown }, t("recording.slowed_short", { n }))),
+    SLOWDOWNS.map((n) =>
+      h("option", { value: n, selected: n === slowdown }, n === 1 ? t("recording.normal_speed") : t("recording.slowed_short", { n })),
+    ),
   );
 
   const step = (direction, other) =>

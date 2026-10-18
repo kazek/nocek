@@ -321,7 +321,8 @@
       "rain": "rain"
     },
     "slowed_short": "{n}× slower",
-    "speed": "Speed"
+    "speed": "Speed",
+    "normal_speed": "Normal speed"
   },
   "sites_page": {
     "intro": "Where your recorders listen. A site's position decides which bats are expected there; you can change that for any species.",

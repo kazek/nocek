@@ -321,7 +321,8 @@
       "rain": "Regen"
     },
     "slowed_short": "{n}× langsamer",
-    "speed": "Wiedergabegeschwindigkeit"
+    "speed": "Wiedergabegeschwindigkeit",
+    "normal_speed": "Normale Geschwindigkeit"
   },
   "sites_page": {
     "intro": "Die Orte, an denen deine Rekorder lauschen. Von der Position eines Standorts hängt ab, welche Fledermäuse dort zu erwarten sind; für jede Art kannst du das ändern.",
