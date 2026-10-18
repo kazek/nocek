@@ -19,7 +19,8 @@ let lastZoom = 1; // kept from one night to the next
 
 // rows: the night's recordings in time order; sun: {sunset, sunrise} or nulls;
 // hues: from assignHues(); selected: a recording id; onSelect(id).
-export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {} } = {}) {
+// scroll: where a widened bar drawn before was scrolled to, to keep the same place.
+export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}, scroll = null } = {}) {
   const times = rows.map((r) => minutes(r.recorded_at));
   const dusk = sun.sunset ? minutes(sun.sunset) : null;
   const dawn = sun.sunrise ? minutes(sun.sunrise) : null;
@@ -211,13 +212,17 @@ export function nightBar(rows, sun, hues, { selected = null, onSelect = () => {}
     ),
   );
   setZoom(zoom);
-  requestAnimationFrame(reveal);
+  requestAnimationFrame(() => {
+    if (scroll === null) reveal();
+    else scroller.scrollLeft = scroll;
+  });
   return {
     element,
     select: (id) => {
       select(id);
       reveal();
     },
+    scrollLeft: () => scroller.scrollLeft,
   };
 }
 

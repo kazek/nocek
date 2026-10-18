@@ -9,7 +9,7 @@ import { calendar } from "../calendar.js";
 import { openDialog } from "../dialog.js";
 import { h, replace } from "../dom.js";
 import { formatDate, formatNumber, t } from "../i18n.js";
-import { onFinished } from "../jobs.js";
+import { onFinished, onUpdate } from "../jobs.js";
 import { numberName } from "../names.js";
 import { nightBar } from "../nightbar.js";
 import { devices as devicesPanel } from "./devices.js";
@@ -20,6 +20,7 @@ import { sites as sitesPanel } from "./sites.js";
 const PAGE = 1000; // recordings fetched at a time; a night rarely holds more
 const NONE = "none"; // the tab of recordings without a site
 const ROWS = 6; // sites in a column before another begins
+const REFRESH_MS = 15000; // how often the page catches up while recordings are processed
 
 export async function home(view, query) {
   const site = query.get("site");
@@ -45,6 +46,8 @@ export async function home(view, query) {
   let bar = null;
   let panel = null;
   let autoPicked = false; // whether the recording shown was chosen for the user
+  let shown = null; // what the recording panel was drawn from
+  let sameNight = null; // the night the bar shows
   // Each answer is used only if nothing newer was asked for meanwhile.
   const latest = { site: 0, night: 0, recording: 0 };
 
@@ -207,7 +210,10 @@ export async function home(view, query) {
       state.recording = (rows.find((r) => r.named.length) ?? rows[0])?.id ?? null;
       autoPicked = true;
     }
-    bar = nightBar(rows, sun, hues, { selected: state.recording, onSelect: pick });
+    // Drawn again, the same night keeps its place on a widened bar.
+    const scroll = bar && sameNight === state.night ? bar.scrollLeft() : null;
+    sameNight = state.night;
+    bar = nightBar(rows, sun, hues, { selected: state.recording, onSelect: pick, scroll });
     sections.night.hidden = false;
     replace(
       sections.night,
@@ -234,6 +240,11 @@ export async function home(view, query) {
   };
 
   const showRecording = async (id) => {
+    const at = rows.findIndex((r) => r.id === id);
+    // Drawn again only when it changed: a refresh while it plays leaves it playing, and
+    // the bar where it was scrolled to.
+    const key = JSON.stringify([id, rows[at]?.analysed, rows[at]?.named, rows[at - 1]?.id, rows[at + 1]?.id]);
+    if (panel && id !== null && key === shown) return;
     const ticket = ++latest.recording;
     state.recording = id;
     remember();
@@ -241,9 +252,9 @@ export async function home(view, query) {
     if (id === null) {
       replace(sections.recording);
       panel = null;
+      shown = null;
       return;
     }
-    const at = rows.findIndex((r) => r.id === id);
     const rec = await get(`/recordings/${id}`);
     const made = await recordingPanel(rec, {
       previous: rows[at - 1]?.id ?? null,
@@ -252,6 +263,7 @@ export async function home(view, query) {
     });
     if (ticket !== latest.recording) return;
     panel = made;
+    shown = key;
     replace(sections.recording, panel.element);
   };
 
@@ -263,13 +275,31 @@ export async function home(view, query) {
   document.addEventListener("keydown", keys);
   addEventListener("hashchange", () => document.removeEventListener("keydown", keys), { once: true });
 
-  // New recordings or names: draw again, keeping what was picked.
-  const stop = onFinished(async (job) => {
-    if (!view.contains(sections.sites)) return stop();
-    if (!["import", "analyse", "verdicts"].includes(job.kind) || job.status !== "done") return;
-    await loadSites();
-    drawSites();
-    await showSite();
+  // New recordings or names: draw again, keeping what was picked; when a job is done,
+  // and every REFRESH_MS while one runs, unless the pointer is on the night's bar.
+  const KINDS = ["import", "analyse", "verdicts"];
+  let refreshed = Date.now();
+  let refreshing = false;
+  const refresh = async () => {
+    if (refreshing) return;
+    refreshing = true;
+    refreshed = Date.now();
+    try {
+      await loadSites();
+      drawSites();
+      await showSite();
+    } finally {
+      refreshing = false;
+    }
+  };
+  const stopFinished = onFinished((job) => {
+    if (!view.contains(sections.sites)) return stopFinished();
+    if (KINDS.includes(job.kind) && job.status === "done") refresh();
+  });
+  const stopUpdates = onUpdate((jobs) => {
+    if (!view.contains(sections.sites)) return stopUpdates();
+    const busy = jobs.some((job) => !job.finished_at && KINDS.includes(job.kind));
+    if (busy && Date.now() - refreshed > REFRESH_MS && !sections.night.matches(":hover")) refresh();
   });
 
   await loadSites();
