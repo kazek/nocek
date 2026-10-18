@@ -38,6 +38,12 @@ curl -LsSf https://raw.githubusercontent.com/kazek/nocek/main/install.sh | sh
 On **Windows**, open PowerShell and paste:
 
 ```
+irm https://raw.githubusercontent.com/kazek/nocek/main/install.ps1 | iex
+```
+
+or paste this into the Start menu's search box, or the Run box (Win+R):
+
+```
 powershell -ExecutionPolicy ByPass -c "irm https://raw.githubusercontent.com/kazek/nocek/main/install.ps1 | iex"
 ```
 
